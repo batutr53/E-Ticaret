@@ -1,4 +1,4 @@
-﻿@model IEnumerable<E_Ticaret.Core.Entities.Brand>
+﻿@model IEnumerable<E_Ticaret.Core.Entities.Category>
 
 @{
     ViewData["Title"] = "Index";
@@ -19,10 +19,19 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Logo)
+                @Html.DisplayNameFor(model => model.Image)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsTopMenu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderNo)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedDate)
@@ -40,10 +49,19 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-               <img src="/img/@item.Logo" height="75" />
+                <img src="/img/@item.Image" height="75" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsTopMenu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParentId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderNo)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedDate)
