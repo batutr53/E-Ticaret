@@ -72,7 +72,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppUsers");
+                    b.ToTable("AppUsers", (string)null);
 
                     b.HasData(
                         new
@@ -119,7 +119,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Category", b =>
@@ -160,7 +160,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Contact", b =>
@@ -203,7 +203,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.News", b =>
@@ -237,7 +237,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Product", b =>
@@ -298,7 +298,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Slider", b =>
@@ -330,7 +330,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sliders");
+                    b.ToTable("Sliders", (string)null);
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Product", b =>

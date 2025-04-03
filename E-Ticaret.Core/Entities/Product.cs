@@ -12,9 +12,9 @@
         public bool IsActive { get; set; }
         public bool IsHome { get; set; }
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
         public int BrandId { get; set; }
-        public Brand Brand { get; set; }
+        public Brand? Brand { get; set; }
         public int OrderNo { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }

@@ -53,11 +53,11 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category,IFormFile? file)
+        public async Task<IActionResult> Create(Category category,IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
-                category.Image = await FileHelper.FileLoaderASynx(file);
+                category.Image = await FileHelper.FileLoaderASynx(Image);
                 await _context.AddAsync(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -85,7 +85,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Category category, IFormFile? file, bool cbRemoveImage = false)
+        public async Task<IActionResult> Edit(int id, Category category, IFormFile? Image, bool cbRemoveImage = false)
         {
             if (id != category.Id)
             {
@@ -98,8 +98,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 {
                     if (cbRemoveImage)
                         category.Image = string.Empty;
-                    if (file is not null)
-                      category.Image = await FileHelper.FileLoaderASynx(file);
+                    if (Image is not null)
+                      category.Image = await FileHelper.FileLoaderASynx(Image);
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                 }
@@ -146,6 +146,10 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
+                if (!string.IsNullOrEmpty(category.Image))
+                {
+                    FileHelper.FileRemover(category.Image);
+                }
                 _context.Categories.Remove(category);
             }
 
