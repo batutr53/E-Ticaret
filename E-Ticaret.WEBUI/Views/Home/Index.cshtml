@@ -2,7 +2,225 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<partial name="_SLider" />
+<!-- Özellikler Kutuları -->
+<section class="features-section">
+    <div class="features-container">
+        <div class="feature-box">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h3>Güvenli Alışveriş</h3>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-paper-plane"></i>
+            <h3>Hızlı Teslimat</h3>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-seedling"></i>
+            <h3>Taze Çiçekler</h3>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-face-smile"></i>
+            <h3>Mutlu Müşteriler</h3>
+        </div>
+    </div>
+</section>
+
+<!-- Ürün Listesi Bölümü -->
+<section class="products-section">
+    <div class="section-header">
+        <h2>Sizin İçin Seçtiğimiz Ürünler</h2>
+    </div>
+
+    <div class="products-grid">
+        <!-- Ürün 1 -->
+        <div class="product-card">
+            <a href="/detail.html" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=600&h=600&fit=crop" alt="Lady Pink Bloom">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Lady Pink Bloom</h3>
+                    <div class="product-price">3500<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 2 -->
+        <div class="product-card">
+            <a href="/detail.html" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=600&h=600&fit=crop" alt="Jolie Çiçek Aranjman">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Jolie Çiçek Aranjman</h3>
+                    <div class="product-price">4000<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 3 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&h=600&fit=crop" alt="Etiler Fuşya Çiçek Dizayn">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Etiler Fuşya Çiçek Dizayn</h3>
+                    <div class="product-price">3000<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 4 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&h=600&fit=crop" alt="Orkide Bahçesi">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Orkide Bahçesi</h3>
+                    <div class="product-price">5200<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 5 - 10 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1591892146577-a7c8c5f506cd?w=600&h=600&fit=crop" alt="Kırmızı Gül Buketi">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Kırmızı Gül Buketi</h3>
+                    <div class="product-price">2800<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 6 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=600&h=600&fit=crop" alt="Beyaz Şıklık">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Beyaz Şıklık</h3>
+                    <div class="product-price">3700<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 7 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1622467827417-bbe6542819d0?w=600&h=600&fit=crop" alt="Bahar Esintisi">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Bahar Esintisi</h3>
+                    <div class="product-price">4200<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 8 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1605645454784-60516bf982c5?w=600&h=600&fit=crop" alt="Kutuda Çiçekler">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Kutuda Çiçekler</h3>
+                    <div class="product-price">3900<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 9 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1560182704-47a5888fc2e3?w=600&h=600&fit=crop" alt="Pembe Düşler">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Pembe Düşler</h3>
+                    <div class="product-price">3200<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+
+        <!-- Ürün 10 -->
+        <div class="product-card">
+            <a href="#" class="product-link">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1599733594230-6b823276abcc?w=600&h=600&fit=crop" alt="Mor İhtişam">
+                    <div class="quick-view">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Mor İhtişam</h3>
+                    <div class="product-price">4500<span class="currency">.00 TL</span></div>
+                </div>
+            </a>
+            <button class="add-to-cart-btn">
+                <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+            </button>
+        </div>
+    </div>
+</section>
