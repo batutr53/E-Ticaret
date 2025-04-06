@@ -10,6 +10,7 @@
         public bool IsTopMenu { get; set; }
         public int ParentId { get; set; }
         public int OrderNo { get; set; }
+        public string? ClassImage { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public IList<Product>? Products { get; set; }
     }

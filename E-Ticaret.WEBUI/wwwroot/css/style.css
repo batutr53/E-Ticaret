@@ -1681,7 +1681,154 @@ ul {
     font-weight: 600;
     cursor: pointer;
 }
+.image-radio-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+}
 
+.image-radio-option {
+    position: relative;
+    width: calc(33.333% - 10px); /* 3 sütun için */
+}
+
+.image-radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.image-radio-label {
+    display: block;
+    padding: 10px;
+    border: 2px solid #eee;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.image-radio-input:checked + .image-radio-label {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.image-radio-input:focus + .image-radio-label {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Scrollbar düzenlemesi */
+.image-radio-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.image-radio-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.image-radio-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+    .image-radio-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+.contactUs-container {
+    padding: 40px 20px;
+    background: #f8f8f8;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.contactUs-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.contactUs-info,
+.contactUs-form {
+    flex: 1 1 45%;
+    margin: 10px;
+}
+
+    .contactUs-info h2,
+    .contactUs-form h2 {
+        margin-bottom: 20px;
+        font-size: 1.4rem;
+    }
+
+    .contactUs-info p {
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+
+    .contactUs-form form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .contactUs-form input,
+    .contactUs-form textarea {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .contactUs-form textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+.contactUs-recaptcha {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+    .contactUs-recaptcha img {
+        height: 40px;
+    }
+
+.contactUs-form button {
+    background-color: #15803d;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+    .contactUs-form button:hover {
+        background-color: #166534;
+    }
+
+.contactUs-map iframe {
+    width: 100%;
+    height: 300px;
+    border: none;
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .contactUs-wrapper {
+        flex-direction: column;
+    }
+
+    .contactUs-info,
+    .contactUs-form {
+        flex: 1 1 100%;
+        margin: 0 0 20px 0;
+    }
+}
 @media (max-width: 768px) {
     .gonderici-container {
         flex-direction: column;

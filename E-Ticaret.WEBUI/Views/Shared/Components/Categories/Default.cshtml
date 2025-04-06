@@ -1,35 +1,40 @@
 ﻿@using E_Ticaret.Core.Entities
 @model IEnumerable<Category>
-@{
-    foreach (var item in Model.Where(x=>x.IsActive && x.IsTopMenu && x.ParentId == 0))
-    {
-        // @foreach (var altCategories in Model.Where(x=>x.IsActive && x.IsTopMenu && x.ParentId == item.Id))
-        // {
-        //     <a href="/Categories/Index/@altCategories.Name"><i class="fa-solid fa-seedling"></i> @altCategories.Name</a>
-        // }
-        <div class="dropdown-menu">
-            <div class="dropdown-content">
-                @*/<a href="@Url.Action("Index", "Product", new { categoryId = item.Id })" class="nav-link">
-                    @item.Name
-                </a>/*@
-                <a href="#"><i class="fa-solid fa-seedling"></i> Canlı Aranjmanlar</a>
-                <a href="#"><i class="fa-solid fa-heart"></i> Gül Aranjmanları</a>
-                <a href="#"><i class="fa-solid fa-fan"></i> Buketler</a>
-                <a href="#"><i class="fa-solid fa-spa"></i> Ferforje Aranjmanlar</a>
-                <a href="#"><i class="fa-solid fa-ring"></i> Gelin Buketleri</a>
-                <a href="#"><i class="fa-solid fa-glass-water"></i> Gelin Masası ve Havuz Çiçk.</a>
-                <a href="#"><i class="fa-solid fa-car-side"></i> Gelin Araba Süslemeleri</a>
-                <a href="#"><i class="fa-solid fa-cross"></i> ÇELENK & CENAZE</a>
-                <a href="#"><i class="fa-solid fa-champagne-glasses"></i> Açılış & Düğün Çiçekleri</a>
-                <a href="#"><i class="fa-solid fa-gem"></i> Ölmeyen Güller</a>
-                <a href="#"><i class="fa-solid fa-earth-americas"></i> Teraryum Düzenlemesi</a>
-                <a href="#"><i class="fa-solid fa-seedling"></i> ORKİDELER</a>
-                <a href="#"><i class="fa-solid fa-tree"></i> Bonzailer</a>
-                <a href="#"><i class="fa-solid fa-leaf"></i> BİTKİ ÇEŞİTLERİ</a>
-            </div>
+
+@foreach (var item in Model.Where(x => x.IsActive && x.IsTopMenu && x.ParentId == 0))
+{
+    <div class="dropdown-menu">
+        <div class="dropdown-content">
+           @foreach (var altCategories in Model.Where(x => x.IsActive && x.IsTopMenu && x.ParentId == item.Id))
+           {
+
+            <a href="/Category?id=@altCategories.Id">
+                <i class="@altCategories.ClassImage"></i> @altCategories.Name
+            </a>
+
+            }
         </div>
-        <li class="nav-item">
-           
-        </li>
-    }
+    </div>
 }
+
+@*<div class="dropdown-menu">
+                        <div class="dropdown-content">
+                            <a href="#"><i class="fa-solid fa-seedling"></i> Canlı Aranjmanlar</a>
+                            <a href="#"><i class="fa-solid fa-heart"></i> Gül Aranjmanları</a>
+                            <a href="#"><i class="fa-solid fa-fan"></i> Buketler</a>
+                            <a href="#"><i class="fa-solid fa-spa"></i> Ferforje Aranjmanlar</a>
+                            <a href="#"><i class="fa-solid fa-ring"></i> Gelin Buketleri</a>
+                            <a href="#"><i class="fa-solid fa-glass-water"></i> Gelin Masası ve Havuz Çiçk.</a>
+                            <a href="#"><i class="fa-solid fa-car-side"></i> Gelin Araba Süslemeleri</a>
+                            <a href="#"><i class="fa-solid fa-cross"></i> ÇELENK & CENAZE</a>
+                            <a href="#"><i class="fa-solid fa-champagne-glasses"></i> Açılış & Düğün Çiçekleri</a>
+                            <a href="#"><i class="fa-solid fa-gem"></i> Ölmeyen Güller</a>
+                            <a href="#"><i class="fa-solid fa-earth-americas"></i> Teraryum Düzenlemesi</a>
+                            <a href="#"><i class="fa-solid fa-seedling"></i> ORKİDELER</a>
+                            <a href="#"><i class="fa-solid fa-tree"></i> Bonzailer</a>
+                            <a href="#"><i class="fa-solid fa-leaf"></i> BİTKİ ÇEŞİTLERİ</a>
+                        </div>
+                    </div>
+    <li class="nav-item">
+
+    </li>/*@

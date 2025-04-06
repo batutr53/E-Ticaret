@@ -1,26 +1,61 @@
-﻿@model E_Ticaret.Core.Entities.Product
+﻿@model ProductDetailViewModel
+@{
+
+    ViewData["Title"] = Model.Product?.Name ?? "Detay";
+ }
+
 <div class="product-detail-container">
 
     <div class="product-detail-image-wrapper">
         <div class="product-detail-main-image">
-            <img id="mainImage" src="/img/@Model.Image" alt="@Model.Name">
+            <img id="mainImage" src="/img/@Model.Product?.Image" alt="@Model.Product?.Name">
         </div>
         <div class="product-detail-thumbnails">
-            <img src="/img/@Model.Image" class="active" onclick="changeImage(this)">
+            <img src="/img/@Model.Product?.Image" class="active" onclick="changeImage(this)">
         </div>
     </div>
 
     <div class="product-detail-info-wrapper">
-        <div class="product-detail-title">@Model.Name</div>
+        <div class="product-detail-title">@Model.Product?.Name</div>
         <div class="product-detail-description">
-           @Model.Description
+            @Model.Product?.Description
         </div>
 
         <div class="product-detail-order-box">
             <input type="text" placeholder="Gönderim yeri yazınız veya seçiniz">
-            <div class="product-detail-price">@Model.Price.ToString("c") </div>
+            <div class="product-detail-price">@Model.Product?.Price.ToString("c") </div>
             <button class="product-detail-btn">Sipariş Ver →</button>
         </div>
     </div>
 
 </div>
+
+<section class="products-section">
+    <div class="section-header">
+        <h2>Benzer Ürünler</h2>
+    </div>
+
+    <div class="products-grid">
+
+        @foreach (var item in Model.RelatedProducts)
+        {
+            <div class="product-card">
+                <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                    <div class="product-image">
+                        <img src="@item.Image" alt="@item.Name">
+                        <div class="quick-view">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">@item.Name</h3>
+                        <div class="product-price">@item.Price.ToString("c")</div>
+                    </div>
+                </a>
+                <button class="add-to-cart-btn">
+                    <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                </button>
+            </div>
+        }
+    </div>
+</section>

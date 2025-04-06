@@ -35,24 +35,6 @@ mobileCategoryToggles.forEach(toggle => {
     });
 });
 
-// Arama Fonksiyonları
-const searchInput = document.querySelector('.search-input');
-const searchBtn = document.querySelector('.search-btn');
-
-searchBtn.addEventListener('click', () => {
-    const searchTerm = searchInput.value.trim();
-    if (searchTerm) {
-        alert(`Arama yapılıyor: ${searchTerm}`);
-        // Normal şartlarda arama sonuçları sayfasına yönlendirme yapılır
-        // Here you would normally redirect to search results page
-    }
-});
-
-searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        searchBtn.click();
-    }
-});
 
 // Cart İşlevleri
 document.querySelectorAll('.add-to-cart-btn').forEach(button => {
@@ -97,40 +79,9 @@ document.querySelectorAll('.nav-links li').forEach(item => {
     }
 });
 
-//// Duyarlı Görsel Yükleme
-//function loadResponsiveImages() {
-//    const windowWidth = window.innerWidth;
-//    const bannerImages = document.querySelectorAll('.banner-item img');
+// Duyarlı Görsel Yükleme
 
-//    // Unsplash'ten yüksek kaliteli çiçek görselleri
-//    const imageSources = {
-//        desktop: [
-//            'https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=800&h=500&fit=crop',
-//            'https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=800&h=500&fit=crop',
-//            'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800&h=500&fit=crop',
-//            'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800&h=500&fit=crop'
-//        ],
-//        mobile: [
-//            'https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=400&h=300&fit=crop',
-//            'https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=400&h=300&fit=crop',
-//            'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400&h=300&fit=crop',
-//            'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=400&h=300&fit=crop'
-//        ]
-//    };
-
-//    bannerImages.forEach((img, index) => {
-//        try {
-//            if (windowWidth <= 768) {
-//                img.src = imageSources.mobile[index];
-//            } else {
-//                img.src = imageSources.desktop[index];
-//            }
-//        } catch (e) {
-//            console.error('Görsel yüklenirken hata:', e);
-//        }
-//    });
-//}
-///*feather.replace();*/
+feather.replace();
 function changeImage(thumbnail) {
     document.getElementById('mainImage').src = thumbnail.src;
     document.querySelectorAll('.product-detail-thumbnails img').forEach(img => img.classList.remove('active'));
@@ -169,25 +120,3 @@ quantitySelectors.forEach(selector => {
         input.value = value + 1;
     });
 });
-
-// Coupon toggle functionality
-const couponHeader = document.querySelector('.basket-coupon-header');
-const couponIcon = document.querySelector('.basket-coupon-icon');
-const couponContent = document.querySelector('.basket-coupon-content');
-
-//couponHeader.addEventListener('click', () => {
-//    couponIcon.classList.toggle('open');
-//    couponContent.classList.toggle('open');
-//});
-
-const ordercouponHeader = document.querySelector('.order-coupon-header');
-const ordercouponIcon = document.querySelector('.order-coupon-icon');
-const ordercouponContent = document.querySelector('.order-coupon-content');
-
-//ordercouponHeader.addEventListener('click', () => {
-//    ordercouponIcon.classList.toggle('open');
-//    ordercouponContent.classList.toggle('open');
-//});
-// Sayfa yüklendiğinde ve yeniden boyutlandırıldığında çağır
-window.addEventListener('load', loadResponsiveImages);
-window.addEventListener('resize', loadResponsiveImages);

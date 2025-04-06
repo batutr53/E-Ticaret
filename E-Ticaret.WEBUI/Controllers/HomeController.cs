@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,40 @@ namespace E_Ticaret.WEBUI.Controllers
             return View();
         }
 
+        public IActionResult ContactUs()
+        {
+            return View();
+        }
+        public async Task<IActionResult> ContactUsPost(Contact contact)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Contacts.Add(contact);
+                    var result = await _context.SaveChangesAsync();
+                    if (result > 0)
+                    {
+                        TempData["Message"] = "Swal.fire({icon: 'success', title: 'Baþarýlý', text: 'Mesajýnýz baþarýyla gönderilmiþtir.'});";
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        TempData["Message"] = "Swal.fire({icon: 'success', title: 'Baþarýlý', text: 'Mesajýnýz gönderilemedi. Lütfen tekrar deneyin.'});";;
+                        return RedirectToAction("ContactUs");
+                    }
+
+                }
+                catch (Exception)
+                {
+                     ModelState.AddModelError("", "Mesajýnýz gönderilemedi. Lütfen tekrar deneyin.");
+                    throw;
+                }
+            }
+          
+
+            return View(contact);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

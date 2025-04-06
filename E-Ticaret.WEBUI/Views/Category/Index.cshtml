@@ -1,41 +1,17 @@
-﻿@model IEnumerable<E_Ticaret.Core.Entities.Product>
+﻿@model E_Ticaret.Core.Entities.Category
 @{
-    ViewData["Title"] = "Home Page";
+
+    ViewData["Title"] = Model.Name ?? "Kategoriler";
 }
 
-<partial name="_SLider" />
-<!-- Özellikler Kutuları -->
-<section class="features-section">
-    <div class="features-container">
-        <div class="feature-box">
-            <i class="fa-solid fa-shield-halved"></i>
-            <h3>Güvenli Alışveriş</h3>
-        </div>
-        <div class="feature-box">
-            <i class="fa-solid fa-paper-plane"></i>
-            <h3>Hızlı Teslimat</h3>
-        </div>
-        <div class="feature-box">
-            <i class="fa-solid fa-seedling"></i>
-            <h3>Taze Çiçekler</h3>
-        </div>
-        <div class="feature-box">
-            <i class="fa-solid fa-face-smile"></i>
-            <h3>Mutlu Müşteriler</h3>
-        </div>
-    </div>
-</section>
-
-<!-- Ürün Listesi Bölümü -->
 <section class="products-section">
     <div class="section-header">
-        <h2>Sizin İçin Seçtiğimiz Ürünler</h2>
+        <h2>@Model.Name</h2>
     </div>
 
     <div class="products-grid">
-        <!-- Ürün 1 -->
 
-        @foreach (var item in Model)
+        @foreach (var item in Model.Products)
         {
             <div class="product-card">
                 <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
@@ -59,4 +35,3 @@
 
     </div>
 </section>
-
