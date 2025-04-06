@@ -1,0 +1,26 @@
+﻿@model E_Ticaret.Core.Entities.Product
+<div class="product-detail-container">
+
+    <div class="product-detail-image-wrapper">
+        <div class="product-detail-main-image">
+            <img id="mainImage" src="/img/@Model.Image" alt="@Model.Name">
+        </div>
+        <div class="product-detail-thumbnails">
+            <img src="/img/@Model.Image" class="active" onclick="changeImage(this)">
+        </div>
+    </div>
+
+    <div class="product-detail-info-wrapper">
+        <div class="product-detail-title">@Model.Name</div>
+        <div class="product-detail-description">
+           @Model.Description
+        </div>
+
+        <div class="product-detail-order-box">
+            <input type="text" placeholder="Gönderim yeri yazınız veya seçiniz">
+            <div class="product-detail-price">@Model.Price.ToString("c") </div>
+            <button class="product-detail-btn">Sipariş Ver →</button>
+        </div>
+    </div>
+
+</div>

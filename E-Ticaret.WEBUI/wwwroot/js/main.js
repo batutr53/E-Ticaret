@@ -97,40 +97,40 @@ document.querySelectorAll('.nav-links li').forEach(item => {
     }
 });
 
-// Duyarlı Görsel Yükleme
-function loadResponsiveImages() {
-    const windowWidth = window.innerWidth;
-    const bannerImages = document.querySelectorAll('.banner-item img');
+//// Duyarlı Görsel Yükleme
+//function loadResponsiveImages() {
+//    const windowWidth = window.innerWidth;
+//    const bannerImages = document.querySelectorAll('.banner-item img');
 
-    // Unsplash'ten yüksek kaliteli çiçek görselleri
-    const imageSources = {
-        desktop: [
-            'https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=800&h=500&fit=crop',
-            'https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=800&h=500&fit=crop',
-            'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800&h=500&fit=crop',
-            'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800&h=500&fit=crop'
-        ],
-        mobile: [
-            'https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=400&h=300&fit=crop',
-            'https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=400&h=300&fit=crop',
-            'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400&h=300&fit=crop',
-            'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=400&h=300&fit=crop'
-        ]
-    };
+//    // Unsplash'ten yüksek kaliteli çiçek görselleri
+//    const imageSources = {
+//        desktop: [
+//            'https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=800&h=500&fit=crop',
+//            'https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=800&h=500&fit=crop',
+//            'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800&h=500&fit=crop',
+//            'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800&h=500&fit=crop'
+//        ],
+//        mobile: [
+//            'https://images.unsplash.com/photo-1586968695411-35c7c919195a?w=400&h=300&fit=crop',
+//            'https://images.unsplash.com/photo-1589244159943-460088ed5c1e?w=400&h=300&fit=crop',
+//            'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400&h=300&fit=crop',
+//            'https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=400&h=300&fit=crop'
+//        ]
+//    };
 
-    bannerImages.forEach((img, index) => {
-        try {
-            if (windowWidth <= 768) {
-                img.src = imageSources.mobile[index];
-            } else {
-                img.src = imageSources.desktop[index];
-            }
-        } catch (e) {
-            console.error('Görsel yüklenirken hata:', e);
-        }
-    });
-}
-/*feather.replace();*/
+//    bannerImages.forEach((img, index) => {
+//        try {
+//            if (windowWidth <= 768) {
+//                img.src = imageSources.mobile[index];
+//            } else {
+//                img.src = imageSources.desktop[index];
+//            }
+//        } catch (e) {
+//            console.error('Görsel yüklenirken hata:', e);
+//        }
+//    });
+//}
+///*feather.replace();*/
 function changeImage(thumbnail) {
     document.getElementById('mainImage').src = thumbnail.src;
     document.querySelectorAll('.product-detail-thumbnails img').forEach(img => img.classList.remove('active'));

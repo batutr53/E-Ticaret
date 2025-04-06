@@ -134,7 +134,7 @@ namespace E_Ticaret.Data.Migrations
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Image = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
                     Price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    ProductCode = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ProductCode = table.Column<long>(type: "bigint", nullable: false),
                     Stock = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsHome = table.Column<bool>(type: "boolean", nullable: false),
