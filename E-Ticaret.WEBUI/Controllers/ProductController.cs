@@ -1,23 +1,23 @@
-﻿using E_Ticaret.Data;
+﻿using E_Ticaret.Core.Entities;
+using E_Ticaret.Service.Abstract;
 using E_Ticaret.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace E_Ticaret.WEBUI.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly DatabaseContext _context;
+        private readonly IService<Product> _productService;
 
-        public ProductController(DatabaseContext context)
+        public ProductController(IService<Product> productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         public async Task<IActionResult> Index(string q = "")
         {
-            var result = await _context.Products
+            var result = await _productService.GetQueryable()
                 .Where(x => x.IsActive &&
                        (EF.Functions.ILike(x.Name, $"%{q}%") ||
                         EF.Functions.ILike(x.ProductCode.ToString(), $"%{q}%")))
@@ -31,7 +31,7 @@ namespace E_Ticaret.WEBUI.Controllers
 
         public async Task<IActionResult> Detail(int productCode)
         {
-            var product = await _context.Products
+            var product = await _productService.GetQueryable()
                 .Include(x => x.Category)
                 .Include(x => x.Brand)
                 .FirstOrDefaultAsync(x => x.ProductCode == productCode && x.IsActive);
@@ -43,7 +43,7 @@ namespace E_Ticaret.WEBUI.Controllers
             var model = new ProductDetailViewModel
             {
                 Product = product,
-                RelatedProducts = await _context.Products
+                RelatedProducts = await _productService.GetQueryable()
                     .Where(x => x.CategoryId == product.CategoryId && x.Id != product.Id && x.IsActive)
                     .ToListAsync()
             };

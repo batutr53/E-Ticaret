@@ -22,9 +22,13 @@
         </div>
 
         <div class="product-detail-order-box">
-            <input type="text" placeholder="Gönderim yeri yazınız veya seçiniz">
+            @*<input type="text" placeholder="Gönderim yeri yazınız veya seçiniz">*@
             <div class="product-detail-price">@Model.Product?.Price.ToString("c") </div>
-            <button class="product-detail-btn">Sipariş Ver →</button>
+            <form asp-action="Add" asp-controller="Cart">
+                <input type="hidden" name="productId" value="@Model.Product?.Id" />
+                <input type="number" value="1" name="quantity" />
+                <button class="product-detail-btn" type="submit">Sepete Ekle</button>
+            </form>
         </div>
     </div>
 

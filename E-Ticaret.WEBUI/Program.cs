@@ -1,10 +1,39 @@
 using E_Ticaret.Data;
+using E_Ticaret.Service.Abstract;
+using E_Ticaret.Service.Concrete;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(7);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Name = "E-Ticaret.Session";
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.MaxAge = TimeSpan.FromMinutes(30);
+});
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddScoped(typeof(IService<>),typeof(Service<>));
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/SignIn";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role,"Admin"));
+    options.AddPolicy("User", policy => policy.RequireClaim(ClaimTypes.Role, "Admin","User","Customer"));
+}); 
 
 var app = builder.Build();
 
@@ -20,7 +49,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseSession();
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllerRoute(
           name: "admin",

@@ -1,0 +1,170 @@
+﻿@model CartViewModel
+@{
+    ViewData["Title"] = "Sepetim";
+}
+
+<div class="basket-container">
+    <div class="basket-main-content">
+        <!-- Main Product -->
+        <div class="basket-product-card">
+            @if (Model.CartLines.Any())
+            {
+                @foreach (var item in Model.CartLines)
+                {
+
+                    <h2 class="basket-product-title">@item.Product.Name</h2>
+
+                    <div class="basket-product-header">
+                        <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
+                        <div>
+                            <p class="basket-product-info">@item.Product.Price.ToString("c")</p>
+                        </div>
+                        <button class="basket-remove-btn">Sil <i class="fas fa-trash"></i></button>
+                    </div>
+                }
+
+                <p>Jolie Çiçek Aranjman için ekstra ürün ekleyin (Opsiyonel)</p>
+
+                <!-- Add-on Products -->
+                <div class="basket-addon-container">
+                    <!-- Nazar Boncuğu -->
+                    <div class="basket-addon-item">
+                        <img src="/img/100.png" alt="Nazar Boncuğu" class="basket-addon-img">
+                        <h3 class="basket-addon-title">Nazar Boncuğu</h3>
+                        <p class="basket-addon-price">15 TL</p>
+                        <div class="basket-quantity-selector">
+                            <div class="basket-quantity-btn basket-minus">-</div>
+                            <input type="text" class="basket-quantity-input" value="0" readonly>
+                            <div class="basket-quantity-btn basket-plus">+</div>
+                        </div>
+                        <button class="basket-add-to-cart">
+                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                        </button>
+                    </div>
+
+                    <!-- Renkli Balon -->
+                    <div class="basket-addon-item">
+                        <img src="/img/100.png" alt="Renkli Balon" class="basket-addon-img">
+                        <h3 class="basket-addon-title">Renkli Balon</h3>
+                        <p class="basket-addon-price">15 TL</p>
+                        <div class="basket-quantity-selector">
+                            <div class="basket-quantity-btn basket-minus">-</div>
+                            <input type="text" class="basket-quantity-input" value="0" readonly>
+                            <div class="basket-quantity-btn basket-plus">+</div>
+                        </div>
+                        <button class="basket-add-to-cart">
+                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                        </button>
+                    </div>
+
+                    <!-- Folyo Balon -->
+                    <div class="basket-addon-item">
+                        <img src="/img/100.png" alt="Folyo Balon" class="basket-addon-img">
+                        <h3 class="basket-addon-title">Folyo Balon</h3>
+                        <p class="basket-addon-price">75 TL</p>
+                        <div class="basket-quantity-selector">
+                            <div class="basket-quantity-btn basket-minus">-</div>
+                            <input type="text" class="basket-quantity-input" value="0" readonly>
+                            <div class="basket-quantity-btn basket-plus">+</div>
+                        </div>
+                        <button class="basket-add-to-cart">
+                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                        </button>
+                    </div>
+
+                    <!-- Kalp Çubuk -->
+                    <div class="basket-addon-item">
+                        <img src="/img/100.png" alt="Kalp Çubuk" class="basket-addon-img">
+                        <h3 class="basket-addon-title">Kalp Çubuk</h3>
+                        <p class="basket-addon-price">15 TL</p>
+                        <div class="basket-quantity-selector">
+                            <div class="basket-quantity-btn basket-minus">-</div>
+                            <input type="text" class="basket-quantity-input" value="0" readonly>
+                            <div class="basket-quantity-btn basket-plus">+</div>
+                        </div>
+                        <button class="basket-add-to-cart">
+                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                        </button>
+                    </div>
+                    <div class="basket-addon-item">
+                        <img src="/img/100.png" alt="Kalp Çubuk" class="basket-addon-img">
+                        <h3 class="basket-addon-title">Kalp Çubuk</h3>
+                        <p class="basket-addon-price">15 TL</p>
+                        <div class="basket-quantity-selector">
+                            <div class="basket-quantity-btn basket-minus">-</div>
+                            <input type="text" class="basket-quantity-input" value="0" readonly>
+                            <div class="basket-quantity-btn basket-plus">+</div>
+                        </div>
+                        <button class="basket-add-to-cart">
+                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                        </button>
+                    </div>
+                    <div class="basket-addon-item">
+                        <img src="/img/100.png" alt="Kalp Çubuk" class="basket-addon-img">
+                        <h3 class="basket-addon-title">Kalp Çubuk</h3>
+                        <p class="basket-addon-price">15 TL</p>
+                        <div class="basket-quantity-selector">
+                            <div class="basket-quantity-btn basket-minus">-</div>
+                            <input type="text" class="basket-quantity-input" value="0" readonly>
+                            <div class="basket-quantity-btn basket-plus">+</div>
+                        </div>
+                        <button class="basket-add-to-cart">
+                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <span>Sepette ürün bulunmamaktadır.</span>
+            }
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="basket-order-summary">
+        <h2 class="basket-summary-title">Sipariş Özetiniz</h2>
+
+        <div class="basket-summary-product">
+            <img src="/img/100.png" alt="Jolie Çiçek Aranjman" class="basket-summary-img">
+            <div class="basket-summary-info">
+                <p class="basket-summary-name">Çiçek</p>
+                <p>Jolie Çiçek Aranjman</p>
+            </div>
+            <p class="basket-summary-price">4000.00 TL</p>
+        </div>
+
+        <div class="basket-delivery-info">
+            <h3 class="basket-delivery-title">Teslimat Bilgileri</h3>
+            <p class="basket-delivery-address">Aksaray, İstanbul Avrupa Yakası 30 Mart 2025 09:30 - 16:30</p>
+            <p><strong>Yol Ücreti:</strong> 50 TL</p>
+        </div>
+
+        <div class="basket-price-summary">
+            <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
+            <p class="basket-price-item">(KDV Dahil)</p>
+            <p class="basket-price-value">4050,00 TL</p>
+
+            <div class="basket-coupon-section">
+                <div class="basket-coupon-header">
+                    <p><strong>İndirim Kuponu</strong></p>
+                    <i class="fas fa-chevron-down basket-coupon-icon"></i>
+                </div>
+                <div class="basket-coupon-content">
+                    <input type="text" placeholder="Kupon kodu girin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+                    <button style="background-color: #e61e4d; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px;">Uygula</button>
+                </div>
+            </div>
+
+            <div class="basket-total-price">
+                <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
+                <span>4050 TL</span>
+            </div>
+        </div>
+    </div>
+    <div class="order-bottom-nav">
+        <a href="/basket.html" class="order-back-btn">
+        </a>
+        <a href="/order.html" class="order-next-btn">Sonraki Adım</a>
+    </div>
+</div> 

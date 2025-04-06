@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using E_Ticaret.Core.Entities;
-using E_Ticaret.Data;
-using E_Ticaret.WEBUI.Models;
+using E_Ticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,19 +7,24 @@ namespace E_Ticaret.WEBUI.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly DatabaseContext _context;
-        public HomeController(ILogger<HomeController> logger, DatabaseContext context)
+        private readonly IService<Product> _productService;
+        private readonly IService<Slider> _sliderService;
+        private readonly IService<Contact> _contactService;
+
+        public HomeController(IService<Slider> sliderService, IService<Product> productService, IService<Contact> contactService)
         {
-            _logger = logger;
-            _context = context;
+            _sliderService = sliderService;
+            _productService = productService;
+            _contactService = contactService;
         }
+
+
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.Sliders = await _context.Sliders.ToListAsync();
+            ViewBag.Sliders = await _sliderService.GetAllAsync();
 
-            var result = await _context.Products.Where(x=>x.IsActive && x.IsHome)
+            var result = await _productService.GetQueryable().Where(x => x.IsActive && x.IsHome)
                 .Include(x => x.Category)
                 .Include(x => x.Brand)
                 .ToListAsync();
@@ -43,8 +46,8 @@ namespace E_Ticaret.WEBUI.Controllers
             {
                 try
                 {
-                    _context.Contacts.Add(contact);
-                    var result = await _context.SaveChangesAsync();
+                    _contactService.Add(contact);
+                    var result = await _contactService.SaveChangesAsync();
                     if (result > 0)
                     {
                         TempData["Message"] = "Swal.fire({icon: 'success', title: 'Baþarýlý', text: 'Mesajýnýz baþarýyla gönderilmiþtir.'});";
@@ -52,25 +55,21 @@ namespace E_Ticaret.WEBUI.Controllers
                     }
                     else
                     {
-                        TempData["Message"] = "Swal.fire({icon: 'success', title: 'Baþarýlý', text: 'Mesajýnýz gönderilemedi. Lütfen tekrar deneyin.'});";;
+                        TempData["Message"] = "Swal.fire({icon: 'success', title: 'Baþarýlý', text: 'Mesajýnýz gönderilemedi. Lütfen tekrar deneyin.'});"; ;
                         return RedirectToAction("ContactUs");
                     }
 
                 }
                 catch (Exception)
                 {
-                     ModelState.AddModelError("", "Mesajýnýz gönderilemedi. Lütfen tekrar deneyin.");
+                    ModelState.AddModelError("", "Mesajýnýz gönderilemedi. Lütfen tekrar deneyin.");
                     throw;
                 }
             }
-          
+
 
             return View(contact);
         }
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+
     }
 }

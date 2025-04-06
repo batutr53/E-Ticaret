@@ -1,24 +1,24 @@
-﻿using E_Ticaret.Data;
+﻿using E_Ticaret.Core.Entities;
+using E_Ticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticaret.WEBUI.ViewComponents
 {
-    public class Categories: ViewComponent
+    public class Categories : ViewComponent
     {
-        private readonly DatabaseContext _context;
+        private readonly IService<Category> _categoryService;
 
-        public Categories(DatabaseContext context)
+        public Categories(IService<Category> categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _categoryService.GetAllAsync(x => x.IsActive && x.IsTopMenu);
             return View(categories);
         }
     }
-    
-    
+
+
 }

@@ -1,4 +1,5 @@
-﻿using E_Ticaret.Data;
+﻿using E_Ticaret.Core.Entities;
+using E_Ticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,16 +7,16 @@ namespace E_Ticaret.WEBUI.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly DatabaseContext _context;
+        private readonly IService<Category> _categoryService;
 
-        public CategoryController(DatabaseContext context)
+        public CategoryController(IService<Category> categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         public async Task<IActionResult> Index(int id)
         {
-            var category = await _context.Categories
+            var category = await _categoryService.GetQueryable()
                 .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Id == id);
             return View(category);
