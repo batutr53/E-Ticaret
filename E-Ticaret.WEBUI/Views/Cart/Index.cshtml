@@ -15,11 +15,23 @@
                     <h2 class="basket-product-title">@item.Product.Name</h2>
 
                     <div class="basket-product-header">
-                        <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
+                        <a href="/Product/Detail?productCode=@item.Product.ProductCode">
+                            <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
+                        </a>
+                        <div>
+                            <p class="basket-product-info">@item.Quantity</p>
+                        </div>
                         <div>
                             <p class="basket-product-info">@item.Product.Price.ToString("c")</p>
                         </div>
-                        <button class="basket-remove-btn">Sil <i class="fas fa-trash"></i></button>
+                        <div>
+                            <p class="basket-product-info">@item.TotalPrice().ToString("c")</p>
+                        </div>
+                        <form asp-action="Remove" asp-controller="Cart">
+                            <input type="hidden" name="ProductId" value="@item.Product.Id" />
+                            <button class="basket-remove-btn" type="submit">Sil <i class="fas fa-trash"></i></button>
+
+                        </form>
                     </div>
                 }
 
@@ -131,19 +143,19 @@
                 <p class="basket-summary-name">Çiçek</p>
                 <p>Jolie Çiçek Aranjman</p>
             </div>
-            <p class="basket-summary-price">4000.00 TL</p>
+            <p class="basket-summary-price">@Model.TotalPrice.ToString("c")</p>
         </div>
 
-        <div class="basket-delivery-info">
+        @*<div class="basket-delivery-info">
             <h3 class="basket-delivery-title">Teslimat Bilgileri</h3>
             <p class="basket-delivery-address">Aksaray, İstanbul Avrupa Yakası 30 Mart 2025 09:30 - 16:30</p>
             <p><strong>Yol Ücreti:</strong> 50 TL</p>
-        </div>
+        </div>*@
 
         <div class="basket-price-summary">
             <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
             <p class="basket-price-item">(KDV Dahil)</p>
-            <p class="basket-price-value">4050,00 TL</p>
+            <p class="basket-price-value">@Model.TotalPrice.ToString("c")</p>
 
             <div class="basket-coupon-section">
                 <div class="basket-coupon-header">

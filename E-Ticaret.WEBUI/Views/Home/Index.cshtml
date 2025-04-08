@@ -50,9 +50,13 @@
                         <div class="product-price">@item.Price.ToString("c")</div>
                     </div>
                 </a>
-                <button class="add-to-cart-btn">
-                    <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
-                </button>
+               
+                <form action="Cart/Add" method="post">
+                    <input accept="" type="hidden" name="productId" value="@item.Id" />
+                    <button class="add-to-cart-btn">  <i class="fa-solid fa-cart-plus"></i> Sepete Ekle </button>
+                </form>
+                   
+               
             </div>
 
         }

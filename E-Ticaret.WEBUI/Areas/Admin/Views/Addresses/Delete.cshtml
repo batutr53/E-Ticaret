@@ -1,0 +1,98 @@
+﻿@model E_Ticaret.Core.Entities.Address
+@* Add reference to Bootstrap Icons if you use them below *@
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> *@
+
+@{
+    ViewData["Title"] = $"Confirm Deletion: {Model.Title}";
+}
+
+<div class="container mt-4">
+
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <h4 class="alert-heading">Confirm Deletion</h4>
+            <p class="mb-0">Are you absolutely sure you want to delete the address titled "<strong>@Html.DisplayFor(model => model.Title)</strong>"? This action cannot be undone.</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Address Details to be Deleted:</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3 col-md-2">@Html.DisplayNameFor(model => model.Title)</dt>
+                <dd class="col-sm-9 col-md-10">@Html.DisplayFor(model => model.Title)</dd>
+
+                <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2">@Html.DisplayNameFor(model => model.City)</dt>
+                <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2">@Html.DisplayFor(model => model.City)</dd>
+
+                <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2">@Html.DisplayNameFor(model => model.District)</dt>
+                <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2">@Html.DisplayFor(model => model.District)</dd>
+
+                <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2">Full Address</dt>
+                <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2">@Html.DisplayFor(model => model.OpenAddress)</dd>
+
+                <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2">@Html.DisplayNameFor(model => model.IsActive)</dt>
+                <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2">Type</dt>
+                <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2">
+                    @if (Model.IsDeliveryAddress)
+                    {
+                        <span class="badge bg-primary me-1">Default Delivery</span>
+                    }
+                    @if (Model.IsBillingAddress)
+                    {
+                        <span class="badge bg-info">Default Billing</span>
+                    }
+                    @if (!Model.IsDeliveryAddress && !Model.IsBillingAddress)
+                    {
+                        <span class="badge bg-light text-dark">Standard</span>
+                    }
+                </dd>
+
+                @* Optionally show less critical info like dates/guids if helpful for confirmation *@
+                <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2 text-muted">@Html.DisplayNameFor(model => model.CreatedDate)</dt>
+                <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2 text-muted">@Model.CreatedDate.ToString("g")</dd>
+
+                @* Hiding GUID and UserId as they are less relevant for user confirmation *@
+                @*
+                    <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2 text-muted">@Html.DisplayNameFor(model => model.AddressGuid)</dt>
+                    <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2 text-muted small">@Html.DisplayFor(model => model.AddressGuid)</dd>
+
+                    <dt class="col-sm-3 col-md-2 border-top pt-2 mt-2 text-muted">@Html.DisplayNameFor(model => model.UserId)</dt>
+                    <dd class="col-sm-9 col-md-10 border-top pt-2 mt-2 text-muted small">@Html.DisplayFor(model => model.UserId)</dd>
+                *@
+            </dl>
+        </div> @* End card-body *@
+    </div> @* End card *@
+
+    <div>
+        <form asp-action="Delete">
+            @* Hidden field to ensure the correct ID is sent on POST *@
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-start gap-2">
+                @* Use gap for spacing *@
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Yes, Delete this Address
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> No, Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div> @* End container *@

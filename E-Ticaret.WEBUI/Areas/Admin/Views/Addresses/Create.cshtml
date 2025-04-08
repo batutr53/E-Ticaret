@@ -1,0 +1,113 @@
+﻿@model E_Ticaret.Core.Entities.Address
+@* Add reference to Bootstrap Icons if you use them below *@
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> *@
+
+@{
+    ViewData["Title"] = "Create New Address";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            @* Adjust column width as needed *@
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4 class="mb-0">@ViewData["Title"]</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        @* Display validation summary prominently at the top if needed *@
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        @* Assuming UserId is set server-side based on the logged-in user *@
+                        @* If you NEED to pass it explicitly, use a hidden field:
+                            <input type="hidden" asp-for="UserId" />
+                        *@
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="E.g., Home, Work" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="City" class="form-label"></label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="District" class="form-label"></label>
+                                <input asp-for="District" class="form-control" />
+                                <span asp-validation-for="District" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="OpenAddress" class="form-label">Full Address</label> @* More descriptive label *@
+                            <textarea asp-for="OpenAddress" class="form-control" rows="3" placeholder="Street, Building No, Apartment No, etc."></textarea>
+                            <span asp-validation-for="OpenAddress" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="my-4"> @* Separator *@
+
+                        <p class="mb-2">Address Options:</p>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="IsActive" checked> @* Default to checked? Adjust if needed *@
+                            <label class="form-check-label" asp-for="IsActive"></label>
+                            <span asp-validation-for="IsActive" class="text-danger small"></span>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="IsDeliveryAddress">
+                            <label class="form-check-label" asp-for="IsDeliveryAddress">Set as Default Delivery Address</label> @* Better label *@
+                            <span asp-validation-for="IsDeliveryAddress" class="text-danger small"></span>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" role="switch" asp-for="IsBillingAddress">
+                            <label class="form-check-label" asp-for="IsBillingAddress">Set as Default Billing Address</label> @* Better label *@
+                            <span asp-validation-for="IsBillingAddress" class="text-danger small"></span>
+                        </div>
+
+
+                        @* Fields like CreatedDate and AddressGuid are usually generated server-side and shouldn't be on the form *@
+                        @*
+                            <div class="mb-3">
+                                <label asp-for="CreatedDate" class="form-label"></label>
+                                <input asp-for="CreatedDate" class="form-control" readonly /> // Make readonly if needed for display, but usually hidden
+                                <span asp-validation-for="CreatedDate" class="text-danger small"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="AddressGuid" class="form-label"></label>
+                                <input asp-for="AddressGuid" class="form-control" readonly /> // Make readonly if needed for display, but usually hidden
+                                <span asp-validation-for="AddressGuid" class="text-danger small"></span>
+                            </div>
+                             <div class="mb-3">
+                                <label asp-for="UserId" class="form-label"></label>
+                                <input asp-for="UserId" class="form-control" readonly /> // Make readonly if needed for display, but usually hidden/set server-side
+                                <span asp-validation-for="UserId" class="text-danger small"></span>
+                            </div>
+                        *@
+
+                        <hr class="mt-4"> @* Separator before buttons *@
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Create Address
+                            </button>
+                        </div>
+                    </form>
+                </div> @* End card-body *@
+            </div> @* End card *@
+
+        </div> @* End col *@
+    </div> @* End row *@
+</div> @* End container *@
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

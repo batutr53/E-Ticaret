@@ -1,0 +1,99 @@
+﻿@model IEnumerable<E_Ticaret.Core.Entities.Address>
+@* Add reference to Bootstrap Icons if you use them below *@
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> *@
+
+@{
+    ViewData["Title"] = "My Addresses"; // More user-friendly title
+                                        // You might want to get the actual user's name here if available
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create New Address
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            You haven't added any addresses yet. Click 'Create New Address' to add one.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.Title)</th>
+                        <th>@Html.DisplayNameFor(model => model.City)</th>
+                        <th>@Html.DisplayNameFor(model => model.District)</th>
+                        <th>@Html.DisplayNameFor(model => model.OpenAddress)</th>
+                        <th class="text-center">@Html.DisplayNameFor(model => model.IsActive)</th>
+                        <th class="text-center">Type</th> @* Combined Billing/Delivery info *@
+                        @* Removing technical details like GUID and UserId from the main list for cleaner UI *@
+                        @*
+                            <th>@Html.DisplayNameFor(model => model.AddressGuid)</th>
+                            <th>@Html.DisplayNameFor(model => model.UserId)</th>
+                        *@
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                            <td>@Html.DisplayFor(modelItem => item.City)</td>
+                            <td>@Html.DisplayFor(modelItem => item.District)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OpenAddress)</td>
+                            <td class="text-center">
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.IsDeliveryAddress)
+                                {
+                                    <span class="badge bg-primary me-1">Delivery</span>
+                                }
+                                @if (item.IsBillingAddress)
+                                {
+                                    <span class="badge bg-info">Billing</span>
+                                }
+                                @if (!item.IsDeliveryAddress && !item.IsBillingAddress)
+                                {
+                                    <span class="badge bg-light text-dark">-</span>
+                                }
+                            </td>
+                            @*
+                                <td>@Html.DisplayFor(modelItem => item.AddressGuid)</td>
+                                <td>@Html.DisplayFor(modelItem => item.UserId)</td>
+                            *@
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Address Actions">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Details">
+                                        <i class="bi bi-info-circle"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

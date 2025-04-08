@@ -36,21 +36,6 @@ mobileCategoryToggles.forEach(toggle => {
 });
 
 
-// Cart İşlevleri
-document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', function () {
-        const productCard = this.closest('.product-card');
-        const productTitle = productCard.querySelector('.product-title').textContent;
-        const productPrice = productCard.querySelector('.product-price').textContent;
-
-        // Sepet sayacını güncelle
-        const cartCount = document.querySelector('.cart-count');
-        cartCount.textContent = parseInt(cartCount.textContent) + 1;
-
-        // Kullanıcıya bildirim göster
-        alert(`"${productTitle}" sepetinize eklendi!`);
-    });
-});
 
 // Hızlı Görünüm İşlevi
 document.querySelectorAll('.quick-view').forEach(quickView => {

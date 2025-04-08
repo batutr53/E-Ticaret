@@ -65,7 +65,16 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             return HttpContext.Session.GetJson<CartService>("Cart") ?? new CartService();
         }
-
+        public IActionResult Checkout()
+        {
+            var cart = GetCart();
+            var model = new CheckoutViewModel
+            {
+                CartProducts = cart.CartLines,
+                TotalPrice = cart.TotalPrice()
+            };
+            return View(model);
+        }
 
     }
 }
