@@ -4,77 +4,152 @@ using E_Ticaret.Service.Concrete;
 using Microsoft.AspNetCore.Mvc;
 using E_Ticaret.WEBUI.ExtensionMethods;
 using E_Ticaret.WEBUI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticaret.WEBUI.Controllers
 {
     public class CartController : Controller
     {
         private readonly IService<Product> _serviceProduct;
+        private readonly IService<Cart> _serviceCart;
 
-        public CartController(IService<Product> serviceProduct)
+        public CartController(IService<Product> serviceProduct, IService<Cart> serviceCart)
         {
             _serviceProduct = serviceProduct;
+            _serviceCart = serviceCart;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var cart = GetCart();
-            var model = new CartViewModel
+            var cart = await GetOrCreate();
+            ViewBag.TotalPrice = 0;
+            foreach (var item in cart.CartItems)
             {
-                CartLines = cart.CartLines,
-                TotalPrice = cart.TotalPrice()
-            };
-            return View(model);
+                ViewBag.TotalPrice += item.Product.Price * item.Quantity;
+            }
+            return View(cart);
+
         }
 
-        public IActionResult Add(int ProductId, int quantity = 1)
+        [HttpPost("AddItemToCart")]
+        public async Task<IActionResult> AddItemToCart(int productId, int quantity = 1)
         {
-            var product = _serviceProduct.Find(ProductId);
+            var cart = await GetOrCreate();
+
+            var product = await _serviceProduct.GetQueryable().FirstOrDefaultAsync(x => x.Id == productId);
             if (product != null)
             {
-                var cart = GetCart();
-                cart.AddToProduct(product, quantity);
-                HttpContext.Session.SetJson("Cart", cart);
+                cart.AddItem(product, quantity);
+                await _serviceCart.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
 
-        public IActionResult Update(int ProductId, int quantity = 1)
+        [HttpPost("DeleteItemFromCart")]
+        public async Task<IActionResult> DeleteItemFromCart(int productId, int quantity)
         {
-            var product = _serviceProduct.Find(ProductId);
-            if (product != null)
-            {
-                var cart = GetCart();
-                cart.UpdateProduct(product, quantity);
-                HttpContext.Session.SetJson("Cart", cart);
-            }
+            var cart = await GetOrCreate();
+            cart.DeleteItem(productId, quantity);
+            var result = await _serviceProduct.SaveChangesAsync() > 0;
             return RedirectToAction("Index");
         }
-        public IActionResult Remove(int ProductId)
+
+
+        public async Task<Cart> GetOrCreate()
         {
-            var product = _serviceProduct.Find(ProductId);
-            if (product != null)
+            var cart = await _serviceCart.GetQueryable()
+                .Include(x => x.CartItems)
+                .ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync(x => x.CustomerId == Request.Cookies["customerId"]);
+            if (cart == null)
             {
-                var cart = GetCart();
-                cart.RemoveProduct(product);
-                HttpContext.Session.SetJson("Cart", cart);
+
+                var customerId = Guid.NewGuid().ToString();
+
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    IsEssential = true
+                };
+
+                Response.Cookies.Append("customerId", customerId, cookieOptions);
+
+
+                cart = new Cart
+                {
+                    CustomerId = customerId,
+                    CartItems = new List<CartItem>()
+                };
+                await _serviceCart.AddAsync(cart);
+                await _serviceCart.SaveChangesAsync();
             }
-            return RedirectToAction("Index");
+            return cart;
         }
-        private CartService GetCart()
-        {
-            return HttpContext.Session.GetJson<CartService>("Cart") ?? new CartService();
-        }
-        public IActionResult Checkout()
-        {
-            var cart = GetCart();
-            var model = new CheckoutViewModel
-            {
-                CartProducts = cart.CartLines,
-                TotalPrice = cart.TotalPrice()
-            };
-            return View(model);
-        }
+
+
+
+        //public IActionResult Index()
+        //{
+        //    var cart = GetCart();
+        //    var model = new CartViewModel
+        //    {
+        //        CartLines = cart.CartLines,
+        //        TotalPrice = cart.TotalPrice()
+        //    };
+        //    return View(model);
+        //}
+
+        //public IActionResult Add(int ProductId, int quantity = 1)
+        //{
+        //    var product = _serviceProduct.Find(ProductId);
+        //    if (product != null)
+        //    {
+        //        var cart = GetCart();
+        //        cart.AddToProduct(product, quantity);
+        //        HttpContext.Session.SetJson("Cart", cart);
+        //    }
+        //    return RedirectToAction("Index");
+        //}
+
+        //public IActionResult Update(int ProductId, int quantity = 1)
+        //{
+        //    var product = _serviceProduct.Find(ProductId);
+        //    if (product != null)
+        //    {
+        //        var cart = GetCart();
+        //        cart.UpdateProduct(product, quantity);
+        //        HttpContext.Session.SetJson("Cart", cart);
+        //    }
+        //    return RedirectToAction("Index");
+        //}
+        //public IActionResult Remove(int ProductId)
+        //{
+        //    var product = _serviceProduct.Find(ProductId);
+        //    if (product != null)
+        //    {
+        //        var cart = GetCart();
+        //        cart.RemoveProduct(product);
+        //        HttpContext.Session.SetJson("Cart", cart);
+        //    }
+        //    return RedirectToAction("Index");
+        //}
+        //private CartService GetCart()
+        //{
+        //    //return HttpContext.Session.GetJson<CartService>("Cart") ?? new CartService();
+        //}
+        //public IActionResult Checkout()
+        //{
+        //    var cart = GetCart();
+        //    var model = new CheckoutViewModel
+        //    {
+        //        CartProducts = cart.CartLines,
+        //        TotalPrice = cart.TotalPrice()
+        //    };
+        //    return View(model);
+        //}
 
     }
 }

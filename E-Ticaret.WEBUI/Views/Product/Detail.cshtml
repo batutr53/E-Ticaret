@@ -24,7 +24,7 @@
         <div class="product-detail-order-box">
             @*<input type="text" placeholder="Gönderim yeri yazınız veya seçiniz">*@
             <div class="product-detail-price">@Model.Product?.Price.ToString("c") </div>
-            <form asp-action="Add" asp-controller="Cart">
+            <form asp-action="AddItemToCart" asp-controller="Cart">
                 <input type="hidden" name="productId" value="@Model.Product?.Id" />
                 <input type="number" value="1" name="quantity" />
                 <button class="product-detail-btn" type="submit">Sepete Ekle</button>
@@ -41,12 +41,12 @@
 
     <div class="products-grid">
 
-        @foreach (var item in Model.RelatedProducts)
+        @foreach (var item in Model.RelatedProducts!)
         {
             <div class="product-card">
                 <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
                     <div class="product-image">
-                        <img src="@item.Image" alt="@item.Name">
+                        <img src="/img/@item.Image" alt="@item.Name">
                         <div class="quick-view">
                             <i class="fa-solid fa-eye"></i>
                         </div>
@@ -56,9 +56,11 @@
                         <div class="product-price">@item.Price.ToString("c")</div>
                     </div>
                 </a>
-                <button class="add-to-cart-btn">
-                    <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
-                </button>
+                <form asp-action="AddItemToCart" asp-controller="Cart">
+                    <input type="hidden" name="productId" value="@item.Id" />
+                    <input type="hidden" value="1" name="quantity" />
+                    <button class="product-detail-btn" type="submit">Sepete Ekle</button>
+                </form>
             </div>
         }
     </div>

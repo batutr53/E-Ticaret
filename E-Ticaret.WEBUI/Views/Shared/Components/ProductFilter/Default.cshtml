@@ -1,0 +1,22 @@
+﻿@model List<E_Ticaret.Core.Entities.Product>
+<p>Sepetiniz için ekstra ürün ekleyin (Opsiyonel)</p>
+<div class="basket-addon-container">
+    @foreach (var item in Model)
+    {
+
+        <div class="basket-addon-item">
+            <img src="/img/@item.Image" alt="@item.Name" class="basket-addon-img">
+            <h3 class="basket-addon-title">@item.Name</h3>
+            <p class="basket-addon-price">@item.Price.ToString("c")</p>
+            <form asp-action="AddItemToCart" asp-controller="Cart">
+                <div class="basket-quantity-selector">
+                    <div class="basket-quantity-btn basket-minus">-</div>
+                    <input type="text" name="quantity" class="basket-quantity-input" value="1" readonly>
+                    <div class="basket-quantity-btn basket-plus">+</div>
+                </div>
+                <input type="hidden" name="productId" value="@item.Id" />
+                <button class="add-to-cart-btn" type="submit"> <i class="fas fa-shopping-cart"></i> Sepete Ekle</button>
+            </form>
+        </div>
+    }
+</div>

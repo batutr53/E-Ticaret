@@ -1,4 +1,4 @@
-﻿@model CartViewModel
+﻿@model E_Ticaret.Core.Entities.Cart
 @{
     ViewData["Title"] = "Sepetim";
 }
@@ -7,9 +7,9 @@
     <div class="basket-main-content">
         <!-- Main Product -->
         <div class="basket-product-card">
-            @if (Model.CartLines.Any())
+            @if (Model.CartItems.Any())
             {
-                @foreach (var item in Model.CartLines)
+                @foreach (var item in Model.CartItems)
                 {
 
                     <h2 class="basket-product-title">@item.Product.Name</h2>
@@ -25,106 +25,17 @@
                             <p class="basket-product-info">@item.Product.Price.ToString("c")</p>
                         </div>
                         <div>
-                            <p class="basket-product-info">@item.TotalPrice().ToString("c")</p>
+                            <p class="basket-product-info"> </p>
                         </div>
-                        <form asp-action="Remove" asp-controller="Cart">
+                        <form asp-action="DeleteItemFromCart" asp-controller="Cart">
                             <input type="hidden" name="ProductId" value="@item.Product.Id" />
+                            <input type="hidden" value="1" name="quantity" />
                             <button class="basket-remove-btn" type="submit">Sil <i class="fas fa-trash"></i></button>
 
                         </form>
                     </div>
                 }
-
-                <p>Jolie Çiçek Aranjman için ekstra ürün ekleyin (Opsiyonel)</p>
-
-                <!-- Add-on Products -->
-                <div class="basket-addon-container">
-                    <!-- Nazar Boncuğu -->
-                    <div class="basket-addon-item">
-                        <img src="/img/100.png" alt="Nazar Boncuğu" class="basket-addon-img">
-                        <h3 class="basket-addon-title">Nazar Boncuğu</h3>
-                        <p class="basket-addon-price">15 TL</p>
-                        <div class="basket-quantity-selector">
-                            <div class="basket-quantity-btn basket-minus">-</div>
-                            <input type="text" class="basket-quantity-input" value="0" readonly>
-                            <div class="basket-quantity-btn basket-plus">+</div>
-                        </div>
-                        <button class="basket-add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                        </button>
-                    </div>
-
-                    <!-- Renkli Balon -->
-                    <div class="basket-addon-item">
-                        <img src="/img/100.png" alt="Renkli Balon" class="basket-addon-img">
-                        <h3 class="basket-addon-title">Renkli Balon</h3>
-                        <p class="basket-addon-price">15 TL</p>
-                        <div class="basket-quantity-selector">
-                            <div class="basket-quantity-btn basket-minus">-</div>
-                            <input type="text" class="basket-quantity-input" value="0" readonly>
-                            <div class="basket-quantity-btn basket-plus">+</div>
-                        </div>
-                        <button class="basket-add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                        </button>
-                    </div>
-
-                    <!-- Folyo Balon -->
-                    <div class="basket-addon-item">
-                        <img src="/img/100.png" alt="Folyo Balon" class="basket-addon-img">
-                        <h3 class="basket-addon-title">Folyo Balon</h3>
-                        <p class="basket-addon-price">75 TL</p>
-                        <div class="basket-quantity-selector">
-                            <div class="basket-quantity-btn basket-minus">-</div>
-                            <input type="text" class="basket-quantity-input" value="0" readonly>
-                            <div class="basket-quantity-btn basket-plus">+</div>
-                        </div>
-                        <button class="basket-add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                        </button>
-                    </div>
-
-                    <!-- Kalp Çubuk -->
-                    <div class="basket-addon-item">
-                        <img src="/img/100.png" alt="Kalp Çubuk" class="basket-addon-img">
-                        <h3 class="basket-addon-title">Kalp Çubuk</h3>
-                        <p class="basket-addon-price">15 TL</p>
-                        <div class="basket-quantity-selector">
-                            <div class="basket-quantity-btn basket-minus">-</div>
-                            <input type="text" class="basket-quantity-input" value="0" readonly>
-                            <div class="basket-quantity-btn basket-plus">+</div>
-                        </div>
-                        <button class="basket-add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                        </button>
-                    </div>
-                    <div class="basket-addon-item">
-                        <img src="/img/100.png" alt="Kalp Çubuk" class="basket-addon-img">
-                        <h3 class="basket-addon-title">Kalp Çubuk</h3>
-                        <p class="basket-addon-price">15 TL</p>
-                        <div class="basket-quantity-selector">
-                            <div class="basket-quantity-btn basket-minus">-</div>
-                            <input type="text" class="basket-quantity-input" value="0" readonly>
-                            <div class="basket-quantity-btn basket-plus">+</div>
-                        </div>
-                        <button class="basket-add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                        </button>
-                    </div>
-                    <div class="basket-addon-item">
-                        <img src="/img/100.png" alt="Kalp Çubuk" class="basket-addon-img">
-                        <h3 class="basket-addon-title">Kalp Çubuk</h3>
-                        <p class="basket-addon-price">15 TL</p>
-                        <div class="basket-quantity-selector">
-                            <div class="basket-quantity-btn basket-minus">-</div>
-                            <input type="text" class="basket-quantity-input" value="0" readonly>
-                            <div class="basket-quantity-btn basket-plus">+</div>
-                        </div>
-                        <button class="basket-add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> Sepete Ekle
-                        </button>
-                    </div>
-                </div>
+                @await Component.InvokeAsync("ProductFilter", new { categoryId = 5 })
             }
             else
             {
@@ -143,7 +54,7 @@
                 <p class="basket-summary-name">Çiçek</p>
                 <p>Jolie Çiçek Aranjman</p>
             </div>
-            <p class="basket-summary-price">@Model.TotalPrice.ToString("c")</p>
+            <p class="basket-summary-price">@*@Model.TotalPriceTotalPrice.ToString("c")*@</p>
         </div>
 
         @*<div class="basket-delivery-info">
@@ -155,7 +66,7 @@
         <div class="basket-price-summary">
             <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
             <p class="basket-price-item">(KDV Dahil)</p>
-            <p class="basket-price-value">@Model.TotalPrice.ToString("c")</p>
+            <p class="basket-price-value">@(ViewBag.TotalPrice.ToString("c"))</p>
 
             <div class="basket-coupon-section">
                 <div class="basket-coupon-header">
@@ -170,7 +81,7 @@
 
             <div class="basket-total-price">
                 <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
-                <span>4050 TL</span>
+                <span>@(ViewBag.TotalPrice.ToString("c")) </span>
             </div>
         </div>
     </div>

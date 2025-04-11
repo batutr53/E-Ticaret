@@ -50,15 +50,13 @@
                         <div class="product-price">@item.Price.ToString("c")</div>
                     </div>
                 </a>
-               
-                <form action="Cart/Add" method="post">
-                    <input accept="" type="hidden" name="productId" value="@item.Id" />
-                    <button class="add-to-cart-btn">  <i class="fa-solid fa-cart-plus"></i> Sepete Ekle </button>
-                </form>
-                   
-               
-            </div>
 
+                <form asp-action="AddItemToCart" asp-controller="Cart">
+                    <input type="hidden" name="productId" value="@item.Id" />
+                    <input type="hidden" value="1" name="quantity" />
+                    <button class="add-to-cart-btn" type="submit"> <i class="fa-solid fa-cart-plus"></i> Sepete Ekle</button>
+                </form>
+            </div>
         }
 
     </div>

@@ -21,9 +21,11 @@
                         <div class="product-price">@item.Price.ToString("c")</div>
                     </div>
                 </a>
-                <button class="add-to-cart-btn">
-                    <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
-                </button>
+                    <form asp-action="AddItemToCart" asp-controller="Cart">
+                        <input type="hidden" name="productId" value="@Model.Product?.Id" />
+                        <input type="number" value="1" name="quantity" />
+                        <button class="add-to-cart-btn" type="submit"> <i class="fa-solid fa-cart-plus"></i> Sepete Ekle</button>
+                    </form>
             </div>
 
         }
