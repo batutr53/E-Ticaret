@@ -1,4 +1,5 @@
-﻿<section class="products-section">
+﻿@model List<E_Ticaret.Core.Entities.Product>
+<section class="products-section">
     <div class="section-header">
         <h2>Sizin İçin Seçtiğimiz Ürünler</h2>
     </div>
@@ -22,8 +23,8 @@
                     </div>
                 </a>
                     <form asp-action="AddItemToCart" asp-controller="Cart">
-                        <input type="hidden" name="productId" value="@Model.Product?.Id" />
-                        <input type="number" value="1" name="quantity" />
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <input type="hidden" value="1" name="quantity" />
                         <button class="add-to-cart-btn" type="submit"> <i class="fa-solid fa-cart-plus"></i> Sepete Ekle</button>
                     </form>
             </div>
