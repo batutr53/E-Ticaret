@@ -1,4 +1,5 @@
-﻿using E_Ticaret.Data;
+﻿using E_Ticaret.Core.DTO;
+using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,5 +20,20 @@ namespace E_Ticaret.WEBUI.Controllers
             var result = await _orderService.GetOrder(userCustomerId!);
             return View(result.ToList());
         }
+
+        public async Task<IActionResult> Index()
+        {
+            return View();
+        }
+
+        [HttpPost("CreateOrder")]
+        public async Task<IActionResult> CreateOrder(CreateOrderDTO orderDTO)
+        {
+            var userCustomerId = Request.Cookies["userCustomerId"];
+            orderDTO.CustomerId = userCustomerId!;
+            var result = await _orderService.CreateOrder(orderDTO);
+            return RedirectToAction("GetOrder");
+        }
+
     }
 }

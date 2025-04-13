@@ -51,7 +51,7 @@ namespace E_Ticaret.Service.Concrete
                 {
                     ProductId = item.ProductId,
                     ProductName = product!.Name,
-                    ProductImage = product.Image!   ,
+                    ProductImage = product.Image!,
                     Price = product.Price,
                     Quantity = item.Quantity
                 };
