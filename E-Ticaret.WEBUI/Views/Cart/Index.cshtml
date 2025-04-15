@@ -35,6 +35,52 @@
                         </form>
                     </div>
                 }
+                <!-- Order Summary -->
+                <div class="basket-order-summary">
+                    <h2 class="basket-summary-title">Sipariş Özetiniz</h2>
+
+                    <div class="basket-summary-product">
+                        <img src="/img/100.png" alt="Jolie Çiçek Aranjman" class="basket-summary-img">
+                        <div class="basket-summary-info">
+                            <p class="basket-summary-name">Çiçek</p>
+                            <p>Jolie Çiçek Aranjman</p>
+                        </div>
+                        <p class="basket-summary-price">@*@Model.TotalPriceTotalPrice.ToString("c")*@</p>
+                    </div>
+
+                    @*<div class="basket-delivery-info">
+                    <h3 class="basket-delivery-title">Teslimat Bilgileri</h3>
+                    <p class="basket-delivery-address">Aksaray, İstanbul Avrupa Yakası 30 Mart 2025 09:30 - 16:30</p>
+                    <p><strong>Yol Ücreti:</strong> 50 TL</p>
+                </div>*@
+
+                    <div class="basket-price-summary">
+                        <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
+                        <p class="basket-price-item">(KDV Dahil)</p>
+                        <p class="basket-price-value">@(ViewBag.TotalPrice.ToString("c"))</p>
+
+                        <div class="basket-coupon-section">
+                            <div class="basket-coupon-header">
+                                <p><strong>İndirim Kuponu</strong></p>
+                                <i class="fas fa-chevron-down basket-coupon-icon"></i>
+                            </div>
+                            <div class="basket-coupon-content">
+                                <input type="text" placeholder="Kupon kodu girin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+                                <button style="background-color: #e61e4d; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px;">Uygula</button>
+                            </div>
+                        </div>
+
+                        <div class="basket-total-price">
+                            <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
+                            <span>@(ViewBag.TotalPrice.ToString("c")) </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-bottom-nav">
+                    <a href="/cart" class="order-back-btn">
+                    </a>
+                    <a href="/order" class="order-next-btn">Sonraki Adım</a>
+                </div>
                 @await Component.InvokeAsync("ProductFilter", new { categoryId = 5 })
             }
             else
@@ -44,50 +90,5 @@
         </div>
     </div>
 
-    <!-- Order Summary -->
-    <div class="basket-order-summary">
-        <h2 class="basket-summary-title">Sipariş Özetiniz</h2>
-
-        <div class="basket-summary-product">
-            <img src="/img/100.png" alt="Jolie Çiçek Aranjman" class="basket-summary-img">
-            <div class="basket-summary-info">
-                <p class="basket-summary-name">Çiçek</p>
-                <p>Jolie Çiçek Aranjman</p>
-            </div>
-            <p class="basket-summary-price">@*@Model.TotalPriceTotalPrice.ToString("c")*@</p>
-        </div>
-
-        @*<div class="basket-delivery-info">
-            <h3 class="basket-delivery-title">Teslimat Bilgileri</h3>
-            <p class="basket-delivery-address">Aksaray, İstanbul Avrupa Yakası 30 Mart 2025 09:30 - 16:30</p>
-            <p><strong>Yol Ücreti:</strong> 50 TL</p>
-        </div>*@
-
-        <div class="basket-price-summary">
-            <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
-            <p class="basket-price-item">(KDV Dahil)</p>
-            <p class="basket-price-value">@(ViewBag.TotalPrice.ToString("c"))</p>
-
-            <div class="basket-coupon-section">
-                <div class="basket-coupon-header">
-                    <p><strong>İndirim Kuponu</strong></p>
-                    <i class="fas fa-chevron-down basket-coupon-icon"></i>
-                </div>
-                <div class="basket-coupon-content">
-                    <input type="text" placeholder="Kupon kodu girin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                    <button style="background-color: #e61e4d; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px;">Uygula</button>
-                </div>
-            </div>
-
-            <div class="basket-total-price">
-                <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
-                <span>@(ViewBag.TotalPrice.ToString("c")) </span>
-            </div>
-        </div>
-    </div>
-    <div class="order-bottom-nav">
-        <a href="/basket.html" class="order-back-btn">
-        </a>
-        <a href="/order.html" class="order-next-btn">Sonraki Adım</a>
-    </div>
+  
 </div> 

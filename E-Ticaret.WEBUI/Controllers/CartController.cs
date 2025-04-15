@@ -30,7 +30,8 @@ namespace E_Ticaret.WEBUI.Controllers
         [HttpPost("AddItemToCart")]
         public async Task<IActionResult> AddItemToCart(int productId, int quantity = 1)
         {
-            quantity *= -1;
+            quantity = quantity < 0 ? -quantity : (quantity == 0 || quantity == null ? 1 : quantity);
+
             var cart = await GetOrCreate();
 
             var product = await _serviceProduct.GetQueryable().FirstOrDefaultAsync(x => x.Id == productId);
