@@ -1,9 +1,6 @@
 ﻿using E_Ticaret.Core.Entities;
 using E_Ticaret.Service.Abstract;
-using E_Ticaret.Service.Concrete;
 using Microsoft.AspNetCore.Mvc;
-using E_Ticaret.WEBUI.ExtensionMethods;
-using E_Ticaret.WEBUI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticaret.WEBUI.Controllers
@@ -28,12 +25,12 @@ namespace E_Ticaret.WEBUI.Controllers
                 ViewBag.TotalPrice += item.Product.Price * item.Quantity;
             }
             return View(cart);
-
         }
 
         [HttpPost("AddItemToCart")]
         public async Task<IActionResult> AddItemToCart(int productId, int quantity = 1)
         {
+            quantity *= -1;
             var cart = await GetOrCreate();
 
             var product = await _serviceProduct.GetQueryable().FirstOrDefaultAsync(x => x.Id == productId);
@@ -54,7 +51,6 @@ namespace E_Ticaret.WEBUI.Controllers
             return RedirectToAction("Index");
         }
 
-
         public async Task<Cart> GetOrCreate()
         {
             var cart = await _serviceCart.GetQueryable()
@@ -63,7 +59,6 @@ namespace E_Ticaret.WEBUI.Controllers
                 .FirstOrDefaultAsync(x => x.CustomerId == Request.Cookies["customerId"]);
             if (cart == null)
             {
-
                 var customerId = Guid.NewGuid().ToString();
 
                 var cookieOptions = new CookieOptions
@@ -88,68 +83,5 @@ namespace E_Ticaret.WEBUI.Controllers
             }
             return cart;
         }
-
-
-
-        //public IActionResult Index()
-        //{
-        //    var cart = GetCart();
-        //    var model = new CartViewModel
-        //    {
-        //        CartLines = cart.CartLines,
-        //        TotalPrice = cart.TotalPrice()
-        //    };
-        //    return View(model);
-        //}
-
-        //public IActionResult Add(int ProductId, int quantity = 1)
-        //{
-        //    var product = _serviceProduct.Find(ProductId);
-        //    if (product != null)
-        //    {
-        //        var cart = GetCart();
-        //        cart.AddToProduct(product, quantity);
-        //        HttpContext.Session.SetJson("Cart", cart);
-        //    }
-        //    return RedirectToAction("Index");
-        //}
-
-        //public IActionResult Update(int ProductId, int quantity = 1)
-        //{
-        //    var product = _serviceProduct.Find(ProductId);
-        //    if (product != null)
-        //    {
-        //        var cart = GetCart();
-        //        cart.UpdateProduct(product, quantity);
-        //        HttpContext.Session.SetJson("Cart", cart);
-        //    }
-        //    return RedirectToAction("Index");
-        //}
-        //public IActionResult Remove(int ProductId)
-        //{
-        //    var product = _serviceProduct.Find(ProductId);
-        //    if (product != null)
-        //    {
-        //        var cart = GetCart();
-        //        cart.RemoveProduct(product);
-        //        HttpContext.Session.SetJson("Cart", cart);
-        //    }
-        //    return RedirectToAction("Index");
-        //}
-        //private CartService GetCart()
-        //{
-        //    //return HttpContext.Session.GetJson<CartService>("Cart") ?? new CartService();
-        //}
-        //public IActionResult Checkout()
-        //{
-        //    var cart = GetCart();
-        //    var model = new CheckoutViewModel
-        //    {
-        //        CartProducts = cart.CartLines,
-        //        TotalPrice = cart.TotalPrice()
-        //    };
-        //    return View(model);
-        //}
-
     }
 }
