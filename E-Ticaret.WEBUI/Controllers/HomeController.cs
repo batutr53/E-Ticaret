@@ -31,7 +31,7 @@ namespace E_Ticaret.WEBUI.Controllers
             return View(result);
         }
 
-        public IActionResult Privacy()
+        public IActionResult About()
         {
             return View();
         }

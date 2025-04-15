@@ -1,27 +1,26 @@
 ﻿<div class="top-bar">
     <div class="top-links">
-        <a class="fa-solid fa-info-circle" asp-area="" asp-controller="Home" asp-action="Privacy">Hakkımızda</a>
-        <a href="#"><i class="fa-solid fa-blog"></i> Blog</a>
+        <a class="fa-solid fa-info-circle" asp-area="" asp-controller="Home" asp-action="About">Hakkımızda</a>
     </div>
     <div class="social-icons">
-        <a href="#"><i class="fab fa-instagram"></i></a>
+        @*   <a href="#"><i class="fab fa-instagram"></i></a>
         <a href="#"><i class="fab fa-youtube"></i></a>
-        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a> *@
     </div>
     <div class="auth-links">
-        <a href="#"><i class="fa-solid fa-right-to-bracket"></i> Giriş Yapın</a>
-        <a href="#"><i class="fa-solid fa-user-plus"></i> Üye Olun</a>
+        @*      <a href="#"><i class="fa-solid fa-right-to-bracket"></i> Giriş Yapın</a>
+        <a href="#"><i class="fa-solid fa-user-plus"></i> Üye Olun</a> *@
         <a href="#"><i class="fa-solid fa-truck-fast"></i> Sipariş Takibi</a>
     </div>
 </div>
 <!-- Main Header -->
 <header class="main-header">
-    <a href="#" class="logo">
-        <img src="https://www.detaycicek.com/img/site/logo.jpg" alt="Alex Gülü Logo">
+    <a href="/" class="logo">
+        <img src="/img/logo.webp" height="150" width="100" alt="Detay Çiçekçilik">
     </a>
     <div class="phone-number">
         <i class="fa-solid fa-phone phone-icon"></i>
-        +90 212 284 66 27
+        +90 216 594 50 50
     </div>
     <form action="/Product/">
         <div class="search-container">
@@ -39,7 +38,11 @@
             <li><a href="/"><i class="fa-solid fa-house"></i></a></li>
             <li class="has-dropdown">
                 <a href="#"><i class="fa-solid fa-list-ul"></i> KATEGORİLERİMİZ <i class="fa-solid fa-chevron-down"></i></a>
-                 @await Component.InvokeAsync("Categories")
+                <div class="dropdown-menu">
+                    <div class="dropdown-content">
+                        @await Component.InvokeAsync("Categories")
+                    </div>
+                </div>
             </li>
             <li><a href="#"><i class="fa-solid fa-truck-fast"></i> GÖNDERİM TÜRÜ</a></li>
             <li><a href="#"><i class="fa-solid fa-gift"></i> KADINLAR GÜNÜ ÇİÇEKLERİ</a></li>
@@ -59,35 +62,23 @@
         <i class="fa-solid fa-xmark"></i>
     </button>
     <ul>
-        <li><a href="#"><i class="fa-solid fa-house"></i> Anasayfa</a></li>
+        <li><a href="/"><i class="fa-solid fa-house"></i> Anasayfa</a></li>
         <li class="mobile-category">
-            <a href="#">
-                <span><i class="fa-solid fa-list-ul"></i> Kategorilerimiz</span>
-                <a class="toggle-submenu"><i class="fa-solid fa-chevron-down"></i></a>
-            </a>
+           
+                <a class="toggle-submenu">
+                    <span><i class="fa-solid fa-list-ul"></i> Kategorilerimiz</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+          
             <div class="mobile-category-content">
-                <a href="#"><i class="fa-solid fa-seedling"></i> Canlı Aranjmanlar</a>
-                <a href="#"><i class="fa-solid fa-heart"></i> Gül Aranjmanları</a>
-                <a href="#"><i class="fa-solid fa-fan"></i> Buketler</a>
-                <a href="#"><i class="fa-solid fa-spa"></i> Ferforje Aranjmanlar</a>
-                <a href="#"><i class="fa-solid fa-ring"></i> Gelin Buketleri</a>
-                <a href="#"><i class="fa-solid fa-glass-water"></i> Gelin Masası ve Havuz Çiçk.</a>
-                <a href="#"><i class="fa-solid fa-car-side"></i> Gelin Araba Süslemeleri</a>
-                <a href="#"><i class="fa-solid fa-cross"></i> ÇELENK & CENAZE</a>
-                <a href="#"><i class="fa-solid fa-champagne-glasses"></i> Açılış & Düğün Çiçekleri</a>
-                <a href="#"><i class="fa-solid fa-gem"></i> Ölmeyen Güller</a>
-                <a href="#"><i class="fa-solid fa-earth-americas"></i> Teraryum Düzenlemesi</a>
-                <a href="#"><i class="fa-solid fa-seedling"></i> ORKİDELER</a>
-                <a href="#"><i class="fa-solid fa-tree"></i> Bonzailer</a>
-                <a href="#"><i class="fa-solid fa-leaf"></i> BİTKİ ÇEŞİTLERİ</a>
+                @await Component.InvokeAsync("Categories")
             </div>
         </li>
-        <li><a href="#"><i class="fa-solid fa-truck-fast"></i> Gönderim Türü</a></li>
         <li><a href="#"><i class="fa-solid fa-gift"></i> Kadınlar Günü Çiçekleri</a></li>
         <li><a href="#"><i class="fa-solid fa-leaf"></i> Aranjmanlar</a></li>
         <li><a href="#"><i class="fa-solid fa-seedling"></i> Orkideler</a></li>
         <li><a href="#"><i class="fa-solid fa-fan"></i> Çiçek Buketleri</a></li>
-        <li><a href="#"><i class="fa-solid fa-info-circle"></i> Hakkımızda</a></li>
-        <li><a href="#"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
+        <li><a href="/Home/About"><i class="fa-solid fa-info-circle"></i> Hakkımızda</a></li>
+        <li><a href="/Home/ContactUs"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
     </ul>
 </div>

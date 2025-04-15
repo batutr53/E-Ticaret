@@ -1,18 +1,12 @@
 ﻿@using E_Ticaret.Core.Entities
 @model IEnumerable<Category>
 
-@foreach (var item in Model.Where(x =>x.ParentId == 0))
+@foreach (var item in Model.Where(x => x.ParentId == 0))
 {
-    <div class="dropdown-menu">
-        <div class="dropdown-content">
-           @foreach (var altCategories in Model.Where(x => x.ParentId == item.Id))
-           {
-
-            <a href="/Category?id=@altCategories.Id">
-                <i class="@altCategories.ClassImage"></i> @altCategories.Name
-            </a>
-
-            }
-        </div>
-    </div>
+    @foreach (var altCategories in Model.Where(x => x.ParentId == item.Id))
+    {
+        <a href="/Category?id=@altCategories.Id">
+            <i class="@altCategories.ClassImage"></i> @altCategories.Name
+        </a>
+    }
 }
