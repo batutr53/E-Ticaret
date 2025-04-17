@@ -9,6 +9,7 @@ namespace E_Ticaret.Service.Abstract
 {
     public interface ICartService
     {
+        Task<Cart> GetCartById(string customerId);
         void AddToProduct(Product product, int quantity);
         void UpdateProduct(Product product, int quantity);
         void RemoveProduct(Product product);

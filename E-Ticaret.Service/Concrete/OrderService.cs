@@ -67,7 +67,7 @@ namespace E_Ticaret.Service.Concrete
                 LastName = orderDTO.LastName,
                 Phone = orderDTO.Phone,
                 City = orderDTO.City,
-                AddresLine = orderDTO.AddresLine,
+                AddresLine = orderDTO.AddressLine,
                 CustomerId = orderDTO.CustomerId,
                 OrderItems = items,
                 SubTotal = total,

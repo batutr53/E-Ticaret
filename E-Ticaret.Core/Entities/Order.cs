@@ -20,7 +20,7 @@ namespace E_Ticaret.Core.Entities
         public List<OrderItem> OrderItems { get; set; } = new();
         public decimal SubTotal { get; set; }
         public decimal DeliveryFree { get; set; }
-        public decimal GetTota()
+        public decimal GetTotal()
         {
             return SubTotal + DeliveryFree;
         }

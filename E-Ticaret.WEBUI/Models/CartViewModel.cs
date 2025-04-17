@@ -4,7 +4,7 @@ namespace E_Ticaret.WEBUI.Models
 {
     public class CartViewModel
     {
-        public List<CartLine>? CartLines { get; set; }
+        public List<Cart>? Carts{ get; set; }
         public decimal TotalPrice { get; set; }
 
     }

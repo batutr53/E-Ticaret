@@ -1,10 +1,20 @@
-﻿using E_Ticaret.Core.Entities;
+﻿using Azure.Core;
+using E_Ticaret.Core.Entities;
+using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticaret.Service.Concrete
 {
     public class CartService : ICartService
     {
+        private readonly DatabaseContext _context;
+
+        public CartService(DatabaseContext context)
+        {
+            _context = context;
+        }
+
         public List<CartItem> CartLines = new();
         public void AddToProduct(Product product, int quantity)
         {
@@ -55,6 +65,16 @@ namespace E_Ticaret.Service.Concrete
                 };
                 CartLines.Add(cartLine);
             }
+        }
+        public async Task<Cart> GetCartById(string customerId)
+        {
+            var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .ThenInclude(ci => ci.Product)
+            .Where(c => c.CustomerId == customerId)
+            .FirstOrDefaultAsync();
+
+            return cart;
         }
     }
 }
