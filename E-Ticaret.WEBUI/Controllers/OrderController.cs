@@ -14,21 +14,19 @@ namespace E_Ticaret.WEBUI.Controllers
     public class OrderController : Controller
     {
        private readonly IOrderService _orderService;
-        private readonly ICartService _cartService;
         private readonly DatabaseContext _context;
         private readonly IConfiguration _config;
 
-        public OrderController(IOrderService orderService, IConfiguration config, ICartService cartService, DatabaseContext context)
+        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context)
         {
             _orderService = orderService;
             _config = config;
-            _cartService = cartService;
             _context = context;
         }
 
         public async Task<IActionResult> GetOrder()
         {
-            var userCustomerId = Request.Cookies["userCustomerId"];
+            var userCustomerId = Request.Cookies["customerId"];
             var result = await _orderService.GetOrder(userCustomerId!);
             return View(result.ToList());
         }
@@ -39,63 +37,21 @@ namespace E_Ticaret.WEBUI.Controllers
         }
 
         [HttpPost("CreateOrder")]
-        public async Task<IActionResult> CreateOrder(CreateOrderPostModel orderDTO)
+        public async Task<IActionResult> CreateOrder(CreateOrderDTO model)
         {
-            var userCustomerId = Request.Cookies["userCustomerId"];
-            orderDTO.CustomerId = userCustomerId!;
-            var cart = await _cartService.GetCartById(userCustomerId);
-            var paymentResult = await Payment(orderDTO, cart);
-
-            var orderModel = new Order()
-            {
-                FirstName = orderDTO.FirstName,
-                LastName = orderDTO.LastName,
-                AddresLine = orderDTO.AddresLine,
-                City = orderDTO.City,
-                DeliveryFree = orderDTO.DeliveryFree,
-                CustomerId = orderDTO.CustomerId,
-                OrderDate = DateTime.UtcNow,
-            };
-            var items = new List<OrderItem>();
-            foreach (var item in cart.CartItems)
-            {
-                var product = await _context.Products.FindAsync(item.ProductId);
-                var orderItem = new OrderItem
-                {
-                    ProductId = product!.Id,
-                    ProductName = product.Name!,
-                    ProductImage = product.Image!,
-                    Price = product.Price,
-                    Quantity = item.Quantity
-                };
-                items.Add(orderItem);
-                product.Stock -= item.Quantity;
-            }
-            var SubTotal = items.Sum(i => i.Price * i.Quantity);
-            var deliveryFee = 0;
-            orderDTO.Oid = Convert.ToString(orderDTO.Oid + RandomNumberGenerator.GetInt32(0, 9999));
-
-            var order = new Order
-            {
-                Id = Convert.ToInt32(model.Oid),
-                OrderItems = items,
-                CustomerId = Request.Cookies["customerId"],
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Phone = model.Phone,
-                City = model.City,
-                AddresLine = model.AddressLine,
-                SubTotal = SubTotal,
-                DeliveryFree = deliveryFee
-            };
-
-
-            var result = await _orderService.CreateOrder(orderDTO);
+            var userCustomerId = Request.Cookies["customerId"];
+            model.CustomerId = userCustomerId;
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+                .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
+            var result = await _orderService.CreateOrder(model);
+            var paymentResult = await Payment(model, cart);
             return RedirectToAction("GetOrder");
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        private async Task<ContentResult> Payment(CreateOrderPostModel input, Cart cart)
+        private async Task<ContentResult> Payment(CreateOrderDTO input, Cart cart)
         {
             string publicKey = _config["TrPosAPI:PublicKey"];
             string apiKey = _config["TrPosAPI:APIKey"];
@@ -119,7 +75,7 @@ namespace E_Ticaret.WEBUI.Controllers
 
             string oid = input.Oid;
             // İşlem tutarı
-            string amount = "222";
+            string amount = cart.CalculateTotal().ToString();
             byte installment = input.Installment; // Örnek: 0,2,3,4,5,6,7,8,9,10,11,12
                                                   // Para birimi
             byte currency = 1; // 1:TL, 2:USD, 3:EUR
@@ -159,7 +115,7 @@ namespace E_Ticaret.WEBUI.Controllers
             { "IntegratorId", integratorId }
             };
             // TRPOS Satış İşlemi POST URL
-            string paymentURL = _config["TrPosAPI:PaymentURL"]; ;
+            string paymentURL = _config["TrPosAPI:PaymentURL"];
             try
             {
                 using (HttpClient client = new())
@@ -206,7 +162,7 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             if (model.ResultCode == "0000")
             {
-                var userCustomerId = Request.Cookies["userCustomerId"];
+                var userCustomerId = Request.Cookies["customerId"];
                 var order = await _orderService.GetOrderById(Convert.ToInt32(model.Oid), userCustomerId);
                 order.OrderStatus = OrderStatus.Completed;
                 //await _orderService.SaveChangesAsync();

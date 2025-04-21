@@ -25,8 +25,7 @@ document.querySelectorAll('.steporder-prev').forEach(btn => {
 });
 
 document.getElementById('steporder-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert("Siparişiniz alındı. Teşekkür ederiz!");
+ 
 });
 
 showStep(currentStep);

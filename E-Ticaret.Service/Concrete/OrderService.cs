@@ -35,12 +35,12 @@ namespace E_Ticaret.Service.Concrete
                 .FirstOrDefaultAsync(oi => oi.CustomerId == userCustomerId && oi.Id == id);
         }
 
-        public async Task<Order> CreateOrder(CreateOrderDTO orderDTO)
+        public async Task<Order> CreateOrder(CreateOrderDTO model)
         {
            var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.CustomerId == orderDTO.CustomerId);
+                .FirstOrDefaultAsync(c => c.CustomerId == model.CustomerId);
             if (cart == null) { return new Order(); }
             var items = new List<OrderItem>();
 
@@ -63,12 +63,12 @@ namespace E_Ticaret.Service.Concrete
             var deliveryFree = 0;
             var order = new Order
             {
-                FirstName = orderDTO.FirstName,
-                LastName = orderDTO.LastName,
-                Phone = orderDTO.Phone,
-                City = orderDTO.City,
-                AddresLine = orderDTO.AddressLine,
-                CustomerId = orderDTO.CustomerId,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Phone = model.Phone,
+                City = model.City,
+                AddresLine = model.AddressLine,
+                CustomerId = model.CustomerId,
                 OrderItems = items,
                 SubTotal = total,
                 DeliveryFree = deliveryFree

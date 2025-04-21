@@ -38,6 +38,12 @@ namespace E_Ticaret.Core.Entities
                 CartItems.Remove(cartItem);
             }
         }
+
+
+        public double CalculateTotal()
+        {
+            return (double)CartItems.Sum(i => i.Product.Price * i.Quantity);
+        }
     }
 
     public class CartItem : IEntity
