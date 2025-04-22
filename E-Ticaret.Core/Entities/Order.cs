@@ -15,6 +15,15 @@ namespace E_Ticaret.Core.Entities
         public string? Phone { get; set; }
         public string? City { get; set; }
         public string? AddresLine { get; set; }
+
+
+        public string? SenderFirstName { get; set; }
+        public string? SenderLastName { get; set; }
+        public string? SenderPhone { get; set; }
+        public string? SenderEmail { get; set; }
+        public string? Description { get; set; }
+
+
         public string? CustomerId { get; set; }
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
         public List<OrderItem> OrderItems { get; set; } = new();

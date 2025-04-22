@@ -47,7 +47,7 @@ namespace E_Ticaret.WEBUI.Controllers
                 .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
             var result = await _orderService.CreateOrder(model);
             var paymentResult = await Payment(model, cart);
-            return RedirectToAction("GetOrder");
+            return Content(paymentResult.Content, "text/html");
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
@@ -73,9 +73,9 @@ namespace E_Ticaret.WEBUI.Controllers
             string cv2 = input.CardCvc; // Kart Güvenlik Numarası
                                         // Benzersiz sipariş numarası (Örnek olarak verilmiştir. Kendi sipariş numaranızı
 
-            string oid = input.Oid;
+            string oid = Request.Cookies["customerId"];
             // İşlem tutarı
-            string amount = cart.CalculateTotal().ToString();
+            string amount = cart.CalculateTotal().ToString("N2", new System.Globalization.CultureInfo("tr-TR"));
             byte installment = input.Installment; // Örnek: 0,2,3,4,5,6,7,8,9,10,11,12
                                                   // Para birimi
             byte currency = 1; // 1:TL, 2:USD, 3:EUR
