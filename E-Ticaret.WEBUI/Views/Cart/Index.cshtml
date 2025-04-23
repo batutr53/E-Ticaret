@@ -11,64 +11,54 @@
             {
                 @foreach (var item in Model.CartItems)
                 {
-
-                    <h2 class="basket-product-title">@item.Product.Name</h2>
-
+                    
                     <div class="basket-product-header">
-                        <a href="/Product/Detail?productCode=@item.Product.ProductCode">
-                            <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
-                        </a>
-                        <div>
-                            <p class="basket-product-info">@item.Quantity</p>
-                        </div>
-                        <div>
-                            <p class="basket-product-info">@item.Product.Price.ToString("c")</p>
-                        </div>
-                        <div>
-                            <p class="basket-product-info"> </p>
-                        </div>
-                        <form asp-action="DeleteItemFromCart" asp-controller="Cart">
-                            <input type="hidden" name="ProductId" value="@item.Product.Id" />
-                            <input type="hidden" value="1" name="quantity" />
-                            <button class="basket-remove-btn" type="submit">Sil <i class="fas fa-trash"></i></button>
+  <a href="/Product/Detail?productCode=@item.Product.ProductCode">
+    <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
+  </a>
 
-                        </form>
-                    </div>
+  <div class="basket-product-details">
+    <h3>@item.Product.Name</h3>
+    <div class="basket-quantity-wrapper">
+
+      <!-- Azaltma Formu -->
+      <form asp-action="DeleteItemFromCart" asp-controller="Cart" class="decrease-form">
+        <input type="hidden" name="ProductId" value="@item.Product.Id" />
+        <input type="hidden" value="1" name="quantity" />
+        <button type="button" class="basket-quantity-btn" onclick="submitDecrease(this)">-</button>
+      </form>
+
+      <input type="text" class="basket-quantity-input" value="@item.Quantity" readonly />
+
+      <!-- Arttırma Formu -->
+      <form asp-action="AddItemToCart" asp-controller="Cart" class="increase-form">
+        <input type="hidden" name="productId" value="@item.Product.Id" />
+        <input type="hidden" value="1" name="quantity" />
+        <button type="button" class="basket-quantity-btn" onclick="submitIncrease(this)">+</button>
+      </form>
+
+    </div>
+    <p class="basket-product-price">@item.Product.Price.ToString("c")</p>
+  </div>
+
+  <!-- Sil Butonu -->
+  <form asp-action="DeleteItemFromCart" asp-controller="Cart">
+    <input type="hidden" name="ProductId" value="@item.Product.Id" />
+    <input type="hidden" value="@item.Quantity" name="quantity" />
+    <button class="basket-remove-btn" type="submit">
+      Sil <i class="fas fa-trash"></i>
+    </button>
+  </form>
+</div>
                 }
                 <!-- Order Summary -->
                 <div class="basket-order-summary">
-                    <h2 class="basket-summary-title">Sipariş Özetiniz</h2>
-
-                    <div class="basket-summary-product">
-                        <img src="/img/100.png" alt="Jolie Çiçek Aranjman" class="basket-summary-img">
-                        <div class="basket-summary-info">
-                            <p class="basket-summary-name">Çiçek</p>
-                            <p>Jolie Çiçek Aranjman</p>
-                        </div>
-                        <p class="basket-summary-price">@*@Model.TotalPriceTotalPrice.ToString("c")*@</p>
-                    </div>
-
-                    @*<div class="basket-delivery-info">
-                    <h3 class="basket-delivery-title">Teslimat Bilgileri</h3>
-                    <p class="basket-delivery-address">Aksaray, İstanbul Avrupa Yakası 30 Mart 2025 09:30 - 16:30</p>
-                    <p><strong>Yol Ücreti:</strong> 50 TL</p>
-                </div>*@
+              
 
                     <div class="basket-price-summary">
                         <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
                         <p class="basket-price-item">(KDV Dahil)</p>
                         <p class="basket-price-value">@(ViewBag.TotalPrice.ToString("c"))</p>
-
-                        <div class="basket-coupon-section">
-                            <div class="basket-coupon-header">
-                                <p><strong>İndirim Kuponu</strong></p>
-                                <i class="fas fa-chevron-down basket-coupon-icon"></i>
-                            </div>
-                            <div class="basket-coupon-content">
-                                <input type="text" placeholder="Kupon kodu girin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                                <button style="background-color: #e61e4d; color: white; border: none; padding: 8px; width: 100%; border-radius: 4px;">Uygula</button>
-                            </div>
-                        </div>
 
                         <div class="basket-total-price">
                             <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
@@ -92,3 +82,14 @@
 
   
 </div> 
+<script>
+  function submitDecrease(button) {
+    const form = button.closest("form");
+    form.submit();
+  }
+
+  function submitIncrease(button) {
+    const form = button.closest("form");
+    form.submit();
+  }
+</script>

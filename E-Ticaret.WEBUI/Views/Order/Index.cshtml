@@ -1,209 +1,134 @@
-﻿<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sipariş Adımları</title>
-    <link rel="stylesheet" href="/css/order.css">
-</head>
-<body>
+﻿<link rel="stylesheet" href="/css/order.css">
 
-    <div class="steporder-container">
-        <ul class="steporder-steps">
-            <li class="active">Gönderici</li>
-            <li>Alıcı</li>
-            <li>Sipariş</li>
-            <li>Ödeme</li>
-        </ul>
+<div class="steporder-container">
+    <ul class="steporder-steps">
+        <li class="active">Gönderici</li>
+        <li>Alıcı</li>
+        <li>Sipariş</li>
+        <li>Ödeme</li>
+    </ul>
 
-        <form id="steporder-form" asp-action="CreateOrder" asp-controller="Order" method="post">
-            <!-- STEP 1 -->
-            <div class="steporder-step" data-step="1">
-                <h2>Gönderici Bilgileri</h2>
-                <div class="gonderici-container">
-                        <div class="gonderici-form-section">
-                            <div class="gonderici-form-group">
-                                <div class="gonderici-input-icon">
-                                    <i class="fas fa-user"></i>
-                                    <input type="text" class="gonderici-input-control" name="SenderFirstLastName" placeholder="Gönderici Adı Soyadı">
-                                </div>
-                            </div>
+    <form id="steporder-form" asp-action="CreateOrder" asp-controller="Order" method="post">
+        <!-- STEP 1 -->
+        <div class="steporder-step" data-step="1">
+            <h2>Gönderici Bilgileri</h2>
+            <div class="gonderici-container">
+                <div class="gonderici-form-section">
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="gonderici-input-control" name="SenderFirstLastName"
+                                placeholder="Gönderici Adı Soyadı">
+                        </div>
+                    </div>
 
-                            <div class="gonderici-form-group">
-                                <div class="gonderici-input-icon">
-                                    <i class="fas fa-phone"></i>
-                                    <input type="tel" class="gonderici-input-control" name="SenderPhone" placeholder="Gönderici Telefon">
-                                </div>
-                            </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" class="gonderici-input-control" name="SenderPhone"
+                                placeholder="Gönderici Telefon">
+                        </div>
+                    </div>
 
-                            <div class="gonderici-form-group">
-                                <div class="gonderici-input-icon">
-                                    <i class="fas fa-envelope"></i>
-                                    <input type="email" class="gonderici-input-control" name="SenderEmail" placeholder="Gönderici E-Posta Adresi">
-                                </div>
-                            </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="gonderici-input-control" name="SenderEmail"
+                                placeholder="Gönderici E-Posta Adresi">
+                        </div>
+                    </div>
 
-                            @*<div class="gonderici-checkbox-group">
+                    @*<div class="gonderici-checkbox-group">
                                 <input type="checkbox" id="sms" class="gonderici-checkbox" checked>
                                 <label for="sms" class="gonderici-label">SMS Durum bilgilendirmesi Yapılsın</label>
                             </div>*@
 
-                            <div class="gonderici-form-group">
-                                <textarea class="gonderici-textarea" name="Description" placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)"></textarea>
-                            </div>
+                    <div class="gonderici-form-group">
+                        <textarea class="gonderici-textarea" name="Description"
+                            placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)"></textarea>
+                    </div>
 
-                            @*<div class="gonderici-checkbox-group">
+                    @*<div class="gonderici-checkbox-group">
                                 <input type="checkbox" id="fatura" class="gonderici-checkbox">
                                 <label for="fatura" class="gonderici-label">Fatura Bilgilerini Gir</label>
                             </div>*@
 
-                            @*<div class="gonderici-checkbox-group">
+                    @*<div class="gonderici-checkbox-group">
                                 <input type="checkbox" id="marketing" class="gonderici-checkbox">
                                 <label for="marketing" class="gonderici-label">www.detayçiçekçilik.com tarafından tarafıma ticari elektronik ileti gönderilmesine izin veriyorum.</label>
                             </div>*@
 
-                            @*<div class="gonderici-checkbox-group">
+                    @*<div class="gonderici-checkbox-group">
                                 <input type="checkbox" id="privacy" class="gonderici-checkbox">
                                 <label for="privacy" class="gonderici-label">Kişisel Bilgi Toplama Prosedürü Gizlilik Politikası'nı okudum ve kabul ediyorum.</label>
                             </div>*@
-                        </div>
-                </div>
-                    <button type="button" class="steporder-next">İleri</button>
-                </div>
-
-            <!-- STEP 2 -->
-            <div class="steporder-step" data-step="2">
-                <h2>Alıcı Bilgileri</h2>
-                <input type="text" name="FirstLastName" placeholder="Ad Soyad" required />
-                <input type="text" name="AddressLine" placeholder="Adres" required />
-                <input type="tel" name="Phone" placeholder="Telefon" required />
-                <div class="steporder-buttons">
-                    <button type="button" class="steporder-prev">Geri</button>
-                    <button type="button" class="steporder-next">İleri</button>
                 </div>
             </div>
+            <button type="button" class="steporder-next">İleri</button>
+        </div>
 
-            <!-- STEP 3 -->
-            <div class="steporder-step" data-step="3">
-                <h2>Sipariş Detayı</h2>
-                <select required>
-                    <option disabled selected>Ürün Seçin</option>
-                    <option>Çiçek 1</option>
-                    <option>Çiçek 2</option>
-                </select>
-                <textarea placeholder="Notunuz (isteğe bağlı)"></textarea>
-                <div class="steporder-buttons">
-                    <button type="button" class="steporder-prev">Geri</button>
-                    <button type="button" class="steporder-next">İleri</button>
+        <!-- STEP 2 -->
+        <div class="steporder-step" data-step="2">
+            <h2>Alıcı Bilgileri</h2>
+            <div class="gonderici-container">
+            <div class="gonderici-form-section">
+                <div class="gonderici-form-group">
+                    <div class="gonderici-input-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" class="gonderici-input-control" name="FirstLastName"
+                            placeholder="Alıcı Adı Soyadı" required />
+                    </div>
                 </div>
-            </div>
-
-            <!-- STEP 4 -->
-            <div class="steporder-step" data-step="4">
-                <h2>Ödeme</h2>
-                <input type="text" name="CardName" placeholder="Kart Üzerindeki İsim" required />
-                <input type="text" name="CardNumber" placeholder="Kart Numarası" required />
-                <input type="text" name="CardExpireMonth" placeholder="Ay" required />
-                <input type="text" name="CardExpireYear" placeholder="Yıl" required />
-                <input type="text" name="CardCvc" placeholder="CVV" required />
-
-                <div class="steporder-buttons">
-                    <button type="button" class="steporder-prev">Geri</button>
-                    <input type="submit" value="Siparişi Tamamla" class="btn btn-primary" />
+                <div class="gonderici-form-group">
+                    <div class="gonderici-input-icon">
+                        <i class="fas fa-address-card"></i>
+                        <input type="text" class="gonderici-input-control" name="AddressLine" placeholder="Alıcı Adres"
+                            required />
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
-
-    <script src="/js/order.js"></script>
-</body>
-</html>
-
-<!--<div class="gonderici-container">
-    <form asp-action="CreateOrder" method="post">
-        <div class="gonderici-form-section">
-            <div class="gonderici-form-group">
-                <div class="gonderici-input-icon">
-                    <i class="fas fa-user"></i>
-                    <input type="text" class="gonderici-input-control" placeholder="Gönderici Adı Soyadı">
-                </div>
-            </div>
-
-            <div class="gonderici-form-group">
+                <div class="gonderici-form-group">
                 <div class="gonderici-input-icon">
                     <i class="fas fa-phone"></i>
-                    <input type="tel" class="gonderici-input-control" placeholder="Gönderici Telefon">
+                    <input type="tel" class="gonderici-input-control" name="Phone" placeholder="Alıcı Telefon"
+                        required />
                 </div>
             </div>
-
-            <div class="gonderici-form-group">
-                <div class="gonderici-input-icon">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" class="gonderici-input-control" placeholder="Gönderici E-Posta Adresi">
-                </div>
-            </div>
-
-            <div class="gonderici-checkbox-group">
-                <input type="checkbox" id="sms" class="gonderici-checkbox" checked>
-                <label for="sms" class="gonderici-label">SMS Durum bilgilendirmesi Yapılsın</label>
-            </div>
-
-            <div class="gonderici-form-group">
-                <textarea class="gonderici-textarea" placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)"></textarea>
-            </div>
-
-            <div class="gonderici-checkbox-group">
-                <input type="checkbox" id="fatura" class="gonderici-checkbox">
-                <label for="fatura" class="gonderici-label">Fatura Bilgilerini Gir</label>
-            </div>
-
-            <div class="gonderici-checkbox-group">
-                <input type="checkbox" id="marketing" class="gonderici-checkbox">
-                <label for="marketing" class="gonderici-label">www.atesgulucicek.com tarafından tarafıma ticari elektronik ileti gönderilmesine izin veriyorum.</label>
-            </div>
-
-            <div class="gonderici-checkbox-group">
-                <input type="checkbox" id="privacy" class="gonderici-checkbox">
-                <label for="privacy" class="gonderici-label">Kişisel Bilgi Toplama Prosedürü Gizlilik Politikası'nı okudum ve kabul ediyorum.</label>
+            <div class="steporder-buttons">
+                <button type="button" class="steporder-prev">Geri</button>
+                <button type="button" class="steporder-next">İleri</button>
             </div>
         </div>
-    </form>-->
-<!-- Order Summary -->
-<!--<div class="gonderici-order-summary">
-    <h2 class="gonderici-summary-title">Sipariş Özetiniz</h2>
-
-    <div class="gonderici-summary-product">
-        <img src="/img/100.png" alt="Jolie Çiçek Aranjman" class="gonderici-summary-img">
-        <div class="gonderici-summary-info">
-            <p class="gonderici-summary-name">Çiçek</p>
-            <p>Jolie Çiçek Aranjman</p>
+  </div> </div>
+        <!-- STEP 3 -->
+        <div class="steporder-step" data-step="3">
+            <h2>Sipariş Detayı</h2>
+            <select required>
+                <option disabled selected>Ürün Seçin</option>
+                <option>Çiçek 1</option>
+                <option>Çiçek 2</option>
+            </select>
+            <textarea placeholder="Notunuz (isteğe bağlı)"></textarea>
+            <div class="steporder-buttons">
+                <button type="button" class="steporder-prev">Geri</button>
+                <button type="button" class="steporder-next">İleri</button>
+            </div>
         </div>
-        <p class="gonderici-summary-price">4000.00 TL</p>
-    </div>
 
-    <div class="gonderici-delivery-info">
-        <h3 class="gonderici-delivery-title">Teslimat Bilgileri</h3>
-        <p class="gonderici-delivery-address">Aksaray, İstanbul Avrupa Yakası 30 Mart 2025 09:30 - 16:30</p>
-        <p><strong>Yol Ücreti:</strong> 50 TL</p>
-    </div>
+        <!-- STEP 4 -->
+        <div class="steporder-step" data-step="4">
+            <h2>Ödeme</h2>
+            <input type="text" name="CardName" placeholder="Kart Üzerindeki İsim" required />
+            <input type="text" name="CardNumber" placeholder="Kart Numarası" required />
+            <input type="text" name="CardExpireMonth" placeholder="Ay" required />
+            <input type="text" name="CardExpireYear" placeholder="Yıl" required />
+            <input type="text" name="CardCvc" placeholder="CVV" required />
 
-    <div class="gonderici-price-summary">
-        <h3 class="gonderici-price-title">Ürün Toplam Fiyat</h3>
-        <p class="gonderici-price-item">(KDV Dahil)</p>
-        <p class="gonderici-price-value">4050,00 TL</p>
-
-
-        <div class="gonderici-total-price">
-            <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
-            <span>4050 TL</span>
+            <div class="steporder-buttons">
+                <button type="button" class="steporder-prev">Geri</button>
+                <input type="submit" value="Siparişi Tamamla" class="btn btn-primary" />
+            </div>
         </div>
-    </div>
-</div>-->
-<!-- Bottom Navigation -->
-<!--<div class="gonderici-bottom-nav">
-        <a href="#" class="gonderici-back-btn">
-            <i class="fas fa-arrow-left"></i> Sipariş bilgilerini düzenle
-        </a>
-        <button class="gonderici-next-btn">Sonraki Adım</button>
-    </div>
-</div>-->
+    </form>
+</div>
+
+<script src="/js/order.js"></script>
