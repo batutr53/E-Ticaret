@@ -2,9 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Proje dosyasını kopyala ve restore yap
+# Solution dosyasını kopyala ve restore işlemini yap
+COPY ["E-Ticaret.sln", "./"]
 COPY ["E-Ticaret.WEBUI/E-Ticaret.WEBUI.csproj", "E-Ticaret.WEBUI/"]
-RUN dotnet restore "E-Ticaret.WEBUI/E-Ticaret.WEBUI.csproj"
+COPY ["E-Ticaret.Service/E-Ticaret.Service.csproj", "E-Ticaret.Service/"]
+COPY ["E-Ticaret.Data/E-Ticaret.Data.csproj", "E-Ticaret.Data/"]
+RUN dotnet restore
 
 # Tüm dosyaları kopyala ve publish et
 COPY . .
