@@ -1,11 +1,12 @@
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY ["E-Ticaret.WEBUI.csproj", "./"]
-RUN dotnet restore "./E-Ticaret.WEBUI.csproj"
+COPY ["E-Ticaret.WEBUI/E-Ticaret.WEBUI.csproj", "E-Ticaret.WEBUI/"]
+WORKDIR /src/E-Ticaret.WEBUI
+RUN dotnet restore
+
 COPY . .
-RUN dotnet publish "E-Ticaret.WEBUI.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
