@@ -18,7 +18,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-user"></i>
                             <input type="text" class="gonderici-input-control" name="SenderFirstLastName"
-                                placeholder="Gönderici Adı Soyadı">
+                                   placeholder="Gönderici Adı Soyadı">
                         </div>
                     </div>
 
@@ -26,7 +26,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-phone"></i>
                             <input type="tel" class="gonderici-input-control" name="SenderPhone"
-                                placeholder="Gönderici Telefon">
+                                   placeholder="Gönderici Telefon">
                         </div>
                     </div>
 
@@ -34,7 +34,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-envelope"></i>
                             <input type="email" class="gonderici-input-control" name="SenderEmail"
-                                placeholder="Gönderici E-Posta Adresi">
+                                   placeholder="Gönderici E-Posta Adresi">
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
 
                     <div class="gonderici-form-group">
                         <textarea class="gonderici-textarea" name="Description"
-                            placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)"></textarea>
+                                  placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)"></textarea>
                     </div>
 
                     @*<div class="gonderici-checkbox-group">
@@ -71,34 +71,35 @@
         <div class="steporder-step" data-step="2">
             <h2>Alıcı Bilgileri</h2>
             <div class="gonderici-container">
-            <div class="gonderici-form-section">
-                <div class="gonderici-form-group">
-                    <div class="gonderici-input-icon">
-                        <i class="fas fa-user"></i>
-                        <input type="text" class="gonderici-input-control" name="FirstLastName"
-                            placeholder="Alıcı Adı Soyadı" required />
+                <div class="gonderici-form-section">
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="gonderici-input-control" name="FirstLastName"
+                                   placeholder="Alıcı Adı Soyadı" required />
+                        </div>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-address-card"></i>
+                            <input type="text" class="gonderici-input-control" name="AddressLine" placeholder="Alıcı Adres"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" class="gonderici-input-control" name="Phone" placeholder="Alıcı Telefon"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="steporder-buttons">
+                        <button type="button" class="steporder-prev">Geri</button>
+                        <button type="button" class="steporder-next">İleri</button>
                     </div>
                 </div>
-                <div class="gonderici-form-group">
-                    <div class="gonderici-input-icon">
-                        <i class="fas fa-address-card"></i>
-                        <input type="text" class="gonderici-input-control" name="AddressLine" placeholder="Alıcı Adres"
-                            required />
-                    </div>
-                </div>
-                <div class="gonderici-form-group">
-                <div class="gonderici-input-icon">
-                    <i class="fas fa-phone"></i>
-                    <input type="tel" class="gonderici-input-control" name="Phone" placeholder="Alıcı Telefon"
-                        required />
-                </div>
-            </div>
-            <div class="steporder-buttons">
-                <button type="button" class="steporder-prev">Geri</button>
-                <button type="button" class="steporder-next">İleri</button>
             </div>
         </div>
-  </div> </div>
         <!-- STEP 3 -->
         <div class="steporder-step" data-step="3">
             <h2>Sipariş Detayı</h2>
@@ -117,15 +118,49 @@
         <!-- STEP 4 -->
         <div class="steporder-step" data-step="4">
             <h2>Ödeme</h2>
-            <input type="text" name="CardName" placeholder="Kart Üzerindeki İsim" required />
-            <input type="text" name="CardNumber" placeholder="Kart Numarası" required />
-            <input type="text" name="CardExpireMonth" placeholder="Ay" required />
-            <input type="text" name="CardExpireYear" placeholder="Yıl" required />
-            <input type="text" name="CardCvc" placeholder="CVV" required />
+            <div class="gonderici-container">
+                <div class="gonderici-form-section">
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-credit-card"></i>
+                            <input type="text" class="gonderici-input-control" name="CardName" placeholder="Kart Üzerindeki İsim"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-credit-card"></i>
+                            <input type="text" class="gonderici-input-control" name="CardNumber" placeholder="Kart Numarası"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fa-solid fa-calendar"></i>
+                            <input type="text" class="gonderici-input-control" name="CardExpireMonth" placeholder="Ay"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fa-solid fa-calendar"></i>
+                            <input type="text" class="gonderici-input-control" name="CardExpireYear" placeholder="Yıl"
+                                   required />
+                        </div>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <div class="gonderici-input-icon">
+                            <i class="fas fa-credit-card"></i>
+                            <input type="text" class="gonderici-input-control" name="CardCvc" placeholder="CVV"
+                                   required />
+                        </div>
+                    </div>
 
-            <div class="steporder-buttons">
-                <button type="button" class="steporder-prev">Geri</button>
-                <input type="submit" value="Siparişi Tamamla" class="btn btn-primary" />
+                    <div class="steporder-buttons">
+                        <button type="button" class="steporder-prev">Geri</button>
+                        <input type="submit" value="Siparişi Tamamla" class="btn btn-primary" />
+                    </div>
+                </div>
             </div>
         </div>
     </form>
