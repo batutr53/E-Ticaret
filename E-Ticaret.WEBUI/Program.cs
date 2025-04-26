@@ -2,6 +2,8 @@ using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.Service.Concrete;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +38,11 @@ builder.Services.AddAuthorization(options =>
 }); 
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    db.Database.Migrate(); // otomatik update-database yapar
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
