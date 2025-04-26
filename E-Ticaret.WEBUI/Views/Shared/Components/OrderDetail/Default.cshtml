@@ -1,0 +1,61 @@
+﻿@model E_Ticaret.Core.Entities.Cart
+@{ 
+    ViewBag.TotalPrice = 0;
+}
+
+    <div class="basket-main-content">
+        <div class="basket-product-card">
+            @if (Model.CartItems.Any())
+            {
+                @foreach (var item in Model.CartItems)
+                {
+
+                    <div class="basket-product-header">
+                        <a href="/Product/Detail?productCode=@item.Product.ProductCode">
+                            <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
+                        </a>
+
+                        <div class="basket-product-details">
+                            <h3>@item.Product.Name</h3>
+                            <div class="basket-quantity-wrapper">
+
+                                <span class="decrease-form">
+                                    <input type="hidden" name="ProductId" value="@item.Product.Id" disabled />
+                                </span>
+
+                                <input type="text" class="basket-quantity-input" value="@item.Quantity" readonly />
+
+                                <span class="increase-form">
+                                    <input type="hidden" name="productId" value="@item.Product.Id" disabled/>
+                                </span>
+
+                            </div>
+                            <p class="basket-product-price">@item.Product.Price.ToString("c")</p>
+                        </div>
+
+                    </div>
+                    ViewBag.TotalPrice += item.Product.Price * item.Quantity;
+                }
+                <div class="basket-order-summary">
+
+
+                    <div class="basket-price-summary">
+                        <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
+                        <p class="basket-price-item">(KDV Dahil)</p>
+                        <p class="basket-price-value">@(ViewBag.TotalPrice.ToString("c"))</p>
+
+                        <div class="basket-total-price">
+                            <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
+                            <span>@(ViewBag.TotalPrice.ToString("c")) </span>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <span>Ürün deatyı bulunmamaktadır.</span>
+            }
+        </div>
+    </div>
+
+

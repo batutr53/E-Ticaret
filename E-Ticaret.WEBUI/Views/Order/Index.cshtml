@@ -103,12 +103,7 @@
         <!-- STEP 3 -->
         <div class="steporder-step" data-step="3">
             <h2>Sipariş Detayı</h2>
-            <select required>
-                <option disabled selected>Ürün Seçin</option>
-                <option>Çiçek 1</option>
-                <option>Çiçek 2</option>
-            </select>
-            <textarea placeholder="Notunuz (isteğe bağlı)"></textarea>
+            @await Component.InvokeAsync("OrderDetail")  
             <div class="steporder-buttons">
                 <button type="button" class="steporder-prev">Geri</button>
                 <button type="button" class="steporder-next">İleri</button>

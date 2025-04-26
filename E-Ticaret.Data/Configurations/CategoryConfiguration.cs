@@ -17,9 +17,22 @@ namespace E_Ticaret.Data.Configurations
                 Description = "Kategoriler", 
                 IsActive = true, 
                 IsTopMenu = true, 
+                Image= "",
                 ParentId = 0,
                 OrderNo = 1, 
                 CreatedDate = new DateTime(2024, 04, 01, 10, 0, 0, DateTimeKind.Utc)
+            },new Category
+            {
+                Id = 2,
+                ClassImage = "fa fa-gift",
+                Name = "Hediyelik",
+                Description = "Özel günler ve kutlamalar için hediyelik ürünler",
+                IsActive = true,
+                IsTopMenu = true,
+                Image = "",
+                ParentId = 0,
+                OrderNo = 2,
+                CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc) 
             });
         }
     }
