@@ -30,7 +30,7 @@ namespace E_Ticaret.Data.Configurations
                 IsActive = true,
                 IsTopMenu = true,
                 Image = "",
-                ParentId = 0,
+                ParentId = 1,
                 OrderNo = 2,
                 CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc) 
             });
