@@ -1927,7 +1927,92 @@ ul {
         margin: 10px 0;
         font-size: 1.2rem;
     }
+.payment-result-container {
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
 
+.payment-success {
+    color: #2e7d32;
+}
+
+.payment-error {
+    color: #c62828;
+}
+
+.payment-title {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.payment-info {
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+.payment-message {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.payment-btn-primary, .payment-btn-danger {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.payment-btn-primary {
+    background-color: #1976d2;
+}
+
+.payment-btn-danger {
+    background-color: #d32f2f;
+}
+
+    .payment-btn-primary:hover, .payment-btn-danger:hover {
+        opacity: 0.9;
+    }
+
+@media (max-width: 600px) {
+    .payment-result-container {
+        margin: 30px 15px;
+        padding: 15px;
+        max-width: 100%;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .payment-title {
+        font-size: 20px;
+    }
+
+    .payment-info, .payment-message {
+        font-size: 14px;
+    }
+
+    .payment-btn-primary, .payment-btn-danger {
+        width: 100%;
+        padding: 14px 0;
+        font-size: 16px;
+    }
+}
+@media (max-width: 768px) {
+    .payment-response-table {
+        font-size: 12px;
+    }
+}
 /* Responsive */
 @media (max-width: 768px) {
     .aboutUs-mission-vision div {

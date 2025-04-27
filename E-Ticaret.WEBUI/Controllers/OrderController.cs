@@ -1,16 +1,20 @@
-﻿using E_Ticaret.Core.DTO;
+﻿using Azure.Core;
+using E_Ticaret.Core.DTO;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.Service.Concrete;
+using E_Ticaret.WEBUI.ExtensionMethods;
 using E_Ticaret.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace E_Ticaret.WEBUI.Controllers
 {
+    [Route("Order")]
     public class OrderController : Controller
     {
        private readonly IOrderService _orderService;
@@ -23,14 +27,14 @@ namespace E_Ticaret.WEBUI.Controllers
             _config = config;
             _context = context;
         }
-
-        public async Task<IActionResult> GetOrder()
-        {
-            var userCustomerId = Request.Cookies["customerId"];
-            var result = await _orderService.GetOrder(userCustomerId!);
-            return View(result.ToList());
-        }
-
+        //[HttpGet("GetOrder")]
+        //public async Task<IActionResult> GetOrder()
+        //{
+        //    var userCustomerId = Request.Cookies["customerId"];
+        //    var result = await _orderService.GetOrder(userCustomerId!);
+        //    return View(result.ToList());
+        //}
+     
         public async Task<IActionResult> Index()
         {
             return View();
@@ -81,7 +85,7 @@ namespace E_Ticaret.WEBUI.Controllers
             byte currency = 1; // 1:TL, 2:USD, 3:EUR
 
             // Satış işlemine ait cevapların döneceği URL
-            string returnUrl = "http://localhost:6969/api/Order/PaymentResponse";
+            string returnUrl = Request.GetBaseUrl(includePort: true) + "/Order/PaymentResponse";
             string userIp = "1.1.1.1";
             //------------
             if (string.IsNullOrEmpty(userIp))
@@ -165,13 +169,17 @@ namespace E_Ticaret.WEBUI.Controllers
                 var userCustomerId = Request.Cookies["customerId"];
                 var order = await _orderService.GetOrderById(Convert.ToInt32(model.Oid), userCustomerId);
                 order.OrderStatus = OrderStatus.Completed;
-                //await _orderService.SaveChangesAsync();
-                return Redirect("http://localhost:9696/payment/status?id=" + model.Oid);
+
+                var cart = await _context.Carts
+                    .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                    .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
+
+                _context.Carts.Remove(cart);
+                _context.Orders.Update(order);
             }
-            else
-            {
-                return Redirect("http://localhost:9696/payment/status?message=" + model.ResultCode);
-            }
+            return View(model);
+
         }
 
     }

@@ -75,7 +75,6 @@ namespace E_Ticaret.Service.Concrete
             };
 
             _context.Orders.Add(order);
-            _context.Carts.Remove(cart);
             await _context.SaveChangesAsync();
             return order;
 

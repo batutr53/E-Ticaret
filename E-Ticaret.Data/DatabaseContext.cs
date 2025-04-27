@@ -22,7 +22,7 @@ namespace E_Ticaret.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=eticaretdetaycicekdb;Username=postgres;Password=123456");
+                optionsBuilder.UseNpgsql("Host=31.57.33.111;Port=5432;Database=eticaretdetaycicekdb;Username=postgres;Password=123456");
             }
             base.OnConfiguring(optionsBuilder);
         }
