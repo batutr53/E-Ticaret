@@ -20,6 +20,7 @@ namespace E_Ticaret.Core.DTO
         public string? CardExpireYear { get; set; }
         public string? CardCvc { get; set; }
         public string? Oid { get; set; }
+        public string? TxnNo { get; set; }
         public string? Amount { get; set; }
         public byte Installment { get; set; }
         public string? ReturnUrl { get; set; }

@@ -28,11 +28,11 @@ namespace E_Ticaret.Service.Concrete
                 .ToListAsync();
         }
 
-        public async Task<Order?> GetOrderById(int id, string userCustomerId)
+        public async Task<Order?> GetOrderById(string id)
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                .FirstOrDefaultAsync(oi => oi.CustomerId == userCustomerId && oi.Id == id);
+                .FirstOrDefaultAsync(oi => oi.Oid == id);
         }
 
         public async Task<Order> CreateOrder(CreateOrderDTO model)
@@ -71,7 +71,14 @@ namespace E_Ticaret.Service.Concrete
                 CustomerId = model.CustomerId,
                 OrderItems = items,
                 SubTotal = total,
-                DeliveryFree = deliveryFree
+                DeliveryFree = deliveryFree,
+                Oid = model.Oid,
+                TxnNo = model.TxnNo,
+                Description = model.Description,
+                SenderEmail = model.SenderEmail,
+                SenderFirstName = model.SenderFirstName,
+                SenderLastName = model.SenderLastName,
+                SenderPhone = model.SenderPhone
             };
 
             _context.Orders.Add(order);

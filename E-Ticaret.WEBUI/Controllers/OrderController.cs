@@ -17,7 +17,7 @@ namespace E_Ticaret.WEBUI.Controllers
     [Route("Order")]
     public class OrderController : Controller
     {
-       private readonly IOrderService _orderService;
+        private readonly IOrderService _orderService;
         private readonly DatabaseContext _context;
         private readonly IConfiguration _config;
 
@@ -34,7 +34,7 @@ namespace E_Ticaret.WEBUI.Controllers
         //    var result = await _orderService.GetOrder(userCustomerId!);
         //    return View(result.ToList());
         //}
-     
+
         public async Task<IActionResult> Index()
         {
             return View();
@@ -49,13 +49,14 @@ namespace E_Ticaret.WEBUI.Controllers
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
                 .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
+            model.Oid = "SP" + DateTime.UtcNow.Year + DateTime.UtcNow.Month.ToString("D2") + DateTime.UtcNow.Day + DateTime.UtcNow.Minute.ToString("D2") + Request.Cookies["customerId"];
             var result = await _orderService.CreateOrder(model);
-            var paymentResult = await Payment(model, cart);
+            var paymentResult = await Payment(model, cart, model.Oid);
             return Content(paymentResult.Content, "text/html");
         }
 
         [ApiExplorerSettings(IgnoreApi = true)]
-        private async Task<ContentResult> Payment(CreateOrderDTO input, Cart cart)
+        private async Task<ContentResult> Payment(CreateOrderDTO input, Cart cart, string OrderId)
         {
             string publicKey = _config["TrPosAPI:PublicKey"];
             string apiKey = _config["TrPosAPI:APIKey"];
@@ -77,7 +78,7 @@ namespace E_Ticaret.WEBUI.Controllers
             string cv2 = input.CardCvc; // Kart Güvenlik Numarası
                                         // Benzersiz sipariş numarası (Örnek olarak verilmiştir. Kendi sipariş numaranızı
 
-            string oid = Request.Cookies["customerId"];
+            string oid =OrderId;
             // İşlem tutarı
             string amount = cart.CalculateTotal().ToString("N2", new System.Globalization.CultureInfo("tr-TR"));
             byte installment = input.Installment; // Örnek: 0,2,3,4,5,6,7,8,9,10,11,12
@@ -110,7 +111,7 @@ namespace E_Ticaret.WEBUI.Controllers
             { "ExpMonth",expMonth },
             { "ExpYear", expYear },
             { "Cv2", cv2 },
-            { "Oid", oid },
+            { "Oid", oid.ToString() },
             { "Amount", amount },
             { "Installment", installment.ToString() },
             { "Currency", currency.ToString() },
@@ -167,13 +168,15 @@ namespace E_Ticaret.WEBUI.Controllers
             if (model.ResultCode == "0000")
             {
                 var userCustomerId = Request.Cookies["customerId"];
-                var order = await _orderService.GetOrderById(Convert.ToInt32(model.Oid), userCustomerId);
+                var order = await _orderService.GetOrderById(model.Oid);
                 order.OrderStatus = OrderStatus.Completed;
+                order.TxnNo = model.TxnNo;
+                order.Oid = model.Oid;
 
                 var cart = await _context.Carts
                     .Include(c => c.CartItems)
                     .ThenInclude(ci => ci.Product)
-                    .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
+                    .FirstOrDefaultAsync(c => c.CustomerId == model.Oid.Substring(12));
 
                 _context.Carts.Remove(cart);
                 _context.Orders.Update(order);

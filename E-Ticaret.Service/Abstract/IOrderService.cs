@@ -11,7 +11,7 @@ namespace E_Ticaret.Service.Abstract
     public interface IOrderService
     {
         Task<List<Order>> GetOrder(string userCustomerId);
-        Task<Order> GetOrderById(int id, string userCustomerId);
+        Task<Order> GetOrderById(string id);
         Task<Order> CreateOrder(CreateOrderDTO order);
     }
 }
