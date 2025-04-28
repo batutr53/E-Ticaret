@@ -94,3 +94,37 @@ button {
         flex-direction: column;
     }
 }
+.input-error {
+    border: 1px solid red;
+}
+
+.input-error-message {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.steporder-step {
+    display: none;
+}
+
+    .steporder-step.active {
+        display: block;
+    }
+
+/* Progress bar */
+#steporder-progress-container {
+    width: 100%;
+    background: #eee;
+    height: 8px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#steporder-progress {
+    height: 100%;
+    width: 0%;
+    background: #4CAF50;
+    transition: width 0.4s ease;
+}

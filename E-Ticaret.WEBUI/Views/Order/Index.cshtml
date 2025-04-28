@@ -18,7 +18,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-user"></i>
                             <input type="text" class="gonderici-input-control" name="SenderFirstLastName"
-                                   placeholder="Gönderici Adı Soyadı">
+                                   placeholder="Gönderici Adı Soyadı" minlength="2" maxlength="100" pattern="^[A-Za-zÇçĞğİıÖöŞşÜü\s]+$" required>
                         </div>
                     </div>
 
@@ -26,7 +26,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-phone"></i>
                             <input type="tel" class="gonderici-input-control" name="SenderPhone"
-                                   placeholder="Gönderici Telefon">
+                                   placeholder="Gönderici Telefon" minlength="10" maxlength="15" pattern="^\d{10,15}$" required>
                         </div>
                     </div>
 
@@ -34,7 +34,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-envelope"></i>
                             <input type="email" class="gonderici-input-control" name="SenderEmail"
-                                   placeholder="Gönderici E-Posta Adresi">
+                                   placeholder="Gönderici E-Posta Adresi" minlength="5" maxlength="150" required>
                         </div>
                     </div>
 
@@ -45,7 +45,7 @@
 
                     <div class="gonderici-form-group">
                         <textarea class="gonderici-textarea" name="Description"
-                                  placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)"></textarea>
+                                  placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)" maxlength="150"></textarea>
                     </div>
 
                     @*<div class="gonderici-checkbox-group">
@@ -76,21 +76,21 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-user"></i>
                             <input type="text" class="gonderici-input-control" name="FirstLastName"
-                                   placeholder="Alıcı Adı Soyadı" required />
+                                   placeholder="Alıcı Adı Soyadı" required minlength="2" maxlength="100" pattern="^[A-Za-zÇçĞğİıÖöŞşÜü\s]+$" />
                         </div>
                     </div>
                     <div class="gonderici-form-group">
                         <div class="gonderici-input-icon">
                             <i class="fas fa-address-card"></i>
                             <input type="text" class="gonderici-input-control" name="AddressLine" placeholder="Alıcı Adres"
-                                   required />
+                                   required minlength="5" maxlength="250"  />
                         </div>
                     </div>
                     <div class="gonderici-form-group">
                         <div class="gonderici-input-icon">
                             <i class="fas fa-phone"></i>
                             <input type="tel" class="gonderici-input-control" name="Phone" placeholder="Alıcı Telefon"
-                                   required />
+                                   required minlength="10" maxlength="15" pattern="^\d{10,15}$" />
                         </div>
                     </div>
                     <div class="steporder-buttons">
@@ -160,5 +160,6 @@
         </div>
     </form>
 </div>
+
 
 <script src="/js/order.js"></script>
