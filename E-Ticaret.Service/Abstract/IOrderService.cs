@@ -12,6 +12,8 @@ namespace E_Ticaret.Service.Abstract
     {
         Task<List<Order>> GetOrder(string userCustomerId);
         Task<Order> GetOrderById(string id);
+        Task<Order> GetOrderByOId(string oid);
         Task<Order> CreateOrder(CreateOrderDTO order);
+        Task<Order> UpdateOrder(Order order);
     }
 }

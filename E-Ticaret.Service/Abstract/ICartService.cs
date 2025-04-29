@@ -14,6 +14,6 @@ namespace E_Ticaret.Service.Abstract
         void UpdateProduct(Product product, int quantity);
         void RemoveProduct(Product product);
         decimal TotalPrice();
-        void ClearAll();
+        void Remove(Cart cart);
     }
 }

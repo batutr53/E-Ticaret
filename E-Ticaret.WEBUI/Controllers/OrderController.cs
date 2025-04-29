@@ -20,21 +20,28 @@ namespace E_Ticaret.WEBUI.Controllers
         private readonly IOrderService _orderService;
         private readonly DatabaseContext _context;
         private readonly IConfiguration _config;
+        private readonly ICartService _cartService;
 
-        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context)
+        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context, ICartService cartService)
         {
             _orderService = orderService;
             _config = config;
             _context = context;
+            _cartService = cartService;
         }
-        //[HttpGet("GetOrder")]
-        //public async Task<IActionResult> GetOrder()
-        //{
-        //    var userCustomerId = Request.Cookies["customerId"];
-        //    var result = await _orderService.GetOrder(userCustomerId!);
-        //    return View(result.ToList());
-        //}
+        [HttpGet("GetOrder")]
+        public async Task<IActionResult> GetOrder()
+        {
+            return View();
+        }
 
+        [HttpPost("GetOrder")]
+        public async Task<IActionResult> GetOrder(string oid)
+        {
+            var result = await _orderService.GetOrderByOId(oid!);
+            if (result == null) { ViewBag.Error = "Böyle bir sipariş bulunamadı."; return View(); };
+            return View(result);
+        }
         public async Task<IActionResult> Index()
         {
             return View();
@@ -178,8 +185,8 @@ namespace E_Ticaret.WEBUI.Controllers
                     .ThenInclude(ci => ci.Product)
                     .FirstOrDefaultAsync(c => c.CustomerId == model.Oid.Substring(12));
 
-                _context.Carts.Remove(cart);
-                _context.Orders.Update(order);
+                _cartService.Remove(cart);
+                await _orderService.UpdateOrder(order);
             }
             return View(model);
 

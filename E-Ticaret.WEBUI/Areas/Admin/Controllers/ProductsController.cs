@@ -20,15 +20,18 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             _context = context;
         }
-
-        // GET: Admin/Products
         public async Task<IActionResult> Index()
         {
-            var databaseContext = _context.Products.Include(p => p.Brand).Include(p => p.Category);
-            return View(await databaseContext.ToListAsync());
+            var products = await _context.Products
+                .Include(p => p.Brand)
+                .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
+                .ToListAsync();
+
+            return View(products);
         }
 
-        // GET: Admin/Products/Details/5
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,8 +41,10 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Brand)
-                .Include(p => p.Category)
+                .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (product == null)
             {
                 return NotFound();
@@ -47,108 +52,147 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
             return View(product);
         }
+
 
         // GET: Admin/Products/Create
         public IActionResult Create()
         {
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name");
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["Categories"] = new MultiSelectList(_context.Categories.Where(x => x.IsActive), "Id", "Name");
             return View();
         }
 
-   
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product, IFormFile? Image)
+        public async Task<IActionResult> Create(Product product, IFormFile? Image, List<int> CategoryIds)
         {
             if (ModelState.IsValid)
             {
                 product.Image = await FileHelper.FileLoaderASynx(Image);
+
+                // Kategori ilişkilerini kur
+                product.ProductCategories = CategoryIds.Select(id => new ProductCategory
+                {
+                    CategoryId = id
+                }).ToList();
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            ViewData["Categories"] = new MultiSelectList(_context.Categories.Where(x => x.IsActive), "Id", "Name");
+
             return View(product);
         }
 
-        // GET: Admin/Products/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .Include(p => p.ProductCategories)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (product == null)
-            {
                 return NotFound();
-            }
+
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+
+            // Seçili kategori ID'lerini çıkar
+            var selectedCategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList();
+            ViewData["Categories"] = new MultiSelectList(_context.Categories, "Id", "Name", selectedCategoryIds);
+
             return View(product);
         }
 
-  
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,Product product, IFormFile? Image, bool cbRemoveImage = false)
+        public async Task<IActionResult> Edit(int id, Product product, IFormFile? Image, List<int> CategoryIds, bool cbRemoveImage = false)
         {
             if (id != product.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Veritabanındaki mevcut product'u takip et
+                    var existingProduct = await _context.Products
+                        .Include(p => p.ProductCategories)
+                        .FirstOrDefaultAsync(p => p.Id == id);
+
+                    if (existingProduct == null)
+                        return NotFound();
+
+                    // Temel alanları güncelle
+                    existingProduct.Name = product.Name;
+                    existingProduct.Description = product.Description;
+                    existingProduct.Price = product.Price;
+                    existingProduct.Stock = product.Stock;
+                    existingProduct.IsHome = product.IsHome;
+                    existingProduct.IsActive = product.IsActive;
+                    existingProduct.BrandId = product.BrandId;
+                    existingProduct.OrderNo = product.OrderNo;
+
+                    // Görsel silme veya değiştirme
                     if (cbRemoveImage)
-                        product.Image = string.Empty;
-                    if (Image is not null)
-                        product.Image = await FileHelper.FileLoaderASynx(Image);
-                    _context.Update(product);
+                        existingProduct.Image = string.Empty;
+                    else if (Image is not null)
+                        existingProduct.Image = await FileHelper.FileLoaderASynx(Image);
+
+                    // Kategori ilişkilerini güncelle
+                    existingProduct.ProductCategories.Clear();
+                    foreach (var catId in CategoryIds)
+                    {
+                        existingProduct.ProductCategories.Add(new ProductCategory
+                        {
+                            CategoryId = catId,
+                            ProductId = product.Id
+                        });
+                    }
+
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ProductExists(product.Id))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", product.CategoryId);
+            ViewData["Categories"] = new MultiSelectList(_context.Categories, "Id", "Name", CategoryIds);
+
             return View(product);
         }
 
-        // GET: Admin/Products/Delete/5
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var product = await _context.Products
                 .Include(p => p.Brand)
-                .Include(p => p.Category)
+                .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (product == null)
-            {
                 return NotFound();
-            }
 
             return View(product);
         }
+
 
         // POST: Admin/Products/Delete/5
         [HttpPost, ActionName("Delete")]

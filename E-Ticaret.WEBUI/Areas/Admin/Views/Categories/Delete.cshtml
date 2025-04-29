@@ -1,69 +1,82 @@
 ﻿@model E_Ticaret.Core.Entities.Category
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Kategoriyi Sil";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Kategoriyi Sil</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsTopMenu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsTopMenu)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ParentId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ParentId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderNo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedDate)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <strong>Dikkat!</strong> Bu kategori kalıcı olarak silinecek. Devam etmek istediğinize emin misiniz?
+            </div>
+
+            <dl class="row">
+                <dt class="col-sm-3">Kategori Adı</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Açıklama</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+
+                <dt class="col-sm-3">Görsel</dt>
+                <dd class="col-sm-9">
+                    @if (!string.IsNullOrEmpty(Model.Image))
+                    {
+                        <img src="/img/@Model.Image" height="100" class="img-thumbnail" />
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Aktif mi?</dt>
+                <dd class="col-sm-9">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge badge-success">Evet</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-secondary">Hayır</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Üst Menüde Göster</dt>
+                <dd class="col-sm-9">
+                    @if (Model.IsTopMenu)
+                    {
+                        <span class="badge badge-info">Evet</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-light">Hayır</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Üst Kategori</dt>
+                <dd class="col-sm-9">
+                    @(Model.ParentId == 0 ? "Ana Kategori" : $"ID: {Model.ParentId}")
+                </dd>
+
+                <dt class="col-sm-3">Sıra No</dt>
+                <dd class="col-sm-9">@Model.OrderNo</dd>
+
+                <dt class="col-sm-3">Oluşturulma Tarihi</dt>
+                <dd class="col-sm-9">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post" class="mt-4">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Sil
+                </button>
+                <a asp-action="Index" class="btn btn-secondary ml-2">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </a>
+            </form>
+        </div>
+    </div>
 </div>

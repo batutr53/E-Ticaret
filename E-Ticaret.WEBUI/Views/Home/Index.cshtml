@@ -25,40 +25,92 @@
         </div>
     </div>
 </section>
-
-<!-- Ürün Listesi Bölümü -->
 <section class="products-section">
     <div class="section-header">
         <h2>Sizin İçin Seçtiğimiz Ürünler</h2>
     </div>
 
-    <div class="products-grid">
-        <!-- Ürün 1 -->
 
+    <div class="products-grid">
         @foreach (var item in Model)
         {
             <div class="product-card">
-                <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                    <div class="product-image">
+                <div class="product-image" style="position: relative;">
+                    <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
                         <img src="/img/@item.Image" alt="@item.Name">
-                        <div class="quick-view">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
+                    </a>
+                    <div class="quick-view"
+                         data-name="@item.Name"
+                         data-image="/img/@item.Image"
+                         data-price="@item.Price.ToString("c")"
+                         data-description="@(item.Description ?? "")"
+                         data-productid="@item.Id">
+                        <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-title">@item.Name</h3>
-                        <div class="product-price">@item.Price.ToString("c")</div>
-                    </div>
-                </a>
-
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">@item.Name</h3>
+                    <div class="product-price">@item.Price.ToString("c")</div>
+                </div>
                 <form asp-action="AddItemToCart" asp-controller="Cart">
                     <input type="hidden" name="productId" value="@item.Id" />
                     <input type="hidden" value="1" name="quantity" />
-                    <button class="add-to-cart-btn" type="submit"> <i class="fa-solid fa-cart-plus"></i> Sepete Ekle</button>
+                    <button class="add-to-cart-btn" type="submit">
+                        <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                    </button>
                 </form>
             </div>
         }
-
     </div>
 </section>
 
+<div class="quick-view-modal" id="quickViewModal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <img id="modalImage" src="" alt="Ürün Görseli">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDescription"></p>
+        <div class="modal-price" id="modalPrice"></div>
+        <form id="modalCartForm" asp-action="AddItemToCart" asp-controller="Cart">
+            <input type="hidden" name="productId" id="modalProductId">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="add-to-cart-btn">Sepete Ekle</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+    document.querySelectorAll('.quick-view').forEach(quickView => {
+           quickView.addEventListener('click', function (e) {
+               e.stopPropagation();
+               e.preventDefault();
+
+               const name = this.dataset.name;
+               const image = this.dataset.image;
+               const price = this.dataset.price;
+               const description = this.dataset.description;
+               const productId = this.dataset.productid;
+
+               document.getElementById('modalTitle').textContent = name;
+               document.getElementById('modalImage').src = image;
+               document.getElementById('modalDescription').textContent = description;
+               document.getElementById('modalPrice').textContent = price;
+               document.getElementById('modalProductId').value = productId;
+
+               document.getElementById('quickViewModal').style.display = 'block';
+           });
+       });
+
+       document.querySelector('.close-modal').addEventListener('click', function () {
+           document.getElementById('quickViewModal').style.display = 'none';
+       });
+
+       window.addEventListener('click', function (e) {
+           const modal = document.getElementById('quickViewModal');
+           if (e.target === modal) {
+               modal.style.display = 'none';
+           }
+       });
+    </script>
+
+            

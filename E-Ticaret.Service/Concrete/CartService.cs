@@ -34,9 +34,9 @@ namespace E_Ticaret.Service.Concrete
             }
         }
 
-        public void ClearAll()
+        public void Remove(Cart cart)
         {
-            CartLines.Clear();
+            _context.Carts.Remove(cart);
         }
 
         public void RemoveProduct(Product product)

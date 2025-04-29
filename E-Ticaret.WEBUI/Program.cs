@@ -22,6 +22,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddScoped(typeof(IService<>),typeof(Service<>));
 builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
+builder.Services.AddScoped(typeof(ICartService), typeof(CartService));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

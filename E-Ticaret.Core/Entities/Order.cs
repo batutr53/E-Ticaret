@@ -55,7 +55,9 @@ namespace E_Ticaret.Core.Entities
         Pending,
         Approved,
         PaymentFailed,
-        Completed
+        Completed,
+        OnWay
+
     }
 
 }

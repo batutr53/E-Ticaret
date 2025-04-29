@@ -17,9 +17,12 @@ namespace E_Ticaret.WEBUI.Controllers
         public async Task<IActionResult> Index(int id)
         {
             var category = await _categoryService.GetQueryable()
-                .Include(c => c.Products)
+                .Include(c => c.ProductCategories)
+                    .ThenInclude(pc => pc.Product)
                 .FirstOrDefaultAsync(c => c.Id == id);
+
             return View(category);
         }
+
     }
 }

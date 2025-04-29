@@ -1,7 +1,7 @@
 ﻿@model E_Ticaret.Core.Entities.Category
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Kategori Ekle";
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -82,115 +82,127 @@
             color: #495057;
         }
 </style>
-<h1>Create</h1>
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Yeni Kategori Ekle</h1>
 
-<h4>Category</h4>
-<hr />
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group mb-3">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" type="file" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <form asp-action="Create" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ClassImage" class="control-label d-block mb-2">Kategori Simgesi</label>
-
-                <!-- Gerçek input (gizli) -->
-                <input type="hidden" asp-for="ClassImage" id="realClassImage" />
-
-                <!-- Görünen combobox -->
-                <div class="custom-icon-combobox">
-                    <div class="combobox-display" id="iconComboboxDisplay">
-                        <div class="selected-icon">
-                            <i class="@(string.IsNullOrEmpty(Model?.ClassImage) ? "fas fa-seedling" : Model.ClassImage)"></i>
+                        <div class="form-group">
+                            <label asp-for="Name">Kategori Adı</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
-                        <span>@(string.IsNullOrEmpty(Model?.ClassImage) ? "Simge Seçin" : GetIconName(Model.ClassImage))</span>
-                    </div>
-                    <div class="combobox-arrow"></div>
 
-                    <!-- Açılır menü -->
-                    <div class="icon-dropdown-menu">
-                        @foreach (var icon in AvailableIcons())
-                        {
-                            <div class="icon-option" data-value="@icon.Value">
-                                <i class="@icon.Value"></i>
-                                <span>@icon.Text</span>
+                        <div class="form-group">
+                            <label asp-for="Description">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Image">Kategori Görseli</label>
+                            <input asp-for="Image" type="file" class="form-control-file" />
+                            <span asp-validation-for="Image" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="d-block mb-2">Kategori Simgesi</label>
+                            <input type="hidden" asp-for="ClassImage" id="realClassImage" />
+
+                            <div class="custom-icon-combobox">
+                                <div class="combobox-display" id="iconComboboxDisplay">
+                                    <div class="selected-icon">
+                                        <i id="selectedIcon" class="@(string.IsNullOrEmpty(Model?.ClassImage) ? "fas fa-seedling" : Model.ClassImage)"></i>
+                                    </div>
+                                    <span id="selectedIconText">
+                                        @if (!string.IsNullOrEmpty(Model?.ClassImage))
+                                        {
+                                            var text = AvailableIcons().FirstOrDefault(x => x.Value == Model.ClassImage)?.Text;
+                                            @text
+                                        }
+                                        else
+                                        {
+                                            @:Simge Seçin
+                                        }
+                                    </span>
+                                </div>
+                                <div class="combobox-arrow"></div>
+
+                                <!-- Açılır menü -->
+                                <div class="icon-dropdown-menu">
+                                    @foreach (var icon in AvailableIcons())
+                                    {
+                                        <div class="icon-option" data-value="@icon.Value">
+                                            <i class="@icon.Value"></i>
+                                            <span>@icon.Text</span>
+                                        </div>
+                                    }
+                                </div>
                             </div>
-                        }
-                    </div>
+
+                            <span asp-validation-for="ClassImage" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="IsActive" />
+                            <label class="form-check-label" asp-for="IsActive">Aktif mi?</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" asp-for="IsTopMenu" />
+                            <label class="form-check-label" asp-for="IsTopMenu">Üst Menüde Göster</label>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <label asp-for="ParentId">Üst Kategori</label>
+                            <select asp-for="ParentId" class="form-control" asp-items="@ViewBag.Categories">
+                                <option value="0">Ana Kategori</option>
+                            </select>
+                            <span asp-validation-for="ParentId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="OrderNo">Sıra No</label>
+                            <input asp-for="OrderNo" class="form-control" />
+                            <span asp-validation-for="OrderNo" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Kaydet
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary ml-2">
+                            <i class="fas fa-arrow-left"></i> Geri Dön
+                        </a>
+                    </form>
                 </div>
-
-                <span asp-validation-for="ClassImage" class="text-danger"></span>
             </div>
-
-
-            <div class="form-group form-check mb-3">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
-                </label>
-            </div>
-            <div class="form-group form-check mb-3">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsTopMenu" /> @Html.DisplayNameFor(model => model.IsTopMenu)
-                </label>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="ParentId" class="control-label"></label>
-                <select asp-for="ParentId" class="form-select" asp-items="@ViewBag.Categories">
-                    <option value="0">Ana Kategori</option>
-                </select>
-                <span asp-validation-for="ParentId" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="OrderNo" class="control-label"></label>
-                <input asp-for="OrderNo" class="form-control" />
-                <span asp-validation-for="OrderNo" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Combobox aç/kapa
             $('#iconComboboxDisplay').click(function (e) {
                 e.stopPropagation();
                 $('.icon-dropdown-menu').toggle();
             });
 
-            // Seçenek seçme
             $('.icon-option').click(function () {
                 const iconClass = $(this).data('value');
+                const iconText = $(this).find('span').text();
+
                 $('#realClassImage').val(iconClass);
-                $('#iconComboboxDisplay .selected-icon i').attr('class', iconClass);
-                $('#iconComboboxDisplay span').text($(this).find('span').text());
+                $('#selectedIcon').attr('class', iconClass);
+                $('#selectedIconText').text(iconText);
                 $('.icon-dropdown-menu').hide();
             });
 
-            // Dışarı tıklanınca kapat
             $(document).click(function () {
                 $('.icon-dropdown-menu').hide();
             });
@@ -198,37 +210,34 @@
     </script>
 }
 
+
 @functions {
     public List<SelectListItem> AvailableIcons()
     {
         return new List<SelectListItem>
-    {
-        // Genel Bitki İkonları
-        new SelectListItem { Value = "fa-solid fa-seedling", Text = "Canlı Aranjmanlar" },
-        new SelectListItem { Value = "fa-solid fa-heart", Text = "Gül Aranjmanlar" },
-        new SelectListItem { Value = "fa-solid fa-fan", Text = "Buketler" },
-        new SelectListItem { Value = "fa-solid fa-spa", Text = " Ferforje Aranjmanlar" },
-        new SelectListItem { Value = "fa-solid fa-ring", Text = "Gelin Buketleri" },
-        new SelectListItem { Value = "fa-solid fa-glass-water", Text = "Gelin Masası ve Havuz Çiçk." },
-        new SelectListItem { Value = "fa-solid fa-cross", Text = "ÇELENK & CENAZE" },
-        new SelectListItem { Value = "fa-solid fa-champagne-glasses", Text = "Açılış & Düğün Çiçekleri" },
-        new SelectListItem { Value = "fa-solid fa-gem", Text = "Ölmeyen Güller" },
-        new SelectListItem { Value = "fa-solid fa-earth-americas", Text = " Teraryum Düzenlemesi" },
-        new SelectListItem { Value = "fa-solid fa-seedling", Text = "ORKİDELER" },
-        new SelectListItem { Value = "fa-solid fa-tree", Text = "Bonzailer" },
-        new SelectListItem { Value = "fa-solid fa-leaf", Text = "BİTKİ ÇEŞİTLERİ" },
-        new SelectListItem { Value = "fa-solid fa-truck-fast", Text = "GÖNDERİM TÜRÜ" },
-        new SelectListItem { Value = "fa-solid fa-gift", Text = "KADINLAR GÜNÜ ÇİÇEKLERİ" },
-        new SelectListItem { Value = "fa-solid fa-leaf", Text = "ARANJMANLAR" },
-        new SelectListItem { Value = "fa-solid fa-seedling", Text = "ORKİDELER" },
-        new SelectListItem { Value = "fa-solid fa-fan", Text = "ÇİÇEK BUKETLERİ" },
-        
-    };
+        {
+            new("Canlı Aranjmanlar", "fa-solid fa-seedling"),
+            new("Gül Aranjmanlar", "fa-solid fa-heart"),
+            new("Buketler", "fa-solid fa-fan"),
+            new("Ferforje Aranjmanlar", "fa-solid fa-spa"),
+            new("Gelin Buketleri", "fa-solid fa-ring"),
+            new("Gelin Masası & Havuz Çiçekleri", "fa-solid fa-glass-water"),
+            new("Çelenk & Cenaze", "fa-solid fa-cross"),
+            new("Açılış & Düğün Çiçekleri", "fa-solid fa-champagne-glasses"),
+            new("Ölmeyen Güller", "fa-solid fa-gem"),
+            new("Teraryum Düzenlemesi", "fa-solid fa-earth-americas"),
+            new("Orkideler", "fa-solid fa-seedling"),
+            new("Bonzailer", "fa-solid fa-tree"),
+            new("Bitki Çeşitleri", "fa-solid fa-leaf"),
+            new("Gönderim Türü", "fa-solid fa-truck-fast"),
+            new("Kadınlar Günü Çiçekleri", "fa-solid fa-gift"),
+            new("Aranjmanlar", "fa-solid fa-leaf"),
+            new("Çiçek Buketleri", "fa-solid fa-fan")
+        };
     }
-    // İkon adını göstermek için
+
     public string GetIconName(string iconClass)
     {
-        var icon = AvailableIcons().FirstOrDefault(i => i.Value == iconClass);
-        return icon?.Text ?? "Simge Seçin";
+        return AvailableIcons().FirstOrDefault(i => i.Value == iconClass)?.Text ?? "Simge Seçin";
     }
 }

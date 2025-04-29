@@ -11,27 +11,26 @@
 
     <div class="products-grid">
 
-        @foreach (var item in Model.Products)
+        @foreach (var item in Model.ProductCategories.Select(pc => pc.Product))
         {
             <div class="product-card">
-                <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                    <div class="product-image">
-                        <img src="/img/@item.Image" alt="@item.Name">
-                        <div class="quick-view">
-                            <i class="fa-solid fa-eye"></i>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">@item.Name</h3>
-                        <div class="product-price">@item.Price.ToString("c")</div>
-                    </div>
-                </a>
-                <button class="add-to-cart-btn">
+                <div class="product-image">
+                    <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                        <img src="/img/@item.Image" alt="@item.Name" />
+                    </a>
+                </div>
+
+                <div class="product-info">
+                    <h3 class="product-title">@item.Name</h3>
+                    <div class="product-price">@item.Price.ToString("C")</div>
+                </div>
+
+                <button class="add-to-cart-btn" data-product-id="@item.Id">
                     <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
                 </button>
             </div>
-
         }
+
 
     </div>
 </section>

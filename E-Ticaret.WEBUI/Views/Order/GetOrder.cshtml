@@ -1,89 +1,71 @@
-﻿@model IEnumerable<E_Ticaret.Core.Entities.Order>
-
+﻿@model E_Ticaret.Core.Entities.Order?
+@using E_Ticaret.Core.Enums
 @{
-    ViewData["Title"] = "GetOrder";
+    ViewData["Title"] = "Sipariş Takip";
 }
+<link rel="stylesheet" href="~/css/ordertrack.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
-<h1>GetOrder</h1>
+<div class="order-track-container">
+    <h2 class="order-track-title">Sipariş Takip</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.City)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AddresLine)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CustomerId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubTotal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeliveryFree)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AddresLine)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubTotal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeliveryFree)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <form asp-action="GetOrder" method="post" class="track-form">
+        <input type="text" name="oid" placeholder="Takip Numaranızı Girin..." required />
+        <button type="submit">Takip Et</button>
+    </form>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="error-message">@ViewBag.Error</div>
+    }
+
+    @if (Model != null)
+    {
+        <div class="order-info-box">
+            <div><strong>Sipariş Numarası:</strong> @Model.Oid</div>
+            <div><strong>Tarih:</strong> @Model.OrderDate.ToString("dd MMM yyyy HH:mm")</div>
+            <div><strong>Durum:</strong> <span class="status @Model.OrderStatus.ToString().ToLower()">@Model.OrderStatus.ToText()</span></div>
+        </div>
+
+        <div class="receiver-sender">
+            <div class="info-card">
+                <h4>Gönderici Bilgileri</h4>
+                <p>@Model.SenderFirstName @Model.SenderLastName</p>
+                <p>@Model.SenderPhone</p>
+                <p>@Model.SenderEmail</p>
+            </div>
+            <div class="info-card">
+                <h4>Alıcı Bilgileri</h4>
+                <p>@Model.FirstName @Model.LastName</p>
+                <p>@Model.Phone</p>
+                <p>@Model.City - @Model.AddresLine</p>
+            </div>
+        </div>
+
+        <div class="order-items">
+            <h3>Ürünler</h3>
+            @foreach (var item in Model.OrderItems)
+            {
+                <div class="order-item">
+                    <img src="/img/@item.ProductImage" alt="@item.ProductName" />
+                    <div class="details">
+                        <h4>@item.ProductName</h4>
+                        <p>Adet: @item.Quantity</p>
+                        <p>Birim Fiyat: @item.Price.ToString("C")</p>
+                        <p>Toplam: @((item.Quantity * item.Price).ToString("C"))</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="order-total">
+            <div>Ara Toplam: @Model.SubTotal.ToString("C")</div>
+            <div>Kargo Ücreti: @Model.DeliveryFree.ToString("C")</div>
+            <div class="total-amount">Toplam: @Model.GetTotal().ToString("C")</div>
+        </div>
+    }
+</div>
+
+<style>
+
+</style>

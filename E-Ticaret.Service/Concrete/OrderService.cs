@@ -3,11 +3,6 @@ using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Ticaret.Service.Concrete
 {
@@ -37,10 +32,10 @@ namespace E_Ticaret.Service.Concrete
 
         public async Task<Order> CreateOrder(CreateOrderDTO model)
         {
-           var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.CustomerId == model.CustomerId);
+            var cart = await _context.Carts
+                 .Include(c => c.CartItems)
+                 .ThenInclude(ci => ci.Product)
+                 .FirstOrDefaultAsync(c => c.CustomerId == model.CustomerId);
             if (cart == null) { return new Order(); }
             var items = new List<OrderItem>();
 
@@ -85,6 +80,21 @@ namespace E_Ticaret.Service.Concrete
             await _context.SaveChangesAsync();
             return order;
 
+        }
+
+        public async Task<Order> UpdateOrder(Order order)
+        {
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
+
+        public async Task<Order> GetOrderByOId(string oid)
+        {
+            if (string.IsNullOrEmpty(oid)) return null;
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Oid == oid); 
         }
     }
 }

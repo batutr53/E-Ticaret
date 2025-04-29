@@ -1,6 +1,7 @@
 ﻿using E_Ticaret.Core.Entities;
 using E_Ticaret.Service.Abstract;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticaret.WEBUI.ViewComponents
 {
@@ -15,9 +16,16 @@ namespace E_Ticaret.WEBUI.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync(int categoryId)
         {
-            var products = await _productService.GetAllAsync(x => x.Category!.IsActive && x.CategoryId == categoryId);
+            var products = await _productService.GetQueryable()
+                .Where(p => p.IsActive && p.ProductCategories.Any(pc => pc.CategoryId == categoryId && pc.Category.IsActive))
+                .Include(p => p.Brand)
+                .Include(p => p.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
+                .ToListAsync();
+
             return View(products);
         }
+
     }
 
 

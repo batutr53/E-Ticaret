@@ -37,19 +37,19 @@ mobileCategoryToggles.forEach(toggle => {
 
 
 
-// Hızlı Görünüm İşlevi
-document.querySelectorAll('.quick-view').forEach(quickView => {
-    quickView.addEventListener('click', function (e) {
-        e.stopPropagation(); // Kart hover durumunu etkilemesin
+//// Hızlı Görünüm İşlevi
+//document.querySelectorAll('.quick-view').forEach(quickView => {
+//    quickView.addEventListener('click', function (e) {
+//        e.stopPropagation(); // Kart hover durumunu etkilemesin
 
-        const productCard = this.closest('.product-card');
-        const productTitle = productCard.querySelector('.product-title').textContent;
-        const productImg = productCard.querySelector('.product-image img').src;
+//        const productCard = this.closest('.product-card');
+//        const productTitle = productCard.querySelector('.product-title').textContent;
+//        const productImg = productCard.querySelector('.product-image img').src;
 
-        alert(`Hızlı görünüm: ${productTitle}`);
-        // Gerçek uygulamada burada bir modal açılabilir
-    });
-});
+//        alert(`Hızlı görünüm: ${productTitle}`);
+//        // Gerçek uygulamada burada bir modal açılabilir
+//    });
+//});
 
 // Masaüstü için Navigasyon Açılır Menüsü (gerekirse)
 document.querySelectorAll('.nav-links li').forEach(item => {

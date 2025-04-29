@@ -24,12 +24,16 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             ViewBag.Sliders = await _sliderService.GetAllAsync();
 
-            var result = await _productService.GetQueryable().Where(x => x.IsActive && x.IsHome)
-                .Include(x => x.Category)
+            var result = await _productService.GetQueryable()
+                .Where(x => x.IsActive && x.IsHome)
+                .Include(x => x.ProductCategories)
+                    .ThenInclude(pc => pc.Category)
                 .Include(x => x.Brand)
                 .ToListAsync();
+
             return View(result);
         }
+
 
         public IActionResult About()
         {
