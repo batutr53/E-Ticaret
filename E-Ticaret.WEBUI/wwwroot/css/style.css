@@ -106,8 +106,8 @@ ul {
 
 .phone-number {
     display: flex;
-    align-items: center;
-    font-size: 22px;
+    align-items: flex-start; /* ikon üstten hizalansın */
+    font-size: 18px;
     font-weight: 500;
     color: #333;
 }
@@ -115,6 +115,13 @@ ul {
 .phone-icon {
     margin-right: 10px;
     color: #333;
+    margin-top: 2px; /* ikon yukarıdan biraz boşluk bırakır */
+}
+
+.phone-list {
+    display: flex;
+    flex-direction: column; /* numaraları dikey sırala */
+    gap: 4px; /* numaralar arası boşluk */
 }
 
 .search-container {
