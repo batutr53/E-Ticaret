@@ -98,6 +98,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
+                    if (order.OrderDate.Kind != DateTimeKind.Utc)
+                        order.OrderDate = DateTime.SpecifyKind(order.OrderDate, DateTimeKind.Utc);
+
                     _context.Update(order);
                     await _context.SaveChangesAsync();
                 }

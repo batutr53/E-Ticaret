@@ -1,5 +1,6 @@
 ﻿using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
+using E_Ticaret.Data.Migrations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -93,6 +94,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
+                    if (appUser.CreatedDate.Kind != DateTimeKind.Utc)
+                        appUser.CreatedDate = DateTime.SpecifyKind(appUser.CreatedDate, DateTimeKind.Utc);
+
                     _context.Update(appUser);
                     await _context.SaveChangesAsync();
                 }

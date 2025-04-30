@@ -1,89 +1,113 @@
 ﻿@model IEnumerable<E_Ticaret.Core.Entities.Order>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Siparişler";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">
+        <i class="fas fa-box-open text-primary"></i> Siparişler
+    </h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.City)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AddresLine)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CustomerId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubTotal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeliveryFree)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AddresLine)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubTotal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeliveryFree)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-list-ul"></i> Tüm Siparişler</h6>
+            <a asp-action="Create" class="btn btn-sm btn-success shadow-sm">
+                <i class="fas fa-plus"></i> Yeni Sipariş
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped text-center">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Alıcı</th>
+                            <th>Telefon</th>
+                            <th>Şehir</th>
+                            <th>Adres</th>
+                            <th>Gönderen</th>
+                            <th>Durum</th>
+                            <th>Toplam</th>
+                            <th>İşlem No</th>
+                            <th>OID</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@item.FirstName @item.LastName</td>
+                                <td>@item.Phone</td>
+                                <td>@item.City</td>
+                                <td>@item.AddresLine</td>
+                                <td>
+                                    <span>@item.SenderFirstName @item.SenderLastName</span><br />
+                                    <small class="text-muted">@item.SenderPhone</small>
+                                </td>
+                                <td>
+                                    @switch (item.OrderStatus)
+                                    {
+                                        case E_Ticaret.Core.Entities.OrderStatus.Pending:
+                                            <span class="badge badge-light border text-muted">
+                                                <i class="fas fa-hourglass-half"></i> Bekliyor
+                                            </span>
+                                            break;
+                                        case E_Ticaret.Core.Entities.OrderStatus.Approved:
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check-circle"></i> Onaylandı
+                                            </span>
+                                            break;
+                                        case E_Ticaret.Core.Entities.OrderStatus.PaymentFailed:
+                                            <span class="badge badge-danger">
+                                                <i class="fas fa-times-circle"></i> Hatalı
+                                            </span>
+                                            break;
+                                        case E_Ticaret.Core.Entities.OrderStatus.Completed:
+                                            <span class="badge badge-primary">
+                                                <i class="fas fa-box"></i> Tamamlandı
+                                            </span>
+                                            break;
+                                        case E_Ticaret.Core.Entities.OrderStatus.OnWay:
+                                            <span class="badge badge-warning text-white">
+                                                <i class="fas fa-truck"></i> Yolda
+                                            </span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@(item.SubTotal + item.DeliveryFree) ₺</strong>
+                                </td>
+                                <td>@item.TxnNo</td>
+                                <td>@item.Oid</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" data-toggle="tooltip" title="Detay">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" data-toggle="tooltip" title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" data-toggle="tooltip" title="Sil">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 }
-    </tbody>
-</table>

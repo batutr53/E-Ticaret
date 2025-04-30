@@ -92,6 +92,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
+                    if (brand.CreatedDate.Kind != DateTimeKind.Utc)
+                        brand.CreatedDate = DateTime.SpecifyKind(brand.CreatedDate, DateTimeKind.Utc);
+
                     if (cbRemoveLogo)
                         brand.Logo = string.Empty;
                     if (Logo is not null)

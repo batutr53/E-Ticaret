@@ -1,5 +1,6 @@
 ﻿using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
+using E_Ticaret.Service.Abstract;
 using E_Ticaret.WEBUI.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,10 +14,11 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
     public class CategoriesController : Controller
     {
         private readonly DatabaseContext _context;
-
-        public CategoriesController(DatabaseContext context)
+        private readonly IService<Category> _service;
+        public CategoriesController(DatabaseContext context, IService<Category> service)
         {
             _context = context;
+            _service = service;
         }
 
         // GET: Admin/Categories
@@ -33,8 +35,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _service
+                .GetAsync(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -58,8 +60,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 category.Image = await FileHelper.FileLoaderASynx(Image);
-                await _context.AddAsync(category);
-                await _context.SaveChangesAsync();
+                await _service.AddAsync(category);
+                await _service.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -73,7 +75,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
           
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _service.FindAsync(id.Value);
             if (category == null)
             {
                 return NotFound();
@@ -96,12 +98,15 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
+                    if (category.CreatedDate.Kind != DateTimeKind.Utc)
+                        category.CreatedDate = DateTime.SpecifyKind(category.CreatedDate, DateTimeKind.Utc);
+
                     if (cbRemoveImage)
                         category.Image = string.Empty;
                     if (Image is not null)
                       category.Image = await FileHelper.FileLoaderASynx(Image);
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    _service.Update(category);
+                    await _service.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -128,8 +133,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _service
+                .GetAsync(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -143,7 +148,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _service.FindAsync(id);
             if (category != null)
             {
                 if (!string.IsNullOrEmpty(category.Image))
@@ -159,7 +164,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
         private bool CategoryExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _service.Get(x => x.Id == id) != null;
         }
+
     }
 }

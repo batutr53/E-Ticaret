@@ -81,11 +81,64 @@ namespace E_Ticaret.Service.Concrete
         {
             return _context.SaveChanges();
         }
-
         public async Task<int> SaveChangesAsync()
         {
+            foreach (var entry in _context.ChangeTracker.Entries())
+            {
+                if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
+                {
+                    foreach (var property in entry.Properties)
+                    {
+                        var value = property.CurrentValue;
+
+                        // 1. DateTime (non-nullable)
+                        if (value is DateTime dt && dt.Kind != DateTimeKind.Utc)
+                        {
+                            property.CurrentValue = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+                        }
+
+                        // 2. DateTime? (nullable)
+                        else if (value is DateTime dt2)
+                        {
+                            if (dt2.Kind != DateTimeKind.Utc)
+                            {
+                                property.CurrentValue = DateTime.SpecifyKind(dt2, DateTimeKind.Utc);
+                            }
+                        }
+
+                        // 3. List<DateTime>
+                        else if (value is IEnumerable<DateTime> dtList)
+                        {
+                            property.CurrentValue = dtList
+                                .Select(d => d.Kind == DateTimeKind.Utc ? d : DateTime.SpecifyKind(d, DateTimeKind.Utc))
+                                .ToList();
+                        }
+
+                        // 4. List<DateTime?> ve benzeri IEnumerable<object> koleksiyonlar
+                        else if (value is IEnumerable<object> objList)
+                        {
+                            var converted = objList.Select(item =>
+                            {
+                                if (item is DateTime dtItem && dtItem.Kind != DateTimeKind.Utc)
+                                    return (object)DateTime.SpecifyKind(dtItem, DateTimeKind.Utc);
+
+                                var nullableDate = item as DateTime?;
+                                if (nullableDate.HasValue && nullableDate.Value.Kind != DateTimeKind.Utc)
+                                    return (object?)DateTime.SpecifyKind(nullableDate.Value, DateTimeKind.Utc);
+
+                                return item;
+                            }).ToList();
+
+                            property.CurrentValue = converted;
+                        }
+                    }
+                }
+            }
+
             return await _context.SaveChangesAsync();
         }
+
+
 
         public void Update(T entity)
         {

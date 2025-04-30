@@ -87,7 +87,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,City,District,OpenAddress,IsActive,IsBillingAddress,IsDeliveryAddress,CreatedDate,AddressGuid,UserId")] Address address)
+        public async Task<IActionResult> Edit(int id,Address address)
         {
             if (id != address.Id)
             {
@@ -98,6 +98,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
+                    if (address.CreatedDate.Kind != DateTimeKind.Utc)
+                        address.CreatedDate = DateTime.SpecifyKind(address.CreatedDate, DateTimeKind.Utc);
+
                     _context.Update(address);
                     await _context.SaveChangesAsync();
                 }

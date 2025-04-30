@@ -97,6 +97,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
+                    if (news.CreatedDate.Kind != DateTimeKind.Utc)
+                        news.CreatedDate = DateTime.SpecifyKind(news.CreatedDate, DateTimeKind.Utc);
+
                     if (cbRemoveImage)
                         news.Image = string.Empty;
                     if (Image is not null)
