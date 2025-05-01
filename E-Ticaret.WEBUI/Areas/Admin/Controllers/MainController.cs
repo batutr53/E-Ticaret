@@ -1,13 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using E_Ticaret.Core.DTO;
+using E_Ticaret.Service.Abstract;
+using Microsoft.AspNetCore.Mvc;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class MainController : Controller
     {
-        public IActionResult Index()
+        private readonly IOrderService _orderService;
+
+        public MainController(IOrderService orderService)
         {
-            return View();
+            _orderService = orderService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var summary = await _orderService.GetDashboardSummaryAsync();
+            return View(summary);
         }
     }
 }

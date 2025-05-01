@@ -55,7 +55,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                brand.Logo = await FileHelper.FileLoaderASynx(Logo);
+                brand.Logo = await FileHelper.FileLoaderAsync(Logo);
                 _context.Add(brand);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -98,7 +98,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (cbRemoveLogo)
                         brand.Logo = string.Empty;
                     if (Logo is not null)
-                        brand.Logo = await FileHelper.FileLoaderASynx(Logo);
+                        brand.Logo = await FileHelper.FileLoaderAsync(Logo);
                     _context.Update(brand);
                     await _context.SaveChangesAsync();
                 }

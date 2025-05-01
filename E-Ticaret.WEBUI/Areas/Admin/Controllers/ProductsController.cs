@@ -69,7 +69,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                product.Image = await FileHelper.FileLoaderASynx(Image);
+                product.Image = await FileHelper.FileLoaderAsync(Image);
 
                 // Kategori ilişkilerini kur
                 product.ProductCategories = CategoryIds.Select(id => new ProductCategory
@@ -144,7 +144,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (cbRemoveImage)
                         existingProduct.Image = string.Empty;
                     else if (Image is not null)
-                        existingProduct.Image = await FileHelper.FileLoaderASynx(Image);
+                        existingProduct.Image = await FileHelper.FileLoaderAsync(Image);
 
                     // Kategori ilişkilerini güncelle
                     existingProduct.ProductCategories.Clear();

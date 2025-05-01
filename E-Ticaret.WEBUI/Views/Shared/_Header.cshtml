@@ -1,15 +1,15 @@
 ﻿<div class="top-bar">
     <div class="top-links">
-        <a class="fa-solid fa-info-circle" asp-area="" asp-controller="Home" asp-action="About">Hakkımızda</a>
+        <a asp-area="" asp-controller="Home" asp-action="About">Hakkımızda</a>
     </div>
     <div class="social-icons">
-        @*   <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
-        <a href="#"><i class="fab fa-linkedin-in"></i></a> *@
+        <i class="fa-solid fa-phone phone-icon"></i><a href="tel:+905333612554">+90 533 361 25 54</a> /
+        <a href="tel:+902165945050"> +90 216 594 50 50</a>
     </div>
+   
     <div class="auth-links">
         @*      <a href="#"><i class="fa-solid fa-right-to-bracket"></i> Giriş Yapın</a>
-        <a href="#"><i class="fa-solid fa-user-plus"></i> Üye Olun</a> *@
+            <a href="#"><i class="fa-solid fa-user-plus"></i> Üye Olun</a> *@
         <a asp-controller="Order" asp-action="GetOrder"><i class="fa-solid fa-truck-fast"></i> Sipariş Takibi</a>
     </div>
 </div>
@@ -18,13 +18,7 @@
     <a href="/" class="logo">
         <img src="/img/logo.png" height="150" width="100" alt="Detay Çiçekçilik">
     </a>
-    <div class="phone-number">
-      
-        <div class="phone-list">
-            <div>  <i class="fa-solid fa-phone phone-icon"></i>+90 533 361 25 54</div>
-            <div>  <i class="fa-solid fa-phone phone-icon"></i>+90 216 594 50 50</div>
-        </div>
-    </div>
+
 
     <form action="/Product/">
         <div class="search-container">

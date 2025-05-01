@@ -105,3 +105,12 @@ quantitySelectors.forEach(selector => {
         input.value = value + 1;
     });
 });
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.querySelector(".toggle-submenu");
+    const parentLi = document.querySelector(".mobile-category");
+
+    toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+    parentLi.classList.toggle("open");
+        });
+    });

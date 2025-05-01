@@ -8,7 +8,7 @@
     <h1 class="h3 mb-4 text-gray-800">Kategori Listesi</h1>
 
     <div class="mb-3">
-        <a asp-action="Create" class="btn btn-primary">
+        <a asp-action="Create" class="btn btn-success">
             <i class="fas fa-plus"></i> Yeni Kategori Ekle
         </a>
     </div>
@@ -39,7 +39,7 @@
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.Image))
                                     {
-                                        <img src="/img/@item.Image" height="60" class="img-thumbnail" />
+                                        <img src="/img/@item.Image" style="height: 80px; object-fit: cover;" class="img-thumbnail" />
                                     }
                                     else
                                     {

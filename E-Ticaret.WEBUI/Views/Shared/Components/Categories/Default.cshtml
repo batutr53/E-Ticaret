@@ -13,7 +13,7 @@
                 var hasChildren = categories.Any(x => x.ParentId == category.Id);
                 <li class="category-item @(hasChildren ? "has-children" : "")">
                     <div class="category-header">
-                        <a href="/Category?id=@category.Id" style="padding-left:@(depth * 20)px">
+                        <a href="/Category?id=@category.Id" >
                             <i class="@category.ClassImage"></i>
                             <span class="category-name">@category.Name</span>
                             @if (hasChildren)
@@ -38,71 +38,4 @@
     @{RenderCategoryTree(Model, 0); }
 </div>
 
-<style>
-    .category-menu {
-        width: 100%;
-        font-family: Arial, sans-serif;
-    }
 
-    ul.category-level-0,
-    ul.category-level-1,
-    ul.category-level-2 {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .category-item {
-        position: relative;
-    }
-
-    .category-header {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        background: #f9f9f9;
-    }
-
-    .category-header:hover {
-        background-color: #e0f0e9;
-    }
-
-    .category-header a {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        color: #333;
-        font-size: 14px;
-        width: 100%;
-    }
-
-    .category-name {
-        padding-left: 6px;
-    }
-
-    .arrow {
-        margin-left: auto;
-        font-size: 12px;
-        color: #999;
-    }
-
-    .subcategory-wrapper {
-        display: none;
-        padding-left: 0;
-    }
-
-    .category-item:hover > .subcategory-wrapper {
-        display: block;
-    }
-
-    /* Derinlik içeri kayma */
-    .category-level-1 .category-header { padding-left: 20px; }
-    .category-level-2 .category-header { padding-left: 40px; }
-    .category-level-3 .category-header { padding-left: 60px; }
-
-    /* Border kaldırıldı */
-    .subcategory-wrapper {
-        border: none;
-    }
-
-</style>

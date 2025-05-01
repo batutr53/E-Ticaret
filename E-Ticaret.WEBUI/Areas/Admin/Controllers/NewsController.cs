@@ -59,7 +59,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                news.Image = await FileHelper.FileLoaderASynx(Image);
+                news.Image = await FileHelper.FileLoaderAsync(Image);
                 _context.Add(news);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -103,7 +103,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (cbRemoveImage)
                         news.Image = string.Empty;
                     if (Image is not null)
-                        news.Image = await FileHelper.FileLoaderASynx(Image);
+                        news.Image = await FileHelper.FileLoaderAsync(Image);
                     _context.Update(news);
                     await _context.SaveChangesAsync();
                 }

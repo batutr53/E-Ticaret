@@ -25,7 +25,19 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             return View(await _context.Orders.ToListAsync());
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int orderId, OrderStatus orderStatus)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                return NotFound();
 
+            order.OrderStatus = orderStatus;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
         // GET: Admin/Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {

@@ -1,36 +1,42 @@
 ﻿@model E_Ticaret.Core.Entities.Category
-@{
 
-    ViewData["Title"] = Model.Name ?? "Kategoriler";
+@{
+    ViewData["Title"] = Model?.Name ?? "Kategoriler";
 }
 
 <section class="products-section">
     <div class="section-header">
-        <h2>@Model.Name</h2>
+        <h2>@(Model?.Name ?? "Kategoriler")</h2>
     </div>
 
     <div class="products-grid">
-
-        @foreach (var item in Model.ProductCategories.Select(pc => pc.Product))
+        @if (Model?.ProductCategories != null && Model.ProductCategories.Any())
         {
-            <div class="product-card">
-                <div class="product-image">
-                    <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                        <img src="/img/@item.Image" alt="@item.Name" />
-                    </a>
-                </div>
+            foreach (var item in Model.ProductCategories.Select(pc => pc.Product))
+            {
+                <div class="product-card">
+                    <div class="product-image">
+                        <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                            <img src="/img/@item.Image" alt="@item.Name" />
+                        </a>
+                    </div>
 
-                <div class="product-info">
-                    <h3 class="product-title">@item.Name</h3>
-                    <div class="product-price">@item.Price.ToString("C")</div>
-                </div>
+                    <div class="product-info">
+                        <h3 class="product-title">@item.Name</h3>
+                        <div class="product-price">@item.Price.ToString("C")</div>
+                    </div>
 
-                <button class="add-to-cart-btn" data-product-id="@item.Id">
-                    <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
-                </button>
+                    <button class="add-to-cart-btn" data-product-id="@item.Id">
+                        <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                    </button>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-products-message">
+                <p>Bu kategoriye ait ürün bulunamadı veya kategori bilgisi alınamadı.</p>
             </div>
         }
-
-
     </div>
 </section>

@@ -60,7 +60,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                slider.Image = await FileHelper.FileLoaderASynx(Image);
+                slider.Image = await FileHelper.FileLoaderAsync(Image);
                 _context.Add(slider);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -103,7 +103,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (cbRemoveImage)
                         slider.Image = string.Empty;
                     if (Image is not null)
-                        slider.Image = await FileHelper.FileLoaderASynx(Image);
+                        slider.Image = await FileHelper.FileLoaderAsync(Image);
                     _context.Update(slider);
                     await _context.SaveChangesAsync();
                 }

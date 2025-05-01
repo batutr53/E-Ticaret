@@ -96,5 +96,38 @@ namespace E_Ticaret.Service.Concrete
                 .Include(o => o.OrderItems)
                 .FirstOrDefaultAsync(o => o.Oid == oid); 
         }
+        public async Task<DashboardSummaryDto> GetDashboardSummaryAsync()
+        {
+            var orders = await _context.Orders.ToListAsync();
+
+            var now = DateTime.UtcNow;
+            var last6Months = Enumerable.Range(0, 6)
+                .Select(i => now.AddMonths(-i))
+                .OrderBy(d => d)
+                .ToList();
+
+            var monthlyData = last6Months.Select(date =>
+            {
+                var monthOrders = orders
+                    .Where(o => o.OrderDate.Month == date.Month && o.OrderDate.Year == date.Year);
+                return new
+                {
+                    Month = date.ToString("MMM yyyy"),
+                    Total = monthOrders.Sum(o => o.SubTotal + o.DeliveryFree)
+                };
+            }).ToList();
+
+            return new DashboardSummaryDto
+            {
+                MonthlyEarnings = monthlyData.LastOrDefault()?.Total ?? 0,
+                AnnualEarnings = orders
+                    .Where(o => o.OrderDate.Year == now.Year)
+                    .Sum(o => o.SubTotal + o.DeliveryFree),
+                TaskCompletionPercent = 75, // örnek veri
+                Last6MonthsLabels = monthlyData.Select(m => m.Month).ToList(),
+                Last6MonthsTotals = monthlyData.Select(m => m.Total).ToList()
+            };
+        }
+
     }
 }

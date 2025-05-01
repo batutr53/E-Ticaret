@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Siparişler";
+        var durumlar = Enum.GetValues(typeof(E_Ticaret.Core.Entities.OrderStatus)).Cast<E_Ticaret.Core.Entities.OrderStatus>();
 }
 
 <div class="container-fluid">
@@ -33,7 +34,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.OrderByDescending(x => x.OrderDate))
                         {
                             <tr>
                                 <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
@@ -46,39 +47,33 @@
                                     <small class="text-muted">@item.SenderPhone</small>
                                 </td>
                                 <td>
-                                    @switch (item.OrderStatus)
-                                    {
-                                        case E_Ticaret.Core.Entities.OrderStatus.Pending:
-                                            <span class="badge badge-light border text-muted">
-                                                <i class="fas fa-hourglass-half"></i> Bekliyor
-                                            </span>
-                                            break;
-                                        case E_Ticaret.Core.Entities.OrderStatus.Approved:
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-check-circle"></i> Onaylandı
-                                            </span>
-                                            break;
-                                        case E_Ticaret.Core.Entities.OrderStatus.PaymentFailed:
-                                            <span class="badge badge-danger">
-                                                <i class="fas fa-times-circle"></i> Hatalı
-                                            </span>
-                                            break;
-                                        case E_Ticaret.Core.Entities.OrderStatus.Completed:
-                                            <span class="badge badge-primary">
-                                                <i class="fas fa-box"></i> Tamamlandı
-                                            </span>
-                                            break;
-                                        case E_Ticaret.Core.Entities.OrderStatus.OnWay:
-                                            <span class="badge badge-warning text-white">
-                                                <i class="fas fa-truck"></i> Yolda
-                                            </span>
-                                            break;
-                                    }
+                                    <form asp-action="UpdateStatus" method="post" class="d-flex align-items-center justify-content-center">
+                                        <input type="hidden" name="orderId" value="@item.Id" />
+
+                                        <select name="orderStatus" class="form-control form-control-sm mr-2">
+                                            @foreach (var status in Enum.GetValues(typeof(E_Ticaret.Core.Entities.OrderStatus)).Cast<E_Ticaret.Core.Entities.OrderStatus>())
+                                            {
+                                                var selected = item.OrderStatus == status ? "selected=\"selected\"" : "";
+                                                var statusText = status switch
+                                                {
+                                                    E_Ticaret.Core.Entities.OrderStatus.Pending => "Bekliyor",
+                                                    E_Ticaret.Core.Entities.OrderStatus.Approved => "Onaylandı",
+                                                    E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "Ödeme Hatalı",
+                                                    E_Ticaret.Core.Entities.OrderStatus.Completed => "Tamamlandı",
+                                                    E_Ticaret.Core.Entities.OrderStatus.OnWay => "Yolda",
+                                                    _ => status.ToString()
+                                                };
+                                                @:<option value="@status" @Html.Raw(selected)>@statusText</option>
+                                            }
+                                        </select>
+
+                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="Durumu Güncelle">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </form>
+
                                 </td>
-                                <td>
-                                    <strong>@(item.SubTotal + item.DeliveryFree) ₺</strong>
-                                </td>
-                           
+                                <td><strong>@(item.SubTotal + item.DeliveryFree) ₺</strong></td>
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" data-toggle="tooltip" title="Detay">

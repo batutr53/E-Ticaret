@@ -59,7 +59,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                category.Image = await FileHelper.FileLoaderASynx(Image);
+                category.Image = await FileHelper.FileLoaderAsync(Image);
                 await _service.AddAsync(category);
                 await _service.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -104,7 +104,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (cbRemoveImage)
                         category.Image = string.Empty;
                     if (Image is not null)
-                      category.Image = await FileHelper.FileLoaderASynx(Image);
+                      category.Image = await FileHelper.FileLoaderAsync(Image);
                     _service.Update(category);
                     await _service.SaveChangesAsync();
                 }

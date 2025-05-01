@@ -53,19 +53,16 @@ ul {
 
 .social-icons {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     align-items: center;
 }
 
     .social-icons a {
-        color: #2E8B57;
-        font-size: 18px;
-        transition: transform 0.3s;
+        color: rgba(0,0,0,0.1);
+        font-size: 15px;
     }
 
-        .social-icons a:hover {
-            transform: scale(1.2);
-        }
+      
 
 .auth-links {
     display: flex;
@@ -126,7 +123,8 @@ ul {
 
 .search-container {
     position: relative;
-    width: 350px;
+    width: 500px;
+ 
 }
 
 .search-input {
@@ -469,7 +467,7 @@ ul {
     }
 
     .search-container {
-        width: 250px;
+        width:450px;
     }
 }
 
@@ -496,7 +494,7 @@ ul {
     }
 
     .search-container {
-        width: 60%;
+        width: 100%;
         order: 2;
     }
 
@@ -995,20 +993,14 @@ ul {
 }
 
     .social-icons a {
-        width: 36px;
-        height: 36px;
-        background-color: #333;
-        color: #fff;
-        border-radius: 50%;
+        color: rgb(0, 0, 0);
         display: flex;
         justify-content: center;
         align-items: center;
         text-decoration: none;
-        transition: background-color 0.3s;
     }
 
         .social-icons a:hover {
-            background-color: #2E8B57;
         }
 
 .developer p {
@@ -2122,6 +2114,16 @@ ul {
     .payment-btn-primary:hover, .payment-btn-danger:hover {
         opacity: 0.9;
     }
+.no-products-message {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 18px;
+    color: #e61e4d;
+    background-color: #f9f9f9;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    margin-top: 20px;
+}
 
 @media (max-width: 600px) {
     .payment-result-container {
@@ -2244,7 +2246,10 @@ ul {
     .nav-links {
         display: none;
     }
-
+    .social-icons a{
+        gap: 5px;
+        font-size: 10px;
+    }
     .mobile-menu-btn {
         display: block;
     }
@@ -2293,6 +2298,14 @@ ul {
     .footer-column {
         flex: 0 0 100%;
     }
+    .social-icons a{
+        gap: 5px;
+        font-size: 10px;
+    }
+    .social-icons {
+        gap: 1px;
+        font-size: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -2317,8 +2330,14 @@ ul {
         gap: 10px;
     }
 
+    .social-icons a {
+        gap: 5px;
+        font-size: 10px;
+    }
+
     .social-icons {
-        gap: 10px;
+        gap: 1px;
+        font-size: 10px;
     }
 
     .main-header {
@@ -2349,5 +2368,146 @@ ul {
 
     .banner-subtitle {
         font-size: 1.2rem;
+    }
+}
+
+.category-menu {
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+ul.category-level-0,
+ul.category-level-1,
+ul.category-level-2 {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.category-item {
+    position: relative;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+    .category-header:hover {
+        background-color: #e0f0e92c;
+    }
+
+    .category-header a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        width: 100%;
+    }
+
+.category-name {
+    padding-left: 6px;
+}
+
+.arrow {
+    margin-left: auto;
+    font-size: 12px;
+    color: #999;
+}
+
+.subcategory-wrapper {
+    display: none;
+    padding-left: 0;
+}
+
+.category-item:hover > .subcategory-wrapper {
+    display: block;
+}
+
+/* Derinlik içeri kayma */
+.category-level-1 .category-header {
+    padding-left: 20px;
+}
+
+.category-level-2 .category-header {
+    padding-left: 40px;
+}
+
+.category-level-3 .category-header {
+    padding-left: 60px;
+}
+
+/* Border kaldırıldı */
+.subcategory-wrapper {
+    border: none;
+}
+@media (max-width: 768px) {
+    /* GENEL */
+    .mobile-category-content ul[class^="category-level"] {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .mobile-category-content .category-item {
+    }
+
+    .mobile-category-content .category-header {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        background-color: #1110;
+    }
+
+        .mobile-category-content .category-header a {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-decoration: none;
+        }
+
+            .mobile-category-content .category-header a i {
+                margin-right: 10px;
+                color: #2ecc71;
+                font-size: 16px;
+            }
+
+        .mobile-category-content .category-header:hover {
+            background-color: #1f1f1f00;
+        }
+
+    .mobile-category-content .arrow {
+        margin-left: auto;
+        color: #999;
+        font-size: 13px;
+    }
+
+    /* ALT KATEGORİ DÜZEYLERİ */
+    .mobile-category-content .category-level-1 .category-header {
+        padding-left: 35px;
+        background-color: #15151500;
+    }
+
+    .mobile-category-content .category-level-2 .category-header {
+        padding-left: 50px;
+        background-color: #1b1b1b00;
+    }
+
+    .mobile-category-content .category-level-3 .category-header {
+        padding-left: 65px;
+        background-color: #21212100;
+    }
+
+    /* ALT MENÜLER AÇIK KALSIN */
+    .mobile-category-content .subcategory-wrapper {
+        display: block !important;
+        padding: 0;
+        border: none;
     }
 }

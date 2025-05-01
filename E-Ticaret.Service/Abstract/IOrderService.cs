@@ -15,5 +15,7 @@ namespace E_Ticaret.Service.Abstract
         Task<Order> GetOrderByOId(string oid);
         Task<Order> CreateOrder(CreateOrderDTO order);
         Task<Order> UpdateOrder(Order order);
+
+        Task<DashboardSummaryDto> GetDashboardSummaryAsync();
     }
 }

@@ -44,6 +44,14 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             return View();
         }
+        public IActionResult DelivertWarranty()
+        {
+            return View();
+        }
+        public IActionResult PrivacySecurity()
+        {
+            return View();
+        }
         public async Task<IActionResult> ContactUsPost(Contact contact)
         {
             if (ModelState.IsValid)

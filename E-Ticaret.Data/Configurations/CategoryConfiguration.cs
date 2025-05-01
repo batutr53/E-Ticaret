@@ -10,18 +10,19 @@ namespace E_Ticaret.Data.Configurations
         {
             builder.Property(x => x.Name).IsRequired().HasMaxLength(100).HasColumnType("character varying(100)");
             builder.Property(x => x.Image).IsRequired().HasMaxLength(250).HasColumnType("character varying(250)");
-            builder.HasData(new Category {
+            builder.HasData(new Category
+            {
                 Id = 1,
                 ClassImage = "fa fa-home",
-                Name = "Kategoriler", 
-                Description = "Kategoriler", 
-                IsActive = true, 
-                IsTopMenu = true, 
-                Image= "",
+                Name = "Kategoriler",
+                Description = "Kategoriler",
+                IsActive = true,
+                IsTopMenu = true,
+                Image = "",
                 ParentId = 0,
-                OrderNo = 1, 
+                OrderNo = 1,
                 CreatedDate = new DateTime(2024, 04, 01, 10, 0, 0, DateTimeKind.Utc)
-            },new Category
+            }, new Category
             {
                 Id = 2,
                 ClassImage = "fa fa-gift",
@@ -32,7 +33,31 @@ namespace E_Ticaret.Data.Configurations
                 Image = "",
                 ParentId = 1,
                 OrderNo = 2,
-                CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc) 
+                CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+            }, new Category
+            {
+                Id = 3,
+                ClassImage = "fa-solid fa-seedling",
+                Name = "Canlı Çiçekler",
+                Description = "Canlı Çiçekler",
+                IsActive = true,
+                IsTopMenu = true,
+                Image = "",
+                ParentId = 1,
+                OrderNo = 1,
+                CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+            }, new Category
+            {
+                Id = 4,
+                ClassImage = "fa-solid fa-leaf",
+                Name = "Yapay Çiçekler",
+                Description = "Yapay Çiçekler",
+                IsActive = true,
+                IsTopMenu = true,
+                Image = "",
+                ParentId = 1,
+                OrderNo = 0,
+                CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
             });
         }
     }
