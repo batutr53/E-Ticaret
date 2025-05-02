@@ -56,7 +56,7 @@ namespace E_Ticaret.WEBUI.Controllers
                 .Include(c => c.CartItems)
                 .ThenInclude(ci => ci.Product)
                 .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
-            model.Oid = "SP" + DateTime.UtcNow.Year + DateTime.UtcNow.Month.ToString("D2") + DateTime.UtcNow.Day + DateTime.UtcNow.Minute.ToString("D2") + Request.Cookies["customerId"];
+            model.Oid = "SP" + DateTime.UtcNow.Year + DateTime.UtcNow.Month.ToString("D2") + DateTime.UtcNow.Day.ToString("D2") + DateTime.UtcNow.Minute.ToString("D2") + Request.Cookies["customerId"];
             var result = await _orderService.CreateOrder(model);
             var paymentResult = await Payment(model, cart, model.Oid);
             return Content(paymentResult.Content, "text/html");
@@ -172,14 +172,14 @@ namespace E_Ticaret.WEBUI.Controllers
         [HttpPost("PaymentResponse")]
         public async Task<IActionResult> PaymentResponse([FromForm] PaymentResponseDTO model)
         {
+            var order = await _orderService.GetOrderById(model.Oid);
             if (model.ResultCode == "0000")
             {
-                var userCustomerId = Request.Cookies["customerId"];
-                var order = await _orderService.GetOrderById(model.Oid);
                 order.OrderStatus = OrderStatus.Completed;
                 order.TxnNo = model.TxnNo;
                 order.Oid = model.Oid;
 
+                var customerId = model.Oid.Substring(12);
                 var cart = await _context.Carts
                     .Include(c => c.CartItems)
                     .ThenInclude(ci => ci.Product)
@@ -187,7 +187,10 @@ namespace E_Ticaret.WEBUI.Controllers
 
                 _cartService.Remove(cart);
                 await _orderService.UpdateOrder(order);
+                return View(model);
             }
+            order.OrderStatus = OrderStatus.PaymentFailed;
+            await _orderService.UpdateOrder(order);
             return View(model);
 
         }

@@ -11,6 +11,7 @@ namespace E_Ticaret.Core.DTO
         public decimal MonthlyEarnings { get; set; }
         public decimal AnnualEarnings { get; set; }
         public int TaskCompletionPercent { get; set; }
+        public int TaskPendingPercent { get; set; }
 
         public List<string> Last6MonthsLabels { get; set; } = new();
         public List<decimal> Last6MonthsTotals { get; set; } = new();

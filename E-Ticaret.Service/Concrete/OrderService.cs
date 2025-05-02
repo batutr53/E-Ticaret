@@ -98,7 +98,7 @@ namespace E_Ticaret.Service.Concrete
         }
         public async Task<DashboardSummaryDto> GetDashboardSummaryAsync()
         {
-            var orders = await _context.Orders.ToListAsync();
+            var orders = await _context.Orders.Where(x=>x.OrderStatus == OrderStatus.Completed).ToListAsync();
 
             var now = DateTime.UtcNow;
             var last6Months = Enumerable.Range(0, 6)
@@ -113,7 +113,9 @@ namespace E_Ticaret.Service.Concrete
                 return new
                 {
                     Month = date.ToString("MMM yyyy"),
-                    Total = monthOrders.Sum(o => o.SubTotal + o.DeliveryFree)
+                    Total = monthOrders.Sum(o => o.SubTotal + o.DeliveryFree),
+                    Completed = monthOrders.Count(o => o.OrderStatus == OrderStatus.Completed),
+                    Pending = monthOrders.Count(o => o.OrderStatus == OrderStatus.Pending)
                 };
             }).ToList();
 
@@ -123,7 +125,12 @@ namespace E_Ticaret.Service.Concrete
                 AnnualEarnings = orders
                     .Where(o => o.OrderDate.Year == now.Year)
                     .Sum(o => o.SubTotal + o.DeliveryFree),
-                TaskCompletionPercent = 75, // örnek veri
+                TaskCompletionPercent = monthlyData.Count > 0
+    ? (int)Math.Round((double)(monthlyData.Count(x => x.Completed == (int)OrderStatus.Completed)) - monthlyData.Count)
+    : 0,
+                TaskPendingPercent = monthlyData.Count > 0
+    ? (int)Math.Round((double)(monthlyData.Count(x => x.Pending == (int)OrderStatus.Pending)) - monthlyData.Count)
+    : 0,
                 Last6MonthsLabels = monthlyData.Select(m => m.Month).ToList(),
                 Last6MonthsTotals = monthlyData.Select(m => m.Total).ToList()
             };

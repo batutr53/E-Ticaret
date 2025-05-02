@@ -24,8 +24,6 @@
                         <tr>
                             <th>Tarih</th>
                             <th>Alıcı</th>
-                            <th>Telefon</th>
-                            <th>Şehir</th>
                             <th>Adres</th>
                             <th>Gönderen</th>
                             <th>Durum</th>
@@ -38,9 +36,10 @@
                         {
                             <tr>
                                 <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
-                                <td>@item.FirstName @item.LastName</td>
-                                <td>@item.Phone</td>
-                                <td>@item.City</td>
+                                <td>
+                                    <span> @item.FirstName @item.LastName </span><br/>
+                                   <small class="text-muted"> @item.Phone</small>
+                               </td>
                                 <td>@item.AddresLine</td>
                                 <td>
                                     <span>@item.SenderFirstName @item.SenderLastName</span><br />
