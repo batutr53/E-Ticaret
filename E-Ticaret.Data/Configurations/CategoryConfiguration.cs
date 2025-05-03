@@ -58,7 +58,104 @@ namespace E_Ticaret.Data.Configurations
                 ParentId = 1,
                 OrderNo = 0,
                 CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
-            });
+            }
+            , new Category
+              {
+                  Id = 5,
+                  ClassImage = "fa-solid fa-gift",
+                  Name = "KADINLAR GÜNÜ ÇİÇEKLERİ",
+                  Description = "KADINLAR GÜNÜ ÇİÇEKLERİ",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              } , new Category
+              {
+                  Id = 6,
+                  ClassImage = "fa-solid fa-leaf",
+                  Name = "ARANJMANLAR",
+                  Description = "ARANJMANLAR",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              }, new Category
+              {
+                  Id = 7,
+                  ClassImage = "fa-solid fa-leaf",
+                  Name = "ORKİDELER",
+                  Description = "ORKİDELER",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              }, new Category
+              {
+                  Id = 8,
+                  ClassImage = "fa-solid fa-fan",
+                  Name = "ÇİÇEK BUKETLERİ",
+                  Description = "ÇİÇEK BUKETLERİ",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              }, new Category
+              {
+                  Id = 9,
+                  ClassImage = "fa-solid fa-seedling",
+                  Name = "Canlı Aranjmanlar",
+                  Description = "Canlı Aranjmanlar",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              }, new Category
+              {
+                  Id = 10,
+                  ClassImage = "fa-solid fa-heart",
+                  Name = "Gül Aranjmanları",
+                  Description = "Gül Aranjmanları",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              }, new Category
+              {
+                  Id = 11,
+                  ClassImage = "fa-solid fa-leaf",
+                  Name = "Yapay Aranjmanlar",
+                  Description = "Yapay Aranjmanlar",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              }, new Category
+              {
+                  Id = 12,
+                  ClassImage = "fa-solid fa-leaf",
+                  Name = "Yapay İç Dekorasyon",
+                  Description = "Yapay İç Dekorasyon",
+                  IsActive = true,
+                  IsTopMenu = false,
+                  Image = "",
+                  ParentId = 1,
+                  OrderNo = 0,
+                  CreatedDate = new DateTime(2024, 04, 01, 10, 5, 0, DateTimeKind.Utc)
+              });
         }
     }
 }

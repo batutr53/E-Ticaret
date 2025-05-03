@@ -1093,8 +1093,11 @@ ul {
     margin-bottom: 15px;
 }
 
+.product-detail-btn:hover {
+    background-color: #236b43;
+}
 .product-detail-btn {
-    background-color: #ff005a;
+    background-color: #2E8B57;
     color: white;
     padding: 12px;
     width: 100%;
