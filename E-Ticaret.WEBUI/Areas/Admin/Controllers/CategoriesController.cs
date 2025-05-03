@@ -2,6 +2,7 @@
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.WEBUI.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly DatabaseContext _context;

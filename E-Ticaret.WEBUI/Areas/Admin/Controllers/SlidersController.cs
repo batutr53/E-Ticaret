@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.WEBUI.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class SlidersController : Controller
     {
         private readonly DatabaseContext _context;

@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class OrdersController : Controller
     {
         private readonly DatabaseContext _context;

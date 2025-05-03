@@ -1,12 +1,14 @@
 ﻿using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.WEBUI.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class BrandsController : Controller
     {
         private readonly DatabaseContext _context;

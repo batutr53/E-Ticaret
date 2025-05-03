@@ -1,0 +1,94 @@
+﻿@model E_Ticaret.Core.Entities.AppUser
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Admin Giriş</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/startbootstrap-sb-admin-2@4.1.4/css/sb-admin-2.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-xl-5 col-lg-6 col-md-8">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-4">
+
+                        <div class="text-center mb-4">
+                            <h1 class="h4 text-gray-900">Hoş Geldiniz!</h1>
+                            <p class="mb-0">Lütfen giriş yapınız</p>
+                        </div>
+
+                        <form class="user" asp-action="Login" method="post">
+                            <div class="form-group">
+                                <input asp-for="UserName" class="form-control form-control-user" placeholder="E-posta adresi" />
+                                <span asp-validation-for="UserName" class="text-danger small"></span>
+                            </div>
+                            <div class="form-group">
+                                <input asp-for="Password" class="form-control form-control-user" type="password" placeholder="Şifre" />
+                                <span asp-validation-for="Password" class="text-danger small"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-user btn-block">
+                                Giriş Yap
+                            </button>
+                        </form>
+
+                        <hr />
+                        <div class="text-center">
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Hata Modalı -->
+    <div class="modal fade" id="loginErrorModal" tabindex="-1" role="dialog" aria-labelledby="loginErrorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content border-left-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="loginErrorModalLabel"><i class="fas fa-exclamation-triangle"></i> Giriş Hatası</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Kapat">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ViewBag.LoginError
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Tamam</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scriptler -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var error = "@ViewBag.LoginError";
+            if (error && error.length > 0) {
+                $('#loginErrorModal').modal('show');
+            }
+        });
+    </script>
+
+</body>
+</html>
