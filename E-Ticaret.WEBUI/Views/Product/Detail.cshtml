@@ -1,17 +1,27 @@
 ﻿@model ProductDetailViewModel
 @{
-
     ViewData["Title"] = Model.Product?.Name ?? "Detay";
- }
+}
 
 <div class="product-detail-container">
 
     <div class="product-detail-image-wrapper">
         <div class="product-detail-main-image">
-            <img id="mainImage" src="/img/@Model.Product?.Image" alt="@Model.Product?.Name">
+            <img id="mainImage"
+                 src="/img/@(Model.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png")"
+                 alt="@Model.Product?.Name">
         </div>
+
         <div class="product-detail-thumbnails">
-            <img src="/img/@Model.Product?.Image" class="active" onclick="changeImage(this)">
+            @if (Model.Product?.ProductImages != null && Model.Product.ProductImages.Any())
+            {
+                foreach (var image in Model.Product.ProductImages)
+                {
+                    <img src="/img/@image.ImageUrl"
+                         onclick="changeImage(this)"
+                         class="@(image == Model.Product.ProductImages.First() ? "active" : "")" />
+                }
+            }
         </div>
     </div>
 
@@ -22,8 +32,7 @@
         </div>
 
         <div class="product-detail-order-box">
-            @*<input type="text" placeholder="Gönderim yeri yazınız veya seçiniz">*@
-            <div class="product-detail-price">@Model.Product?.Price.ToString("c") </div>
+            <div class="product-detail-price">@Model.Product?.Price.ToString("c")</div>
             <form asp-action="AddItemToCart" asp-controller="Cart">
                 <input type="hidden" name="productId" value="@Model.Product?.Id" />
                 <input type="number" value="1" name="quantity" />
@@ -31,7 +40,6 @@
             </form>
         </div>
     </div>
-
 </div>
 
 <section class="products-section">
@@ -40,13 +48,13 @@
     </div>
 
     <div class="products-grid">
-
         @foreach (var item in Model.RelatedProducts!)
         {
+            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
                 <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
                     <div class="product-image">
-                        <img src="/img/@item.Image" alt="@item.Name">
+                        <img src="/img/@imageUrl" alt="@item.Name">
                         <div class="quick-view">
                             <i class="fa-solid fa-eye"></i>
                         </div>
@@ -65,3 +73,15 @@
         }
     </div>
 </section>
+
+<script>
+    function changeImage(thumbnail) {
+        document.getElementById("mainImage").src = thumbnail.src;
+
+        // Aktif class'ı güncelle
+        document.querySelectorAll(".product-detail-thumbnails img").forEach(img => {
+            img.classList.remove("active");
+        });
+        thumbnail.classList.add("active");
+    }
+</script>

@@ -318,6 +318,110 @@ namespace E_Ticaret.Data.Migrations
                             Name = "Yapay Çiçekler",
                             OrderNo = 0,
                             ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ClassImage = "fa-solid fa-gift",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "KADINLAR GÜNÜ ÇİÇEKLERİ",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "KADINLAR GÜNÜ ÇİÇEKLERİ",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ClassImage = "fa-solid fa-leaf",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "ARANJMANLAR",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "ARANJMANLAR",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClassImage = "fa-solid fa-leaf",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "ORKİDELER",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "ORKİDELER",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ClassImage = "fa-solid fa-fan",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "ÇİÇEK BUKETLERİ",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "ÇİÇEK BUKETLERİ",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ClassImage = "fa-solid fa-seedling",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "Canlı Aranjmanlar",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "Canlı Aranjmanlar",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ClassImage = "fa-solid fa-heart",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "Gül Aranjmanları",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "Gül Aranjmanları",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ClassImage = "fa-solid fa-leaf",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "Yapay Aranjmanlar",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "Yapay Aranjmanlar",
+                            OrderNo = 0,
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ClassImage = "fa-solid fa-leaf",
+                            CreatedDate = new DateTime(2024, 4, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            Description = "Yapay İç Dekorasyon",
+                            Image = "",
+                            IsActive = true,
+                            IsTopMenu = true,
+                            Name = "Yapay İç Dekorasyon",
+                            OrderNo = 0,
+                            ParentId = 1
                         });
                 });
 
@@ -513,11 +617,6 @@ namespace E_Ticaret.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -563,6 +662,37 @@ namespace E_Ticaret.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("ProductCategory");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Slider", b =>
@@ -665,6 +795,17 @@ namespace E_Ticaret.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.ProductImage", b =>
+                {
+                    b.HasOne("E_Ticaret.Core.Entities.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -688,6 +829,8 @@ namespace E_Ticaret.Data.Migrations
             modelBuilder.Entity("E_Ticaret.Core.Entities.Product", b =>
                 {
                     b.Navigation("ProductCategories");
+
+                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,48 +1,47 @@
 ﻿@model E_Ticaret.Core.Entities.Product
-
 @{
     ViewData["Title"] = "Ürün Ekle";
 }
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
 
 <div class="container-fluid">
-    <!-- Sayfa Başlığı -->
     <h1 class="h3 mb-4 text-gray-800">Yeni Ürün Ekle</h1>
 
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="card shadow mb-4">
                 <div class="card-body">
-                    <form asp-action="Create" enctype="multipart/form-data">
+                    <form asp-action="Create" enctype="multipart/form-data" id="productForm">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="form-group">
                             <label asp-for="Name">Ürün Adı</label>
                             <input asp-for="Name" class="form-control" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
                             <label asp-for="Description">Açıklama</label>
                             <textarea asp-for="Description" class="form-control" rows="4"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
-                            <label asp-for="Image">Ürün Görseli</label>
-                            <input asp-for="Image" type="file" class="form-control-file" />
-                            <span asp-validation-for="Image" class="text-danger"></span>
+                            <label>Ürün Görselleri</label>
+                            <input type="file" id="imageInput" name="Images" multiple class="form-control-file" />
+                            <small class="form-text text-muted">Birden fazla görsel seçebilirsiniz.</small>
                         </div>
 
-                        <div class="form-group">
+                        <div id="previewArea" class="d-flex flex-wrap mt-3"></div>
+                        <input type="hidden" id="imageOrderInput" name="ImageOrder" />
+                        <input type="hidden" id="defaultImageIndex" name="DefaultImageIndex" />
+
+                        <div class="form-group mt-3">
                             <label asp-for="Price">Fiyat</label>
                             <input asp-for="Price" class="form-control" />
-                            <span asp-validation-for="Price" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
                             <label asp-for="Stock">Stok Miktarı</label>
                             <input asp-for="Stock" class="form-control" />
-                            <span asp-validation-for="Stock" class="text-danger"></span>
                         </div>
 
                         <div class="form-check">
@@ -70,13 +69,11 @@
                             <select asp-for="BrandId" class="form-control" asp-items="ViewBag.BrandId">
                                 <option value="">Marka Seçiniz</option>
                             </select>
-                            <span asp-validation-for="BrandId" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
                             <label asp-for="OrderNo">Sıra No</label>
                             <input asp-for="OrderNo" class="form-control" />
-                            <span asp-validation-for="OrderNo" class="text-danger"></span>
                         </div>
 
                         <button type="submit" class="btn btn-success">
@@ -93,7 +90,59 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        const previewArea = document.getElementById("previewArea");
+        const imageInput = document.getElementById("imageInput");
+        let defaultImage = 0;
+
+        imageInput.addEventListener("change", function () {
+            previewArea.innerHTML = "";
+            Array.from(imageInput.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "sortable-item m-2 text-center";
+                    wrapper.dataset.index = index;
+                    wrapper.style.width = "160px";
+                    wrapper.innerHTML = `
+                        <img src="${e.target.result}" class="img-thumbnail mb-1 preview-image" style="height:100px; object-fit:contain;" />
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 mt-1 set-cover-btn" data-index="${index}">
+                            Kapak Yap
+                        </button>
+                    `;
+                    previewArea.appendChild(wrapper);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        $(function () {
+            $("#previewArea").sortable({
+                update: function () {
+                    updateOrder();
+                }
+            });
+        });
+
+        function updateOrder() {
+            const order = [];
+            $("#previewArea .sortable-item").each(function () {
+                order.push($(this).data("index"));
+            });
+            $("#imageOrderInput").val(order.join(","));
+        }
+
+        $(document).on("click", ".set-cover-btn", function () {
+            $(".set-cover-btn").removeClass("btn-success").addClass("btn-outline-secondary").text("Kapak Yap");
+            $(this).removeClass("btn-outline-secondary").addClass("btn-success").text("✓ Kapak");
+            defaultImage = $(this).data("index");
+            $("#defaultImageIndex").val(defaultImage);
+        });
+
+        // İlk yüklemede default ayarları yap
+        $(document).ready(function () {
+            $("#defaultImageIndex").val(0);
+        });
+    </script>
 }

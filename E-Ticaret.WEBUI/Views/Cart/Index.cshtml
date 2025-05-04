@@ -11,10 +11,11 @@
             {
                 @foreach (var item in Model.CartItems)
                 {
-
                     <div class="basket-product-header">
                         <a href="/Product/Detail?productCode=@item.Product.ProductCode">
-                            <img src="/img/@item.Product.Image" alt="@item.Product.Name" class="basket-product-img">
+                            <img src="/img/@(item.Product.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png")"
+                                 alt="@item.Product.Name"
+                                 class="basket-product-img">
                         </a>
 
                         <div class="basket-product-details">
@@ -24,7 +25,7 @@
                                 <!-- Azaltma Formu -->
                                 <form asp-action="DeleteItemFromCart" asp-controller="Cart" class="decrease-form">
                                     <input type="hidden" name="ProductId" value="@item.Product.Id" />
-                                    <input type="hidden" value="1" name="quantity" />
+                                    <input type="hidden" name="quantity" value="1" />
                                     <button type="button" class="basket-quantity-btn" onclick="submitDecrease(this)">-</button>
                                 </form>
 
@@ -33,7 +34,7 @@
                                 <!-- Arttırma Formu -->
                                 <form asp-action="AddItemToCart" asp-controller="Cart" class="increase-form">
                                     <input type="hidden" name="productId" value="@item.Product.Id" />
-                                    <input type="hidden" value="1" name="quantity" />
+                                    <input type="hidden" name="quantity" value="1" />
                                     <button type="button" class="basket-quantity-btn" onclick="submitIncrease(this)">+</button>
                                 </form>
 
@@ -44,33 +45,35 @@
                         <!-- Sil Butonu -->
                         <form asp-action="DeleteItemFromCart" asp-controller="Cart">
                             <input type="hidden" name="ProductId" value="@item.Product.Id" />
-                            <input type="hidden" value="@item.Quantity" name="quantity" />
+                            <input type="hidden" name="quantity" value="@item.Quantity" />
                             <button class="basket-remove-btn" type="submit">
                                 Sil <i class="fas fa-trash"></i>
                             </button>
                         </form>
                     </div>
                 }
+
                 <!-- Order Summary -->
                 <div class="basket-order-summary">
-
-
                     <div class="basket-price-summary">
                         <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
                         <p class="basket-price-item">(KDV Dahil)</p>
-                        <p class="basket-price-value">@(ViewBag.TotalPrice.ToString("c"))</p>
+                        <p class="basket-price-value">@ViewBag.TotalPrice.ToString("c")</p>
 
                         <div class="basket-total-price">
                             <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
-                            <span>@(ViewBag.TotalPrice.ToString("c")) </span>
+                            <span>@ViewBag.TotalPrice.ToString("c")</span>
                         </div>
                     </div>
                 </div>
+
+                <!-- Bottom Nav -->
                 <div class="order-bottom-nav">
-                    <a href="/cart" class="order-back-btn">
-                    </a>
+                    <a href="/cart" class="order-back-btn">Geri Dön</a>
                     <a href="/order" class="order-next-btn">Sonraki Adım</a>
                 </div>
+
+                <!-- Önerilen Ürünler -->
                 @await Component.InvokeAsync("ProductFilter", new { categoryId = 2 })
             }
             else
@@ -79,17 +82,16 @@
             }
         </div>
     </div>
-
-
 </div>
+
 <script>
     function submitDecrease(button) {
-      const form = button.closest("form");
-      form.submit();
+        const form = button.closest("form");
+        form.submit();
     }
 
     function submitIncrease(button) {
-      const form = button.closest("form");
-      form.submit();
+        const form = button.closest("form");
+        form.submit();
     }
 </script>

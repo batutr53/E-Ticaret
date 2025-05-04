@@ -57,6 +57,7 @@ namespace E_Ticaret.WEBUI.Controllers
             var cart = await _serviceCart.GetQueryable()
                 .Include(x => x.CartItems)
                 .ThenInclude(x => x.Product)
+                .ThenInclude(x=>x.ProductImages)
                 .FirstOrDefaultAsync(x => x.CustomerId == Request.Cookies["customerId"]);
             if (cart == null)
             {

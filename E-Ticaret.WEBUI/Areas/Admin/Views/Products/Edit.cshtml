@@ -1,23 +1,24 @@
 ﻿@model E_Ticaret.Core.Entities.Product
 
 @{
-    ViewData["Title"] = "Ürün Düzenle";
+    ViewData["Title"] = "Ürün Güncelle";
 }
 
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+
 <div class="container-fluid">
-    <!-- Sayfa Başlığı -->
     <h1 class="h3 mb-4 text-gray-800">Ürün Güncelle</h1>
 
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="card shadow mb-4">
                 <div class="card-body">
-                    <form asp-action="Edit" enctype="multipart/form-data">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="CreatedDate" />
-                        <input type="hidden" asp-for="Image" />
 
                         <div class="form-group">
                             <label asp-for="Name">Ürün Adı</label>
@@ -32,32 +33,45 @@
                         </div>
 
                         <div class="form-group">
-                            <label asp-for="Image">Ürün Görseli</label>
-                            <input asp-for="Image" type="file" class="form-control-file" />
-                            <span asp-validation-for="Image" class="text-danger"></span>
-                            @if (!string.IsNullOrEmpty(Model.Image))
-                            {
-                                <div class="mt-2">
-                                    <img src="/img/@Model.Image" height="75" class="img-thumbnail" />
-                                    <div class="form-check mt-1">
-                                        <input type="checkbox" name="cbRemoveImage" class="form-check-input" id="removeImage">
-                                        <label for="removeImage" class="form-check-label">Görseli Sil</label>
-                                    </div>
-                                </div>
-                            }
+                            <label>Yeni Görseller Yükle</label>
+                            <input name="Images" type="file" multiple class="form-control-file" />
+                            <small class="form-text text-muted">Birden fazla görsel seçebilirsiniz.</small>
                         </div>
+
+                        @if (Model.ProductImages != null && Model.ProductImages.Any())
+                        {
+                            <div class="form-group">
+                                <label>Mevcut Görseller</label>
+                                <ul id="sortableImages" class="list-unstyled d-flex flex-wrap">
+                                    @foreach (var image in Model.ProductImages.OrderBy(i => i.Order))
+                                    {
+                                        <li class="sortable-item m-2 text-center" data-id="@image.Id" style="width: 160px;">
+                                            <img src="/img/@image.ImageUrl" class="img-thumbnail mb-1" style="height:100px; object-fit:contain; cursor:pointer;" data-toggle="modal" data-target="#zoomModal" data-img="/img/@image.ImageUrl" />
+
+                                            <button type="button" class="btn btn-sm btn-outline-@(image.IsDefault ? "success" : "secondary") w-100 mb-1" onclick="setAsDefault(@Model.Id, @image.Id)">
+                                                @(image.IsDefault ? "✓ Kapak" : "Kapak Yap")
+                                            </button>
+
+                                            <button type="button" class="btn btn-sm btn-danger w-100" onclick="deleteImage('@image.ImageUrl', @Model.Id)">
+                                                <i class="fas fa-trash-alt"></i> Sil
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                                <button type="button" class="btn btn-primary mt-2" onclick="saveImageOrder()">Sıralamayı Kaydet</button>
+
+                                <div class="form-check mt-3">
+                                    <input type="checkbox" name="cbRemoveImage" class="form-check-input" id="removeAll">
+                                    <label for="removeAll" class="form-check-label">Tüm görselleri sil</label>
+                                </div>
+                            </div>
+                        }
 
                         <div class="form-group">
                             <label asp-for="Price">Fiyat</label>
                             <input asp-for="Price" class="form-control" />
                             <span asp-validation-for="Price" class="text-danger"></span>
                         </div>
-
-                        @*<div class="form-group">
-                            <label asp-for="ProductCode">Ürün Kodu</label>
-                            <input asp-for="ProductCode" class="form-control" />
-                            <span asp-validation-for="ProductCode" class="text-danger"></span>
-                        </div>*@
 
                         <div class="form-group">
                             <label asp-for="Stock">Stok Miktarı</label>
@@ -113,6 +127,67 @@
     </div>
 </div>
 
+<!-- Zoom Modal -->
+<div class="modal fade" id="zoomModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center">
+                <img id="zoomModalImage" src="" class="img-fluid rounded" />
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function () {
+            $("#sortableImages").sortable();
+        });
+
+        function saveImageOrder() {
+            const orderedIds = [];
+            $(".sortable-item").each(function () {
+                orderedIds.push($(this).data("id"));
+            });
+
+            fetch('@Url.Action("SaveImageOrder", "Products", new { area = "Admin" })', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(orderedIds)
+            }).then(response => {
+                if (response.ok) {
+                    alert("Sıralama kaydedildi.");
+                    location.reload();
+                }
+            });
+        }
+
+        function setAsDefault(productId, imageId) {
+            fetch('/Admin/Products/SetDefaultImage', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, imageId })
+            }).then(res => {
+                if (res.ok) location.reload();
+            });
+        }
+
+        function deleteImage(imageUrl, productId) {
+            if (!confirm("Bu görseli silmek istediğinize emin misiniz?")) return;
+
+            fetch('/Admin/Products/DeleteImage', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageUrl, productId })
+            }).then(res => {
+                if (res.ok) location.reload();
+            });
+        }
+
+        $('.img-thumbnail').click(function () {
+            const imgSrc = $(this).data("img");
+            $('#zoomModalImage').attr('src', imgSrc);
+        });
+    </script>
 }

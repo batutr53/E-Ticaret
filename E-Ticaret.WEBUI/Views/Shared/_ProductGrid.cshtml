@@ -1,0 +1,37 @@
+﻿@model IEnumerable<E_Ticaret.Core.Entities.Product>
+
+<div class="products-grid">
+    @foreach (var item in Model)
+    {
+        var imageUrl = item.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
+                    ?? item.ProductImages?.FirstOrDefault()?.ImageUrl
+                    ?? "no-image.png";
+
+        <div class="product-card">
+            <div class="product-image" style="position: relative;">
+                <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                    <img src="/img/@imageUrl" alt="@item.Name" />
+                </a>
+                <div class="quick-view"
+                     data-name="@item.Name"
+                     data-image="/img/@imageUrl"
+                     data-price="@item.Price.ToString("c")"
+                     data-description="@(item.Description ?? "")"
+                     data-productid="@item.Id">
+                    <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
+                </div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">@item.Name</h3>
+                <div class="product-price">@item.Price.ToString("c")</div>
+            </div>
+            <form asp-action="AddItemToCart" asp-controller="Cart">
+                <input type="hidden" name="productId" value="@item.Id" />
+                <input type="hidden" name="quantity" value="1" />
+                <button type="submit" class="add-to-cart-btn">
+                    <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                </button>
+            </form>
+        </div>
+    }
+</div>

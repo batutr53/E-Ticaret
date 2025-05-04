@@ -22,6 +22,7 @@ namespace E_Ticaret.WEBUI.Controllers
                     (EF.Functions.ILike(x.Name, $"%{q}%") ||
                      EF.Functions.ILike(x.ProductCode.ToString(), $"%{q}%")))
                 .Include(x => x.Brand)
+                .Include(p => p.ProductImages)
                 .Include(x => x.ProductCategories)
                     .ThenInclude(pc => pc.Category)
                 .ToListAsync();
@@ -35,6 +36,7 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             var product = await _productService.GetQueryable()
                 .Include(x => x.Brand)
+                .Include(p => p.ProductImages)
                 .Include(x => x.ProductCategories)
                     .ThenInclude(pc => pc.Category)
                 .FirstOrDefaultAsync(x => x.ProductCode == productCode && x.IsActive);

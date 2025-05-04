@@ -41,12 +41,15 @@ namespace E_Ticaret.Service.Concrete
 
             foreach (var item in cart.CartItems)
             {
-                var product = await _context.Products.FindAsync(item.ProductId);
+                var product = await _context.Products
+          .Include(p => p.ProductImages)
+          .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+
                 var orderItems = new OrderItem
                 {
                     ProductId = item.ProductId,
                     ProductName = product!.Name,
-                    ProductImage = product.Image!,
+                    ProductImage = product.ProductImages?.FirstOrDefault()?.ImageUrl ?? string.Empty,
                     Price = product.Price,
                     Quantity = item.Quantity
                 };

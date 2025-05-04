@@ -4,6 +4,7 @@
 }
 
 <partial name="_SLider" />
+
 <!-- Özellikler Kutuları -->
 <section class="features-section">
     <div class="features-container">
@@ -25,23 +26,25 @@
         </div>
     </div>
 </section>
+
+@* Sizin İçin Seçilen Ürünler *@
 <section class="products-section">
     <div class="section-header">
         <h2>Sizin İçin Seçtiğimiz Ürünler</h2>
     </div>
 
-
     <div class="products-grid">
         @foreach (var item in Model)
         {
+            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
                 <div class="product-image" style="position: relative;">
                     <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                        <img src="/img/@item.Image" alt="@item.Name">
+                        <img src="/img/@imageUrl" alt="@item.Name">
                     </a>
                     <div class="quick-view"
                          data-name="@item.Name"
-                         data-image="/img/@item.Image"
+                         data-image="/img/@imageUrl"
                          data-price="@item.Price.ToString("c")"
                          data-description="@(item.Description ?? "")"
                          data-productid="@item.Id">
@@ -63,23 +66,25 @@
         }
     </div>
 </section>
+
+@* Canlı Çiçekler *@
 <section class="products-section">
     <div class="section-header">
         <h2>Canlı Çiçekler</h2>
     </div>
 
-
     <div class="products-grid">
-        @foreach (var item in Model.Where(x=>x.ProductCategories.Any(x=>x.CategoryId == 3)))
+        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 3)))
         {
+            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
                 <div class="product-image" style="position: relative;">
                     <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                        <img src="/img/@item.Image" alt="@item.Name">
+                        <img src="/img/@imageUrl" alt="@item.Name">
                     </a>
                     <div class="quick-view"
                          data-name="@item.Name"
-                         data-image="/img/@item.Image"
+                         data-image="/img/@imageUrl"
                          data-price="@item.Price.ToString("c")"
                          data-description="@(item.Description ?? "")"
                          data-productid="@item.Id">
@@ -101,23 +106,25 @@
         }
     </div>
 </section>
+
+@* Yapay Çiçekler *@
 <section class="products-section">
     <div class="section-header">
         <h2>Yapay Çiçekler</h2>
     </div>
 
-
     <div class="products-grid">
         @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 4)))
         {
+            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
                 <div class="product-image" style="position: relative;">
                     <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                        <img src="/img/@item.Image" alt="@item.Name">
+                        <img src="/img/@imageUrl" alt="@item.Name">
                     </a>
                     <div class="quick-view"
                          data-name="@item.Name"
-                         data-image="/img/@item.Image"
+                         data-image="/img/@imageUrl"
                          data-price="@item.Price.ToString("c")"
                          data-description="@(item.Description ?? "")"
                          data-productid="@item.Id">
@@ -139,6 +146,8 @@
         }
     </div>
 </section>
+
+@* Quick View Modal *@
 <div class="quick-view-modal" id="quickViewModal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
@@ -154,38 +163,36 @@
     </div>
 </div>
 
-    <script>
+<script>
     document.querySelectorAll('.quick-view').forEach(quickView => {
-           quickView.addEventListener('click', function (e) {
-               e.stopPropagation();
-               e.preventDefault();
+        quickView.addEventListener('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
 
-               const name = this.dataset.name;
-               const image = this.dataset.image;
-               const price = this.dataset.price;
-               const description = this.dataset.description;
-               const productId = this.dataset.productid;
+            const name = this.dataset.name;
+            const image = this.dataset.image;
+            const price = this.dataset.price;
+            const description = this.dataset.description;
+            const productId = this.dataset.productid;
 
-               document.getElementById('modalTitle').textContent = name;
-               document.getElementById('modalImage').src = image;
-               document.getElementById('modalDescription').textContent = description;
-               document.getElementById('modalPrice').textContent = price;
-               document.getElementById('modalProductId').value = productId;
+            document.getElementById('modalTitle').textContent = name;
+            document.getElementById('modalImage').src = image;
+            document.getElementById('modalDescription').textContent = description;
+            document.getElementById('modalPrice').textContent = price;
+            document.getElementById('modalProductId').value = productId;
 
-               document.getElementById('quickViewModal').style.display = 'block';
-           });
-       });
+            document.getElementById('quickViewModal').style.display = 'block';
+        });
+    });
 
-       document.querySelector('.close-modal').addEventListener('click', function () {
-           document.getElementById('quickViewModal').style.display = 'none';
-       });
+    document.querySelector('.close-modal').addEventListener('click', function () {
+        document.getElementById('quickViewModal').style.display = 'none';
+    });
 
-       window.addEventListener('click', function (e) {
-           const modal = document.getElementById('quickViewModal');
-           if (e.target === modal) {
-               modal.style.display = 'none';
-           }
-       });
-    </script>
-
-            
+    window.addEventListener('click', function (e) {
+        const modal = document.getElementById('quickViewModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+</script>

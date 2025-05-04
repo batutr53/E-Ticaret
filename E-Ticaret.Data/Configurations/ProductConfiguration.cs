@@ -14,9 +14,6 @@ namespace E_Ticaret.Data.Configurations
             builder.Property(x => x.ProductCode).IsRequired().HasDefaultValueSql("nextval('public.product_code_seq')");
             builder.Property(x => x.Price).IsRequired().HasColumnType("decimal(18,2)");
             builder.Property(x => x.Stock).IsRequired();
-            builder.Property(x => x.Image).IsRequired().HasMaxLength(250).HasColumnType("character varying(250)");
-    
-
         }
     }
 }

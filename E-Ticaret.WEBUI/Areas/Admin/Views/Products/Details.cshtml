@@ -1,15 +1,15 @@
 ﻿@model E_Ticaret.Core.Entities.Product
-
 @{
     ViewData["Title"] = "Ürün Detayı";
 }
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
 
 <div class="container-fluid">
-    <!-- Sayfa Başlığı -->
     <h1 class="h3 mb-4 text-gray-800">Ürün Detayları</h1>
 
     <div class="card shadow mb-4">
         <div class="card-body">
+
             <dl class="row">
                 <dt class="col-sm-3">Ürün Adı</dt>
                 <dd class="col-sm-9">@Model.Name</dd>
@@ -17,9 +17,29 @@
                 <dt class="col-sm-3">Açıklama</dt>
                 <dd class="col-sm-9">@Model.Description</dd>
 
-                <dt class="col-sm-3">Görsel</dt>
+                <dt class="col-sm-3">Görseller</dt>
                 <dd class="col-sm-9">
-                    <img src="/img/@Model.Image" height="250" class="img-thumbnail" />
+                    @if (Model.ProductImages != null && Model.ProductImages.Any())
+                    {
+                        <ul id="sortableImages" class="list-unstyled d-flex flex-wrap">
+                            @foreach (var image in Model.ProductImages.OrderBy(i => i.Order))
+                            {
+                                <li class="sortable-item m-2 text-center" data-id="@image.Id" style="width: 160px;">
+                                    <img src="/img/@image.ImageUrl" class="img-thumbnail mb-1"
+                                         style="height:100px; object-fit:contain; cursor: zoom-in;" data-img="/img/@image.ImageUrl"
+                                         onclick="zoomImage(this)" />
+
+                                    <span class="badge badge-@(image.IsDefault ? "success" : "secondary") d-block mt-1">
+                                        @(image.IsDefault ? "✓ Kapak Görsel" : "Kapak Değil")
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Görsel yok</span>
+                    }
                 </dd>
 
                 <dt class="col-sm-3">Fiyat</dt>
@@ -84,3 +104,25 @@
         </div>
     </div>
 </div>
+
+<!-- Zoom Modal -->
+<div class="modal fade" id="zoomModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center">
+                <img id="zoomModalImage" src="" class="img-fluid rounded" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        function zoomImage(img) {
+            const imgSrc = $(img).data("img");
+            $('#zoomModalImage').attr('src', imgSrc);
+            $('#zoomModal').modal('show');
+        }
+    </script>
+}

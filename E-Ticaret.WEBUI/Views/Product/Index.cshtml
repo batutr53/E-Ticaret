@@ -1,18 +1,19 @@
 ﻿@model List<E_Ticaret.Core.Entities.Product>
+
 <section class="products-section">
     <div class="section-header">
         <h2>Sizin İçin Seçtiğimiz Ürünler</h2>
     </div>
 
     <div class="products-grid">
-        <!-- Ürün 1 -->
-
         @foreach (var item in Model)
         {
+            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
+
             <div class="product-card">
                 <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
                     <div class="product-image">
-                        <img src="/img/@item.Image" alt="@item.Name">
+                        <img src="/img/@imageUrl" alt="@item.Name">
                         <div class="quick-view">
                             <i class="fa-solid fa-eye"></i>
                         </div>
@@ -22,14 +23,14 @@
                         <div class="product-price">@item.Price.ToString("c")</div>
                     </div>
                 </a>
-                    <form asp-action="AddItemToCart" asp-controller="Cart">
-                        <input type="hidden" name="productId" value="@item.Id" />
-                        <input type="hidden" value="1" name="quantity" />
-                        <button class="add-to-cart-btn" type="submit"> <i class="fa-solid fa-cart-plus"></i> Sepete Ekle</button>
-                    </form>
+                <form asp-action="AddItemToCart" asp-controller="Cart">
+                    <input type="hidden" name="productId" value="@item.Id" />
+                    <input type="hidden" value="1" name="quantity" />
+                    <button class="add-to-cart-btn" type="submit">
+                        <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                    </button>
+                </form>
             </div>
-
         }
-
     </div>
 </section>

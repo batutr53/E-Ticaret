@@ -5,7 +5,6 @@
 }
 
 <div class="container-fluid">
-    <!-- Sayfa Başlığı -->
     <h1 class="h3 mb-4 text-gray-800">Ürünü Sil</h1>
 
     <div class="card shadow mb-4">
@@ -21,13 +20,29 @@
                 <dt class="col-sm-3">Açıklama</dt>
                 <dd class="col-sm-9">@Model.Description</dd>
 
-                <dt class="col-sm-3">Görsel</dt>
+                <dt class="col-sm-3">Görseller</dt>
                 <dd class="col-sm-9">
-                    <img src="/img/@Model.Image" height="150" class="img-thumbnail" />
+                    @if (Model.ProductImages != null && Model.ProductImages.Any())
+                    {
+                        <div class="d-flex flex-wrap">
+                            @foreach (var img in Model.ProductImages)
+                            {
+                                <div class="m-1 text-center">
+                                    <img src="@($"/img/{img.ImageUrl}")"
+                                         style="width: 100px; height: 100px; object-fit: cover;"
+                                         class="img-thumbnail" />
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Görsel yok</span>
+                    }
                 </dd>
 
                 <dt class="col-sm-3">Fiyat</dt>
-                <dd class="col-sm-9">@Model.Price ₺</dd>
+                <dd class="col-sm-9">@Model.Price.ToString("c")</dd>
 
                 <dt class="col-sm-3">Ürün Kodu</dt>
                 <dd class="col-sm-9">@Model.ProductCode</dd>
@@ -37,26 +52,16 @@
 
                 <dt class="col-sm-3">Aktif mi?</dt>
                 <dd class="col-sm-9">
-                    @if (Model.IsActive)
-                    {
-                        <span class="badge badge-success">Evet</span>
-                    }
-                    else
-                    {
-                        <span class="badge badge-secondary">Hayır</span>
-                    }
+                    <span class="badge badge-@(Model.IsActive ? "success" : "secondary")">
+                        @(Model.IsActive ? "Evet" : "Hayır")
+                    </span>
                 </dd>
 
                 <dt class="col-sm-3">Anasayfada Göster</dt>
                 <dd class="col-sm-9">
-                    @if (Model.IsHome)
-                    {
-                        <span class="badge badge-info">Evet</span>
-                    }
-                    else
-                    {
-                        <span class="badge badge-light">Hayır</span>
-                    }
+                    <span class="badge badge-@(Model.IsHome ? "info" : "light")">
+                        @(Model.IsHome ? "Evet" : "Hayır")
+                    </span>
                 </dd>
 
                 <dt class="col-sm-3">Kategoriler</dt>
@@ -77,10 +82,10 @@
                 <dd class="col-sm-9">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
             </dl>
 
-            <form asp-action="Delete" class="mt-4">
+            <form asp-action="Delete" method="post" class="mt-4">
                 <input type="hidden" asp-for="Id" />
                 <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-trash-alt"></i> Sil
+                    <i class="fas fa-trash-alt"></i> Kalıcı Olarak Sil
                 </button>
                 <a asp-action="Index" class="btn btn-secondary ml-2">
                     <i class="fas fa-arrow-left"></i> Geri Dön
