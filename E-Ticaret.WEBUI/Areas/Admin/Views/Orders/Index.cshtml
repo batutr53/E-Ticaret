@@ -26,6 +26,8 @@
                             <th>Alıcı</th>
                             <th>Adres</th>
                             <th>Gönderen</th>
+                            <th>Teslimat Tarihi</th>
+                            <th>Teslimat Saati</th>
                             <th>Durum</th>
                             <th>Toplam</th>
                             <th>İşlemler</th>
@@ -37,15 +39,22 @@
                             <tr>
                                 <td>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
                                 <td>
-                                    <span> @item.FirstName @item.LastName </span><br/>
-                                   <small class="text-muted"> @item.Phone</small>
-                               </td>
+                                    <span> @item.FirstName @item.LastName </span><br />
+                                    <small class="text-muted"> @item.Phone</small>
+                                </td>
                                 <td>@item.AddresLine</td>
                                 <td>
                                     <span>@item.SenderFirstName @item.SenderLastName</span><br />
                                     <small class="text-muted">@item.SenderPhone</small>
                                 </td>
                                 <td>
+                                    @(item.DeliveryDate?.ToString("dd.MM.yyyy") ?? "-")
+                                </td>
+                                <td>
+                                    @(item.DeliveryTimeRange?.RangeText ?? "-")
+                                </td>
+                                <td>
+
                                     <form asp-action="UpdateStatus" method="post" class="d-flex align-items-center justify-content-center">
                                         <input type="hidden" name="orderId" value="@item.Id" />
 

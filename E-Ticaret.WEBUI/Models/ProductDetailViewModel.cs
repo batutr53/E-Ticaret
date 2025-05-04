@@ -5,6 +5,6 @@ namespace E_Ticaret.WEBUI.Models
     public class ProductDetailViewModel
     {
         public Product? Product { get; set; }
-        public IEnumerable<Product>? RelatedProducts { get; set; }
+        public List<Product>? RelatedProducts { get; set; }
     }
 }

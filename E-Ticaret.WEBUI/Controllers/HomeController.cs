@@ -29,9 +29,11 @@ namespace E_Ticaret.WEBUI.Controllers
                 .Include(x => x.ProductCategories)
                     .ThenInclude(pc => pc.Category)
                 .Include(x => x.Brand)
+                .Include(x => x.ProductImages) 
                 .ToListAsync();
 
             return View(result);
+
         }
 
 

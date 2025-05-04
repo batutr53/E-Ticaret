@@ -31,6 +31,8 @@ namespace E_Ticaret.Core.DTO
         public string? SenderEmail { get; set; }
         public string? Description { get; set; }
         public decimal DeliveryFree { get; set; }
+        public DateTime? DeliveryDate { get; set; } = DateTime.UtcNow;
+        public int? DeliveryTimeRangeId { get; set; }
         public string? FirstLastName
         {
             get => $"{FirstName} {LastName}".Trim();

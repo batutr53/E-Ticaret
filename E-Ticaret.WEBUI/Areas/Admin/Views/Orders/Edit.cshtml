@@ -108,8 +108,8 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="SubTotal">Ara Toplam</label>
-                            <input asp-for="SubTotal" class="form-control" />
-                            <span asp-validation-for="SubTotal" class="text-danger small"></span>
+                            <input asp-for="SubTotal" class="form-control" type="number" step="0.01"  />
+                            <span asp-validation-for="SubTotal" class="text-danger small" type="number" step="0.01" ></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="DeliveryFree">Kargo</label>
@@ -125,6 +125,19 @@
                             <label asp-for="Oid">Sipariş Kodu (OID)</label>
                             <input asp-for="Oid" class="form-control" />
                             <span asp-validation-for="Oid" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="DeliveryDate">Teslimat Tarihi</label>
+                            <input asp-for="DeliveryDate" type="date" class="form-control" />
+                            <span asp-validation-for="DeliveryDate" class="text-danger small"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="DeliveryTimeRangeId">Teslimat Saat Aralığı</label>
+                            <select asp-for="DeliveryTimeRangeId" class="form-control"
+                                    asp-items="ViewBag.DeliveryTimeRanges">
+                                <option value="">-- Saat Aralığı Seçin --</option>
+                            </select>
+                            <span asp-validation-for="DeliveryTimeRangeId" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>

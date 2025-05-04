@@ -21,6 +21,7 @@ namespace E_Ticaret.WEBUI.ViewComponents
                 .Include(p => p.Brand)
                 .Include(p => p.ProductCategories)
                     .ThenInclude(pc => pc.Category)
+                    .Include(x=>x.ProductImages)
                 .ToListAsync();
 
             return View(products);

@@ -1,0 +1,21 @@
+﻿@model E_Ticaret.Core.Entities.DeliveryTimeRange
+@{
+    ViewData["Title"] = "Saat Aralığı Sil";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800 text-danger">Saat Aralığını Sil</h1>
+
+    <div class="card border-left-danger shadow mb-4">
+        <div class="card-body">
+            <h5 class="text-danger">“@Model.RangeText” saat aralığını silmek üzeresiniz.</h5>
+            <p>Bu işlem geri alınamaz. Devam etmek istiyor musunuz?</p>
+
+            <form asp-action="DeleteConfirmed" asp-controller="DeliveryTime" method="post">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Evet, Sil</button>
+                <a href="/Admin/DeliveryTime" class="btn btn-secondary">Vazgeç</a>
+            </form>
+        </div>
+    </div>
+</div>

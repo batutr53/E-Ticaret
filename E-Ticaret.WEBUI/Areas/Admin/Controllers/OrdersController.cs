@@ -25,7 +25,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         // GET: Admin/Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Orders.ToListAsync());
+            return View(await _context.Orders
+    .Include(x => x.DeliveryTimeRange)
+    .ToListAsync());
         }
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int orderId, OrderStatus orderStatus)
@@ -49,13 +51,18 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             }
 
             var order = await _context.Orders
+                .Include(o => o.DeliveryTimeRange) 
+                .Include(o => o.OrderItems)        
+                    .ThenInclude(oi => oi.Product) 
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (order == null)
             {
                 return NotFound();
             }
 
             return View(order);
+
         }
 
         // GET: Admin/Orders/Create
@@ -83,25 +90,30 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         // GET: Admin/Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
             {
-                return NotFound();
-            }
+                var order = await _context.Orders
+                    .Include(o => o.DeliveryTimeRange)
+                    .FirstOrDefaultAsync(o => o.Id == id);
 
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
+                if (order == null)
+                    return NotFound();
+
+                ViewBag.DeliveryTimeRanges = new SelectList(
+                    await _context.DeliveryTimeRanges
+                        .Where(x => x.IsActive)
+                        .OrderBy(x => x.StartTime)
+                        .ToListAsync(),
+                    "Id", "RangeText", order.DeliveryTimeRangeId
+                );
+
+                return View(order);
             }
-            return View(order);
         }
 
-        // POST: Admin/Orders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,OrderDate,FirstName,LastName,Phone,City,AddresLine,CustomerId,OrderStatus,SubTotal,DeliveryFree")] Order order)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, Order order)
         {
             if (id != order.Id)
             {
@@ -114,6 +126,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 {
                     if (order.OrderDate.Kind != DateTimeKind.Utc)
                         order.OrderDate = DateTime.SpecifyKind(order.OrderDate, DateTimeKind.Utc);
+
+                    if (order.DeliveryDate.HasValue && order.DeliveryDate.Value.Kind != DateTimeKind.Utc)
+                        order.DeliveryDate = DateTime.SpecifyKind(order.DeliveryDate.Value, DateTimeKind.Utc);
 
                     _context.Update(order);
                     await _context.SaveChangesAsync();
@@ -131,6 +146,16 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // ❗ ViewBag yeniden yüklenmezse sayfa çökebilir
+            ViewBag.DeliveryTimeRanges = new SelectList(
+                await _context.DeliveryTimeRanges
+                    .Where(x => x.IsActive)
+                    .OrderBy(x => x.StartTime)
+                    .ToListAsync(),
+                "Id", "RangeText", order.DeliveryTimeRangeId
+            );
+
             return View(order);
         }
 

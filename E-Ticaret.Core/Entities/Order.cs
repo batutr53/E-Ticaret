@@ -28,6 +28,9 @@ namespace E_Ticaret.Core.Entities
 
         public string? CustomerId { get; set; }
         public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
+        public DateTime? DeliveryDate { get; set; } = DateTime.UtcNow;
+        public int? DeliveryTimeRangeId { get; set; }
+        public DeliveryTimeRange? DeliveryTimeRange { get; set; }
         public List<OrderItem> OrderItems { get; set; } = new();
         public decimal SubTotal { get; set; }
         public decimal DeliveryFree { get; set; }

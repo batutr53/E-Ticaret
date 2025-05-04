@@ -1,0 +1,39 @@
+﻿@model E_Ticaret.Core.Entities.DeliveryTimeRange
+@{
+    ViewData["Title"] = "Saat Aralığı Düzenle";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Saat Aralığı Düzenle</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Edit" asp-controller="DeliveryTime" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="form-group">
+                    <label>Aralık Metni</label>
+                    <input asp-for="RangeText" class="form-control" placeholder="Örn: 09:00 - 13:30" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Başlangıç Saati</label>
+                    <input asp-for="StartTime" class="form-control" type="time" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Bitiş Saati</label>
+                    <input asp-for="EndTime" class="form-control" type="time" required />
+                </div>
+
+                <div class="form-group form-check">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label class="form-check-label" asp-for="IsActive">Aktif</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+                <a href="/Admin/DeliveryTime" class="btn btn-secondary">İptal</a>
+            </form>
+        </div>
+    </div>
+</div>

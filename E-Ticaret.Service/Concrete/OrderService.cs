@@ -76,7 +76,9 @@ namespace E_Ticaret.Service.Concrete
                 SenderEmail = model.SenderEmail,
                 SenderFirstName = model.SenderFirstName,
                 SenderLastName = model.SenderLastName,
-                SenderPhone = model.SenderPhone
+                SenderPhone = model.SenderPhone,
+                DeliveryDate = model.DeliveryDate,
+                DeliveryTimeRangeId = model.DeliveryTimeRangeId
             };
 
             _context.Orders.Add(order);

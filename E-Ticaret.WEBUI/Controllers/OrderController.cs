@@ -44,12 +44,22 @@ namespace E_Ticaret.WEBUI.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            var deliveryTimes = await _context.DeliveryTimeRanges
+      .Where(x => x.IsActive)
+      .OrderBy(x => x.StartTime)
+      .ToListAsync();
+
+            ViewBag.DeliveryTimeRanges = deliveryTimes;
             return View();
         }
 
         [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder(CreateOrderDTO model)
         {
+            if (model.DeliveryDate.HasValue)
+            {
+                model.DeliveryDate = DateTime.SpecifyKind(model.DeliveryDate.Value, DateTimeKind.Utc);
+            }
             var userCustomerId = Request.Cookies["customerId"];
             model.CustomerId = userCustomerId;
             var cart = await _context.Carts

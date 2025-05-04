@@ -43,6 +43,10 @@
                     <p><strong>Sipariş Kodu (OID):</strong> @Model.Oid</p>
                     <p><strong>Ara Toplam:</strong> @Model.SubTotal ₺</p>
                     <p><strong>Kargo:</strong> @Model.DeliveryFree ₺</p>
+                    <hr />
+                    <p><strong>Teslimat Tarihi:</strong> @(Model.DeliveryDate?.ToString("dd.MM.yyyy") ?? "-")</p>
+                    <p><strong>Teslimat Saat Aralığı:</strong> @(Model.DeliveryTimeRange?.RangeText ?? "-")</p>
+
                     <h5 class="mt-3">Toplam: <span class="badge badge-pill badge-dark">@Model.GetTotal() ₺</span></h5>
                 </div>
             </div>

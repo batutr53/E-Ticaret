@@ -8,54 +8,29 @@ namespace E_Ticaret.WEBUI.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly IService<Product> _productService;
+        private readonly IProductService _productService;
 
-        public ProductController(IService<Product> productService)
+        public ProductController(IProductService productService)
         {
             _productService = productService;
         }
 
         public async Task<IActionResult> Index(string q = "")
         {
-            var result = await _productService.GetQueryable()
-                .Where(x => x.IsActive &&
-                    (EF.Functions.ILike(x.Name, $"%{q}%") ||
-                     EF.Functions.ILike(x.ProductCode.ToString(), $"%{q}%")))
-                .Include(x => x.Brand)
-                .Include(p => p.ProductImages)
-                .Include(x => x.ProductCategories)
-                    .ThenInclude(pc => pc.Category)
-                .ToListAsync();
-
+            var result = await _productService.GetFilteredProductsAsync(q);
             return View(result);
         }
 
-
-
         public async Task<IActionResult> Detail(int productCode)
         {
-            var product = await _productService.GetQueryable()
-                .Include(x => x.Brand)
-                .Include(p => p.ProductImages)
-                .Include(x => x.ProductCategories)
-                    .ThenInclude(pc => pc.Category)
-                .FirstOrDefaultAsync(x => x.ProductCode == productCode && x.IsActive);
+            var product = await _productService.GetProductDetailAsync(productCode);
 
             if (product == null)
             {
-                return View(); // veya NotFound()
+                return View(); 
             }
 
-            // İlgili kategorilerden birini baz alarak benzer ürünleri getir
-            var relatedCategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList();
-
-            var relatedProducts = await _productService.GetQueryable()
-                .Where(x => x.IsActive && x.Id != product.Id &&
-                            x.ProductCategories.Any(pc => relatedCategoryIds.Contains(pc.CategoryId)))
-                .Include(x => x.Brand)
-                .Include(x => x.ProductCategories)
-                    .ThenInclude(pc => pc.Category)
-                .ToListAsync();
+            var relatedProducts = await _productService.GetRelatedProductsAsync(product);
 
             var model = new ProductDetailViewModel
             {
@@ -65,6 +40,5 @@ namespace E_Ticaret.WEBUI.Controllers
 
             return View(model);
         }
-
     }
 }

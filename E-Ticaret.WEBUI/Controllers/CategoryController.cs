@@ -19,6 +19,7 @@ namespace E_Ticaret.WEBUI.Controllers
             var category = await _categoryService.GetQueryable()
                 .Include(c => c.ProductCategories)
                     .ThenInclude(pc => pc.Product)
+                    .ThenInclude(x=>x.ProductImages)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             return View(category);
