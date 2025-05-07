@@ -6,7 +6,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model)
+        @foreach (var item in Model.OrderByDescending(x=>x.Id))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
 

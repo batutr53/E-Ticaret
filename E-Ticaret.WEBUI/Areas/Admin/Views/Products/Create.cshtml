@@ -54,14 +54,49 @@
                             <label class="form-check-label" asp-for="IsHome">Anasayfada Göster</label>
                         </div>
 
+                        <hr />
                         <div class="form-group mt-3">
-                            <label for="categories">Kategoriler</label>
-                            <select name="CategoryIds" multiple class="form-control">
-                                @foreach (var category in (MultiSelectList)ViewData["Categories"])
-                                {
-                                    <option value="@category.Value">@category.Text</option>
-                                }
-                            </select>
+                            <label>Kategoriler</label>
+                            <div class="category-zone d-flex flex-wrap gap-3">
+
+                                <!-- Sol: ID = 1 (Canlı) -->
+                                <div class="category-block main-category">
+                                    <strong>Kategori</strong>
+                                    @foreach (var cat in ((MultiSelectList)ViewData["Categories"]).Where(c => c.Value == "1"))
+                                    {
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input main-category-check" name="CategoryIds" value="1" id="cat_1" checked />
+                                            <label class="form-check-label" for="cat_@cat.Value">@cat.Text</label>
+                                        </div>
+                                    }
+                                </div>
+
+
+                                <!-- Alt Alta: ID = 3,4 (Hediyelik) -->
+                                <div class="category-block main-category">
+                                    <strong>Ana Kategori</strong>
+                                    @foreach (var cat in ((MultiSelectList)ViewData["Categories"]).Where(c => c.Value == "3" || c.Value == "4" || c.Value == "2"))
+                                    {
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input main-category-check" name="CategoryIds" value="@cat.Value" id="cat_@cat.Value" />
+                                            <label class="form-check-label" for="cat_@cat.Value">@cat.Text</label>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Sağ: Diğer kategoriler -->
+                                <div class="category-block sub-category" id="subCategoryContainer">
+                                    <strong>Alt Kategoriler</strong>
+                                    @foreach (var cat in ((MultiSelectList)ViewData["Categories"]).Where(c => !new[] { "1", "2", "3", "4" }.Contains(c.Value)))
+                                    {
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input sub-category-check" name="CategoryIds" value="@cat.Value" id="cat_@cat.Value" />
+                                            <label class="form-check-label" for="cat_@cat.Value">@cat.Text</label>
+                                        </div>
+                                    }
+                                </div>
+
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -90,6 +125,30 @@
 </div>
 
 @section Scripts {
+    <style>
+        .category-block {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            min-width: 200px;
+        }
+
+        .sub-category {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .category-zone .form-check-label {
+            font-size: 14px;
+        }
+
+        .category-block input:checked ~ label {
+            font-weight: bold;
+            color: #28a745;
+        }
+    </style>
+
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         const previewArea = document.getElementById("previewArea");
@@ -98,6 +157,7 @@
 
         imageInput.addEventListener("change", function () {
             previewArea.innerHTML = "";
+
             Array.from(imageInput.files).forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function (e) {
@@ -112,6 +172,7 @@
                         </button>
                     `;
                     previewArea.appendChild(wrapper);
+                    updateOrder();
                 };
                 reader.readAsDataURL(file);
             });
@@ -127,22 +188,37 @@
 
         function updateOrder() {
             const order = [];
-            $("#previewArea .sortable-item").each(function () {
-                order.push($(this).data("index"));
+
+            $("#previewArea .sortable-item").each(function (i) {
+                $(this).attr("data-index", i);
+                order.push(i);
             });
-            $("#imageOrderInput").val(order.join(","));
+
+            const orderString = order.join(",");
+            $("#imageOrderInput").val(orderString);
         }
 
         $(document).on("click", ".set-cover-btn", function () {
             $(".set-cover-btn").removeClass("btn-success").addClass("btn-outline-secondary").text("Kapak Yap");
             $(this).removeClass("btn-outline-secondary").addClass("btn-success").text("✓ Kapak");
+
             defaultImage = $(this).data("index");
             $("#defaultImageIndex").val(defaultImage);
         });
 
-        // İlk yüklemede default ayarları yap
         $(document).ready(function () {
             $("#defaultImageIndex").val(0);
+
+            // Ana kategori seçilince alt kategorileri aç/kapat
+            $(".main-category-check").on("change", function () {
+                const anyMainChecked = $(".main-category-check:checked").length > 0;
+                if (anyMainChecked) {
+                    $("#subCategoryContainer").removeClass("sub-category");
+                } else {
+                    $("#subCategoryContainer").addClass("sub-category");
+                    $(".sub-category-check").prop("checked", false);
+                }
+            });
         });
     </script>
 }

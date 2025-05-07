@@ -12,7 +12,7 @@
     <div class="products-grid">
         @if (Model?.ProductCategories != null && Model.ProductCategories.Any())
         {
-            foreach (var item in Model.ProductCategories.Select(pc => pc.Product))
+            foreach (var item in Model.ProductCategories.Select(pc => pc.Product).OrderByDescending(x => x.Id))
             {
                 <div class="product-card">
                     <div class="product-image">

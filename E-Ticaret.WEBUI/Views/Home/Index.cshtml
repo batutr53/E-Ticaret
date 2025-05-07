@@ -34,7 +34,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model)
+        @foreach (var item in Model.OrderByDescending(x => x.Id))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
@@ -74,7 +74,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 3)))
+        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 3)).OrderByDescending(x => x.Id))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
@@ -114,7 +114,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 4)))
+        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 4)).OrderByDescending(x => x.Id))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
             <div class="product-card">
