@@ -27,6 +27,7 @@ namespace E_Ticaret.Service.Concrete
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
+                .Include(x=>x.DeliveryTimeRange)
                 .FirstOrDefaultAsync(oi => oi.Oid == id);
         }
 
@@ -49,7 +50,7 @@ namespace E_Ticaret.Service.Concrete
                 {
                     ProductId = item.ProductId,
                     ProductName = product!.Name,
-                    ProductImage = product.ProductImages?.FirstOrDefault()?.ImageUrl ?? string.Empty,
+                    ProductImage = product.ProductImages.FirstOrDefault(x => x.IsDefault).ImageUrl ?? product.ProductImages?.FirstOrDefault()?.ImageUrl,
                     Price = product.Price,
                     Quantity = item.Quantity
                 };

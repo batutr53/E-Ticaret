@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.12.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\E-Ticaret.Data\E-Ticaret.Data.csproj" />
   </ItemGroup>
 

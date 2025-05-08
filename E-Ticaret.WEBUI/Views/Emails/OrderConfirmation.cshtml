@@ -1,0 +1,167 @@
+﻿@model OrderEmailModel
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e8b57;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background-color: #f9f9f9;
+            padding: 15px 20px;
+            border-left: 4px solid #2e8b57;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+            .status.pending {
+                background-color: #ff9800;
+            }
+
+            .status.approved {
+                background-color: #2196f3;
+            }
+
+            .status.paymentfailed {
+                background-color: #e53935;
+            }
+
+            .status.completed {
+                background-color: #4caf50;
+            }
+
+        .product {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+            .product img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 10px;
+                margin-right: 15px;
+                border: 1px solid #ddd;
+            }
+
+        .product-info {
+            flex: 1;
+        }
+
+            .product-info strong {
+                font-size: 15px;
+                color: #000;
+            }
+
+            .product-info span {
+                font-size: 14px;
+                color: #555;
+            }
+
+        .total-box {
+            text-align: right;
+            font-size: 16px;
+        }
+
+            .total-box div {
+                margin-top: 4px;
+            }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #aaa;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">Siparişiniz Alındı</div>
+
+        <div class="section">
+            <div><strong>Merhaba @Model.CustomerName,</strong></div>
+            <div>Siparişiniz alınmıştır ve aşağıdaki tarihte teslim edilecektir:</div>
+            <div><strong>Teslim Tarihi:</strong> @Model.DeliveryDate.ToString("dd.MM.yyyy") @Model.DeliveryTimeRange</div>
+            <div><strong>Sipariş No:</strong> @Model.OrderNo</div>
+            <div><strong>Sipariş Tarihi:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</div>
+        </div>
+
+        <div class="section">
+            <div class="info-box">
+                <strong>Gönderici:</strong><br />
+                @Model.SenderFullName<br />
+                @Model.SenderPhone<br />
+                @Model.SenderEmail
+            </div>
+            <div class="info-box">
+                <strong>Alıcı:</strong><br />
+                @Model.ReceiverFullName<br />
+                @Model.ReceiverPhone<br />
+                @Model.ReceiverAddress
+            </div>
+        </div>
+
+        <div class="section">
+            <strong>Ürünler:</strong>
+            @foreach (var item in Model.Products)
+            {
+                <div class="product">
+                    <img src="@item.ImageUrl" alt="@item.Name" />
+                    <div class="product-info">
+                        <strong>@item.Name</strong><br />
+                        <span>@item.Quantity adet - ₺@item.Price.ToString("0.00")</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="section total-box">
+            <div><strong>Ara Toplam:</strong> ₺@Model.SubTotal.ToString("0.00")</div>
+            <div><strong>Kargo:</strong> ₺@Model.DeliveryFee.ToString("0.00")</div>
+            <div><strong>Toplam:</strong> <b>₺@Model.Total.ToString("0.00")</b></div>
+        </div>
+
+        <div class="footer">
+            Bu e-posta otomatik gönderilmiştir, lütfen yanıtlamayınız.<br />
+            © @DateTime.Now.Year Detay Çiçekçilik
+        </div>
+    </div>
+</body>
+</html>

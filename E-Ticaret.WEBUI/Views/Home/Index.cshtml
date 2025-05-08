@@ -36,7 +36,10 @@
     <div class="products-grid">
         @foreach (var item in Model.OrderByDescending(x => x.Id))
         {
-            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
+            var imageUrl = item.ProductImages.FirstOrDefault(x => x.IsDefault)?.ImageUrl
+                 ?? item.ProductImages.FirstOrDefault()?.ImageUrl
+                 ?? "no-image.png";
+
             <div class="product-card">
                 <div class="product-image" style="position: relative;">
                     <a href="/product/detail?productCode=@item.ProductCode" class="product-link">

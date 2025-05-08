@@ -1,13 +1,16 @@
 ﻿using Azure.Core;
 using E_Ticaret.Core.DTO;
+using E_Ticaret.Core.Email;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.Service.Concrete;
 using E_Ticaret.WEBUI.ExtensionMethods;
+using E_Ticaret.WEBUI.Helpers;
 using E_Ticaret.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -21,13 +24,18 @@ namespace E_Ticaret.WEBUI.Controllers
         private readonly DatabaseContext _context;
         private readonly IConfiguration _config;
         private readonly ICartService _cartService;
-
-        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context, ICartService cartService)
+        private readonly IEmailService _emailService;
+        private readonly EmailSettings _emailSettings;
+        private readonly IRazorViewToStringRenderer _razorRenderer;
+        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context, ICartService cartService, IEmailService emailService, IOptions<EmailSettings> emailSettings, IRazorViewToStringRenderer razorRenderer)
         {
             _orderService = orderService;
             _config = config;
             _context = context;
             _cartService = cartService;
+            _emailService = emailService;
+            _emailSettings = emailSettings.Value;
+            _razorRenderer = razorRenderer;
         }
         [HttpGet("GetOrder")]
         public async Task<IActionResult> GetOrder()
@@ -39,7 +47,8 @@ namespace E_Ticaret.WEBUI.Controllers
         public async Task<IActionResult> GetOrder(string oid)
         {
             var result = await _orderService.GetOrderByOId(oid!);
-            if (result == null) { ViewBag.Error = "Böyle bir sipariş bulunamadı."; return View(); };
+            if (result == null) { ViewBag.Error = "Böyle bir sipariş bulunamadı."; return View(); }
+            ;
             return View(result);
         }
         public async Task<IActionResult> Index()
@@ -95,7 +104,7 @@ namespace E_Ticaret.WEBUI.Controllers
             string cv2 = input.CardCvc; // Kart Güvenlik Numarası
                                         // Benzersiz sipariş numarası (Örnek olarak verilmiştir. Kendi sipariş numaranızı
 
-            string oid =OrderId;
+            string oid = OrderId;
             // İşlem tutarı
             string amount = cart.CalculateTotal().ToString("N2", new System.Globalization.CultureInfo("tr-TR"));
             byte installment = input.Installment; // Örnek: 0,2,3,4,5,6,7,8,9,10,11,12
@@ -195,14 +204,94 @@ namespace E_Ticaret.WEBUI.Controllers
                     .ThenInclude(ci => ci.Product)
                     .FirstOrDefaultAsync(c => c.CustomerId == model.Oid.Substring(12));
 
+                var products = (order?.OrderItems ?? new List<OrderItem>())
+        .Select(x => new OrderProductModel
+        {
+            Name = x.ProductName,
+            ImageUrl = ImageHelper.ToFullImageUrl(x.ProductImage ?? "no-image.png"),
+            Quantity = x.Quantity,
+            Price = x.Price
+        }).ToList();
+
                 _cartService.Remove(cart);
                 await _orderService.UpdateOrder(order);
+
+
+                NotifyPaymentSuccess(
+             order.SenderEmail,
+             order.SenderFirstName + " " + order.SenderLastName,
+             order.Oid,
+             order.OrderDate,
+             order.DeliveryDate.Value,
+             order.DeliveryTimeRange.RangeText,
+             products,
+             senderFullName: order.SenderFirstName + " " + order.SenderLastName,
+             senderPhone: order.SenderPhone,
+             senderEmail: order.SenderEmail,
+             receiverFullName: order.FirstName + " " + order.LastName,
+             receiverPhone: order.Phone,
+             receiverAddress: order.City + " - " + order.AddresLine,
+             subTotal: order.SubTotal,
+             deliveryFee: order.DeliveryFree,
+             total: order.GetTotal()
+         );
+
+
                 return View(model);
             }
             order.OrderStatus = OrderStatus.PaymentFailed;
             await _orderService.UpdateOrder(order);
             return View(model);
 
+        }
+
+        [HttpPost]
+        [Route("order/notify-payment")]
+        public IActionResult NotifyPaymentSuccess(
+    string customerEmail,
+    string customerName,
+    string orderNo,
+    DateTime orderDate,
+    DateTime deliveryDate,
+    string DeliveryTimeRange,
+    [FromBody] List<OrderProductModel> products,
+    string senderFullName,
+    string senderPhone,
+    string senderEmail,
+    string receiverFullName,
+    string receiverPhone,
+    string receiverAddress,
+    decimal subTotal,
+    decimal deliveryFee,
+    decimal total
+)
+        {
+            var emailModel = new OrderEmailModel
+            {
+                CustomerName = customerName,
+                OrderNo = orderNo,
+                OrderDate = orderDate,
+                DeliveryDate = deliveryDate,
+                DeliveryTimeRange = DeliveryTimeRange,
+                Products = products,
+                SenderFullName = senderFullName,
+                SenderPhone = senderPhone,
+                SenderEmail = senderEmail,
+                ReceiverFullName = receiverFullName,
+                ReceiverPhone = receiverPhone,
+                ReceiverAddress = receiverAddress,
+                SubTotal = subTotal,
+                DeliveryFee = deliveryFee,
+                Total = total
+            };
+
+
+            var bodyHtml = _razorRenderer.RenderViewToStringAsync("Emails/OrderConfirmation", emailModel).Result;
+
+            _emailService.SendEmailAsync(customerEmail, "Siparişiniz Alındı - Detay Çiçekcilik", bodyHtml);
+            _emailService.SendEmailAsync(_emailSettings.AdminEmail, $"Yeni Sipariş - Detay Çiçekcilik", bodyHtml);
+
+            return Ok();
         }
 
     }

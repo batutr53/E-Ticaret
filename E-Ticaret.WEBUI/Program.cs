@@ -1,3 +1,4 @@
+using E_Ticaret.Core.Email;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.Service.Concrete;
@@ -33,7 +34,9 @@ builder.Services.AddScoped(typeof(IService<>),typeof(Service<>));
 builder.Services.AddScoped(typeof(IOrderService), typeof(OrderService));
 builder.Services.AddScoped(typeof(ICartService), typeof(CartService));
 builder.Services.AddScoped<IProductService, ProductService>();
-
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

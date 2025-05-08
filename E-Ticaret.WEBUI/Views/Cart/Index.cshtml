@@ -13,7 +13,9 @@
                 {
                     <div class="basket-product-header">
                         <a href="/Product/Detail?productCode=@item.Product.ProductCode">
-                            <img src="/img/@(item.Product.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png")"
+                            <img src="/img/@(item.Product.ProductImages.FirstOrDefault(x => x.IsDefault)?.ImageUrl
+                 ?? item.Product.ProductImages.FirstOrDefault()?.ImageUrl
+                 ?? "no-image.png")"
                                  alt="@item.Product.Name"
                                  class="basket-product-img">
                         </a>
