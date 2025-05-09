@@ -1,0 +1,38 @@
+﻿@model E_Ticaret.Core.Entities.Contact
+@{
+    ViewData["Title"] = "İletişim Detayı";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">İletişim Formu Detayı</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Mesaj Bilgileri</h6>
+        </div>
+        <div class="card-body">
+
+            <dl class="row">
+                <dt class="col-sm-3">Ad Soyad</dt>
+                <dd class="col-sm-9">@Model.NameSurname</dd>
+
+                <dt class="col-sm-3">E-Posta</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Telefon</dt>
+                <dd class="col-sm-9">@Model.Phone</dd>
+
+                <dt class="col-sm-3">Konu</dt>
+                <dd class="col-sm-9">@Model.Subject</dd>
+
+                <dt class="col-sm-3">Mesaj</dt>
+                <dd class="col-sm-9">@Model.Message</dd>
+
+                <dt class="col-sm-3">Gönderim Tarihi</dt>
+                <dd class="col-sm-9">@Model.CreatedDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</dd>
+            </dl>
+
+            <a asp-action="Index" class="btn btn-secondary mt-3">Geri Dön</a>
+        </div>
+    </div>
+</div>

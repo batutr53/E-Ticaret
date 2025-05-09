@@ -23,25 +23,65 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         }
 
         // GET: Admin/Orders
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+           E_Ticaret.Core.Entities.OrderStatus? status,
+           string? receiver, string? sender,
+           DateTime? startDate, DateTime? endDate,
+           int page = 1, int pageSize = 10)
         {
-            return View(await _context.Orders
-    .Include(x => x.DeliveryTimeRange)
-    .ToListAsync());
-        }
-        [HttpPost]
-        public async Task<IActionResult> UpdateStatus(int orderId, OrderStatus orderStatus)
-        {
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order == null)
-                return NotFound();
+            var query = _context.Orders
+                .Include(x => x.DeliveryTimeRange)
+                .AsQueryable();
 
-            order.OrderStatus = orderStatus;
-            _context.Update(order);
-            await _context.SaveChangesAsync();
+            if (status.HasValue)
+                query = query.Where(x => x.OrderStatus == status.Value);
 
-            return RedirectToAction("Index");
+            if (!string.IsNullOrWhiteSpace(receiver))
+            {
+                var receiverLower = receiver.ToLower();
+                query = query.Where(x =>
+                    x.FirstName.ToLower().Contains(receiverLower) ||
+                    x.LastName.ToLower().Contains(receiverLower) ||
+                    x.Phone.ToLower().Contains(receiverLower));
+            }
+
+            if (!string.IsNullOrWhiteSpace(sender))
+            {
+                var senderLower = sender.ToLower();
+                query = query.Where(x =>
+                    x.SenderFirstName.ToLower().Contains(senderLower) ||
+                    x.SenderLastName.ToLower().Contains(senderLower) ||
+                    x.SenderPhone.ToLower().Contains(senderLower));
+            }
+
+            if (startDate.HasValue)
+                query = query.Where(x => x.OrderDate >= DateTime.SpecifyKind(startDate.Value, DateTimeKind.Utc));
+
+            if (endDate.HasValue)
+            {
+                var endOfDayUtc = DateTime.SpecifyKind(endDate.Value.Date.AddDays(1).AddSeconds(-1), DateTimeKind.Utc);
+                query = query.Where(x => x.OrderDate <= endOfDayUtc);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var pagedOrders = await query
+                .OrderByDescending(x => x.OrderDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.StatusFilter = status;
+            ViewBag.ReceiverFilter = receiver;
+            ViewBag.SenderFilter = sender;
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            return View(pagedOrders);
         }
+
         // GET: Admin/Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {

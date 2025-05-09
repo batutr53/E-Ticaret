@@ -23,17 +23,44 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? name, bool? isActive, bool? isHome, int? brandId, int page = 1, int pageSize = 20)
         {
-            var products = await _context.Products
-                .Include(p => p.Brand)
-                .Include(p => p.ProductImages) 
-                .Include(p => p.ProductCategories)
-                    .ThenInclude(pc => pc.Category)
+            var query = _context.Products
+                .Include(x => x.Brand)
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories).ThenInclude(pc => pc.Category)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+                query = query.Where(p => p.Name.Contains(name));
+
+            if (isActive.HasValue)
+                query = query.Where(p => p.IsActive == isActive);
+
+            if (isHome.HasValue)
+                query = query.Where(p => p.IsHome == isHome);
+
+            if (brandId.HasValue)
+                query = query.Where(p => p.BrandId == brandId);
+
+            var totalCount = await query.CountAsync();
+            var pagedProducts = await query
+                .OrderByDescending(p => p.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return View(products);
+            var brands = await _context.Brands.ToListAsync();
+
+            ViewBag.BrandList = new SelectList(brands, "Id", "Name", brandId);
+            ViewBag.NameFilter = name;
+            ViewBag.IsActiveFilter = isActive?.ToString().ToLower();
+            ViewBag.IsHomeFilter = isHome?.ToString().ToLower();
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            return View(pagedProducts);
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {

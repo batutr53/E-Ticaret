@@ -8,7 +8,9 @@
     <div class="product-detail-image-wrapper">
         <div class="product-detail-main-image">
             <img id="mainImage"
-                 src="/img/@(Model.Product?.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png")"
+                 src="/img/@(Model.Product?.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
+                 ?? Model.Product?.ProductImages?.FirstOrDefault()?.ImageUrl
+                 ?? "no-image.png")"
                  alt="@Model.Product?.Name">
         </div>
 
@@ -19,7 +21,8 @@
                 {
                     <img src="/img/@image.ImageUrl"
                          onclick="changeImage(this)"
-                         class="@(image == Model.Product.ProductImages.First() ? "active" : "")" />
+                         class="@(image.IsDefault || image == Model.Product.ProductImages.FirstOrDefault() ? "active" : "")" />
+
                 }
             }
         </div>
@@ -50,7 +53,9 @@
     <div class="products-grid">
         @foreach (var item in Model.RelatedProducts!)
         {
-            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
+            var imageUrl = item.ProductImages.FirstOrDefault(x => x.IsDefault)?.ImageUrl
+                 ?? item.ProductImages.FirstOrDefault()?.ImageUrl
+                 ?? "no-image.png";
             <div class="product-card">
                 <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
                     <div class="product-image">

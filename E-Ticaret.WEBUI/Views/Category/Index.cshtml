@@ -17,7 +17,9 @@
                 <div class="product-card">
                     <div class="product-image">
                         <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                            <img src="/img/@(item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png")"
+                            <img src="/img/@(item.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
+                 ?? item.ProductImages?.FirstOrDefault()?.ImageUrl
+                 ?? "no-image.png")"
                                  alt="@item.Name" />
                         </a>
                     </div>

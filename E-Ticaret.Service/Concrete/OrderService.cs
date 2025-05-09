@@ -50,7 +50,7 @@ namespace E_Ticaret.Service.Concrete
                 {
                     ProductId = item.ProductId,
                     ProductName = product!.Name,
-                    ProductImage = product.ProductImages.FirstOrDefault(x => x.IsDefault).ImageUrl ?? product.ProductImages?.FirstOrDefault()?.ImageUrl,
+                    ProductImage = product.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl ?? product.ProductImages?.FirstOrDefault()?.ImageUrl,
                     Price = product.Price,
                     Quantity = item.Quantity
                 };

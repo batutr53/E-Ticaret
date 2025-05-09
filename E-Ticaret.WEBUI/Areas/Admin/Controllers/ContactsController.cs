@@ -19,5 +19,15 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             return View(_context.Contacts);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int id)
+        {
+            var contact = await _context.Contacts.FindAsync(id);
+            if (contact == null) return View();
+
+            return View(contact);
+        }
+
     }
 }

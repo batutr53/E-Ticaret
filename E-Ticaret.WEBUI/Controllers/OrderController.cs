@@ -194,7 +194,7 @@ namespace E_Ticaret.WEBUI.Controllers
             var order = await _orderService.GetOrderById(model.Oid);
             if (model.ResultCode == "0000")
             {
-                order.OrderStatus = OrderStatus.Completed;
+                order.OrderStatus = OrderStatus.Approved;
                 order.TxnNo = model.TxnNo;
                 order.Oid = model.Oid;
 

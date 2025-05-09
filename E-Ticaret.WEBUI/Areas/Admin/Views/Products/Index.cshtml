@@ -1,16 +1,60 @@
 ﻿@model IEnumerable<E_Ticaret.Core.Entities.Product>
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
     ViewData["Title"] = "Ürün Listesi";
+    string nameFilter = ViewBag.NameFilter ?? "";
+    string isActiveFilter = ViewBag.IsActiveFilter ?? "";
+    string isHomeFilter = ViewBag.IsHomeFilter ?? "";
 }
-
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Ürün Listesi</h1>
-
     <div class="mb-3">
         <a asp-action="Create" class="btn btn-success">
             <i class="fas fa-plus"></i> Yeni Ürün Ekle
         </a>
     </div>
+    @using (Html.BeginForm("Index", "Products", FormMethod.Get, new { @class = "mb-4" }))
+    {
+        <div class="card shadow-sm p-3">
+            <div class="form-row align-items-end">
+                <div class="form-group col-md-3">
+                    <label>Ürün Adı</label>
+                    <input type="text" name="name" value="@nameFilter" class="form-control" />
+                </div>
+
+                <div class="form-group col-md-2">
+                    <label>Aktif</label>
+                    <select name="isActive" class="form-control">
+                        <option value="">Tümü</option>
+                        <option value="true" selected="@(string.Equals(isActiveFilter, "true", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Evet</option>
+                        <option value="false" selected="@(string.Equals(isActiveFilter, "false", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Hayır</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-2">
+                    <label>Anasayfa</label>
+                    <select name="isHome" class="form-control">
+                        <option value="">Tümü</option>
+                        <option value="true" selected="@(string.Equals(isHomeFilter, "true", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Evet</option>
+                        <option value="false" selected="@(string.Equals(isHomeFilter, "false", StringComparison.OrdinalIgnoreCase) ? "selected" : null)">Hayır</option>
+
+                    </select>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>Marka</label>
+                    @Html.DropDownList("brandId", ViewBag.BrandList as SelectList, "Tümü", new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Filtrele
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
 
     <div class="card shadow mb-4">
         <div class="card-body">
@@ -18,17 +62,14 @@
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
+                            <th>Ürün Kodu</th>
                             <th>Ad</th>
-                            <th>Açıklama</th>
                             <th>Görsel</th>
                             <th>Fiyat</th>
-                            <th>Ürün Kodu</th>
                             <th>Stok</th>
                             <th>Aktif</th>
                             <th>Anasayfa</th>
                             <th>Kategoriler</th>
-                            <th>Marka</th>
-                            <th>Sıra No</th>
                             <th>Oluşturulma</th>
                             <th>İşlemler</th>
                         </tr>
@@ -38,8 +79,9 @@
                         {
                             var defaultImage = item.ProductImages?.FirstOrDefault(x => x.IsDefault) ?? item.ProductImages?.FirstOrDefault();
                             <tr>
+                                <td>@item.ProductCode</td>
+
                                 <td>@item.Name</td>
-                                <td>@item.Description</td>
                                 <td>
                                     @if (defaultImage != null)
                                     {
@@ -91,7 +133,6 @@
                                     }
                                 </td>
                                 <td>@item.Price ₺</td>
-                                <td>@item.ProductCode</td>
                                 <td>@item.Stock</td>
                                 <td>
                                     @if (item.IsActive)
@@ -114,8 +155,6 @@
                                     }
                                 </td>
                                 <td>@string.Join(", ", item.ProductCategories.Select(x => x.Category.Name))</td>
-                                <td>@item.Brand?.Name</td>
-                                <td>@item.OrderNo</td>
                                 <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
                                 <td>
                                     <div class="btn-group">
@@ -127,10 +166,32 @@
                             </tr>
                         }
                     </tbody>
+
                 </table>
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                var active = (ViewBag.CurrentPage == i) ? "active" : "";
+                                <li class="page-item @active">
+                                    <a class="page-link" href="@Url.Action("Index", new {
+           page = i,
+           name = ViewBag.NameFilter,
+           isActive = ViewBag.IsActiveFilter,
+           isHome = ViewBag.IsHomeFilter
+       })">@i</a>
+</li>
+}
+                        </ul>
+                    </nav>
+                }
             </div>
         </div>
     </div>
+
+
 </div>
 
 @section Scripts {
