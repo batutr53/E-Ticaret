@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using Microsoft.AspNetCore.Authorization;
+using E_Ticaret.WEBUI.Areas.Admin.Models;
+using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
@@ -16,11 +20,82 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
     public class OrdersController : Controller
     {
         private readonly DatabaseContext _context;
-
-        public OrdersController(DatabaseContext context)
+        private readonly IConfiguration _config;
+        public OrdersController(DatabaseContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
+
+
+        // GET: Admin/Orders/Cancel
+        public async Task<IActionResult> Cancel(CancelOrderModel model)
+        {
+            // TRPOS Tarafından verilen API bilgileri
+            string publicKey = _config["TrPosAPI:PublicKey"];
+            string apiKey = _config["TrPosAPI:APIKey"];
+            string secretKey = _config["TrPosAPI:SecretKey"];
+            //Her işlemde benzersiz gönderilmesi gereken rnd değeri
+            string rnd = DateTime.Now.Ticks.ToString();
+            // TRPOS tarafından verilen işlem numarası
+            string txnNo = model.txnNo;
+            // Sizin tarafınızdan oluşturulan sipariş numarası
+            string oid = model.oid;
+            // Müşteriye ait IP numarası
+            string userIP = model.userIP ?? "1.1.1.1";
+            // Response da geri dönecek ekstra data bilgileri
+            string extInfo = "";
+            // HASH oluşturma fonksiyonu
+            string birlestir = string.Concat(apiKey, publicKey, rnd, oid, txnNo);
+            HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
+            byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(birlestir));
+            string hash = Convert.ToBase64String(b);
+            CancelRequestModel requestModel = new CancelRequestModel();
+            requestModel.PublicKey = publicKey;
+            requestModel.ApiKey = apiKey;
+            requestModel.Rnd = rnd;
+            requestModel.Hash = hash;
+            requestModel.TxnNo = txnNo;
+            requestModel.UserIP = userIP;
+            requestModel.Oid = oid;
+            requestModel.ExtInfo = extInfo;
+            // TRPOS işlem iptal POST URL
+            string cancelURL = "https://vpostest.trpos.com/Payment/CancelRequest";
+            using (HttpClient client = new())
+            {
+                HttpResponseMessage response = await
+                client.PostAsJsonAsync<CancelRequestModel>(cancelURL, requestModel);
+                if (response.IsSuccessStatusCode)
+                {
+                    var cancelResponse =
+                    JsonConvert.DeserializeObject<CancelResponseModel>(await
+                    response.Content.ReadAsStringAsync()); // Cancel Requestten alınan JSON cevap
+                    if (cancelResponse != null)
+                    {
+
+                        if (cancelResponse.ResultCode == "0000" && hash == cancelResponse.Hash)
+                        {
+                            TempData["Message"] = "İptal işlemi başarıyla tamamlandı.";
+                            return View();
+                        }
+                        else
+                        {
+                              TempData["Message"]= cancelResponse.ResultDetail;
+                        }
+                    }
+                    else
+                    {
+                        TempData["Message"]= cancelResponse.ResultDetail;
+                    }
+                }
+                else
+                {
+                   TempData["Message"] = "Hata: Cevap alınamadı.";
+                }
+            }
+            return RedirectToAction("Details", new { id = model.orderId });
+        }
+
 
         // GET: Admin/Orders
         public async Task<IActionResult> Index(
@@ -91,9 +166,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             }
 
             var order = await _context.Orders
-                .Include(o => o.DeliveryTimeRange) 
-                .Include(o => o.OrderItems)        
-                    .ThenInclude(oi => oi.Product) 
+                .Include(o => o.DeliveryTimeRange)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (order == null)
@@ -111,21 +186,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Orders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,OrderDate,FirstName,LastName,Phone,City,AddresLine,CustomerId,OrderStatus,SubTotal,DeliveryFree")] Order order)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(order);
-        }
+
 
         // GET: Admin/Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -187,7 +248,6 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // ❗ ViewBag yeniden yüklenmezse sayfa çökebilir
             ViewBag.DeliveryTimeRanges = new SelectList(
                 await _context.DeliveryTimeRanges
                     .Where(x => x.IsActive)

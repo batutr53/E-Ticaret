@@ -46,7 +46,15 @@
                     <hr />
                     <p><strong>Teslimat Tarihi:</strong> @(Model.DeliveryDate?.ToString("dd.MM.yyyy") ?? "-")</p>
                     <p><strong>Teslimat Saat Aralığı:</strong> @(Model.DeliveryTimeRange?.RangeText ?? "-")</p>
-
+                    <form asp-action="Cancel" asp-asp-controller="Order">
+                        <input type="hidden" name="orderId" value="@Model.Id" />
+                        <input type="hidden" name="oid" value="@Model.Oid" />
+                        <input type="hidden" name="txnNo" value="@Model.TxnNo" />
+                        
+                        <button type="submit" class="btn btn-danger mt-2">
+                            <i class="fas fa-times"></i> Siparişi İptal Et
+                        </button>
+                    </form>
                     <h5 class="mt-3">Toplam: <span class="badge badge-pill badge-dark">@Model.GetTotal() ₺</span></h5>
                 </div>
             </div>
@@ -113,3 +121,19 @@
         };
     }
 }
+
+
+<script>
+    $(document).ready(function () {
+        @if (TempData["Message"] != null)
+        {
+            <text>
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Bilgi',
+                    text: '@TempData["Message"]'
+                });
+            </text>
+        }
+    });
+</script>
