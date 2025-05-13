@@ -1,7 +1,8 @@
 ﻿@model E_Ticaret.Core.Entities.Order
-
+@using System.Web
 @{
     ViewData["Title"] = "Sipariş Detayı";
+    var message = TempData["Message"] as string;
 }
 
 <div class="container-fluid">
@@ -46,16 +47,33 @@
                     <hr />
                     <p><strong>Teslimat Tarihi:</strong> @(Model.DeliveryDate?.ToString("dd.MM.yyyy") ?? "-")</p>
                     <p><strong>Teslimat Saat Aralığı:</strong> @(Model.DeliveryTimeRange?.RangeText ?? "-")</p>
-                    <form asp-action="Cancel" asp-asp-controller="Order">
-                        <input type="hidden" name="orderId" value="@Model.Id" />
-                        <input type="hidden" name="oid" value="@Model.Oid" />
-                        <input type="hidden" name="txnNo" value="@Model.TxnNo" />
-                        
-                        <button type="submit" class="btn btn-danger mt-2">
-                            <i class="fas fa-times"></i> Siparişi İptal Et
-                        </button>
-                    </form>
+
                     <h5 class="mt-3">Toplam: <span class="badge badge-pill badge-dark">@Model.GetTotal() ₺</span></h5>
+                    @if (Model.OrderDate.Date >= DateTime.Now.Date)
+                    {
+                        <form asp-action="Cancel" asp-asp-controller="Order">
+                            <input type="hidden" name="orderId" value="@Model.Id" />
+                            <input type="hidden" name="oid" value="@Model.Oid" />
+                            <input type="hidden" name="txnNo" value="@Model.TxnNo" />
+
+                            <button type="submit" class="btn btn-danger mt-2">
+                                <i class="fas fa-times"></i> Siparişi İptal Et
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Refund" asp-asp-controller="Order">
+                            <input type="hidden" name="orderId" value="@Model.Id" />
+                            <input type="hidden" name="Oid" value="@Model.Oid" />
+                            <input type="hidden" name="TxnNo" value="@Model.TxnNo" />
+
+                            <button type="submit" class="btn btn-secondary mt-2">
+                                <i class="fas fa-times"></i> Siparişi İade Et
+                            </button>
+                        </form>
+                    }
+
                 </div>
             </div>
         </div>
@@ -106,7 +124,22 @@
         </a>
     </div>
 </div>
-
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <text>
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Bilgi',
+                        text: '@Html.Raw(HttpUtility.JavaScriptStringEncode(message))'
+                    });
+                </text>
+            }
+        });
+    </script>
+}
 @functions {
     public string GetStatusColor(E_Ticaret.Core.Entities.OrderStatus status)
     {
@@ -122,18 +155,3 @@
     }
 }
 
-
-<script>
-    $(document).ready(function () {
-        @if (TempData["Message"] != null)
-        {
-            <text>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Bilgi',
-                    text: '@TempData["Message"]'
-                });
-            </text>
-        }
-    });
-</script>

@@ -12,6 +12,7 @@ using E_Ticaret.WEBUI.Areas.Admin.Models;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
+using Azure;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
@@ -27,8 +28,92 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             _config = config;
         }
 
+        #region Refund
+        public async Task<IActionResult> Refund(CancelRequestModel model)
+        {
+            var order = await _context.Orders
+                .Include(o => o.DeliveryTimeRange)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(m => m.Id == model.orderId);
 
-        // GET: Admin/Orders/Cancel
+            if (order == null)
+            {
+                TempData["Message"] = "Sipariş Bulunamadı.";
+                return RedirectToAction("Details", new { id = model.orderId });
+            }
+            // TRPOS Tarafından verilen API bilgileri
+            string publicKey = _config["TrPosAPI:PublicKey"];
+            string apiKey = _config["TrPosAPI:APIKey"];
+            string secretKey = _config["TrPosAPI:SecretKey"];
+            //Her işlemde benzersiz gönderilmesi gereken rnd değeri
+            string rnd = DateTime.Now.Ticks.ToString();
+            // TRPOS tarafından verilen işlem numarası
+            string txnNo = model.TxnNo;
+            // Sizin tarafınızdan oluşturulan sipariş numarası
+            string oid = model.Oid;
+            // Müşteriye ait IP numarası
+            double amount = (double)order.SubTotal;
+            // Müşteriye ait IP numarası
+            string userIP = model.UserIP ?? "1.1.1.1";
+            // Response da geri dönecek ekstra data bilgileri.
+            string extInfo = "";
+            // HASH oluşturma fonksiyonu
+            string birlestir = string.Concat(apiKey, publicKey, rnd, oid, txnNo,
+            amount.ToString());
+            HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
+            byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(birlestir));
+            string hash = Convert.ToBase64String(b);
+            RefundRequestModel requestModel = new RefundRequestModel();
+            requestModel.PublicKey = publicKey;
+            requestModel.ApiKey = apiKey;
+            requestModel.Rnd = rnd;
+            requestModel.Hash = hash;
+            requestModel.TxnNo = txnNo;
+            requestModel.Oid = oid;
+            requestModel.Amount = amount;
+            requestModel.UserIP = userIP;
+            requestModel.ExtInfo = extInfo;
+            // TRPOS işlem iade POST URL
+            string refundURL = _config["TrPosAPI:RefundURL"];
+            using (HttpClient client = new())
+            {
+                HttpResponseMessage response = await
+                client.PostAsJsonAsync<RefundRequestModel>(refundURL, requestModel);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var refundResponse =
+                    JsonConvert.DeserializeObject<RefundResponseModel>(await
+                    response.Content.ReadAsStringAsync()); // Refund Requestten alınan JSON cevap
+                    if (refundResponse != null)
+                    {
+                        if (refundResponse.ResultCode == "0000" && hash ==
+                        refundResponse.Hash)
+                        {
+                            TempData["Message"] = "İade işlemi başarıyla tamamlandı.";
+                            return RedirectToAction("Details", new { id = model.orderId });
+                        }
+                        else
+                        {
+                            TempData["Message"] = refundResponse.ResultDetail;
+                        }
+                    }
+                    else
+                    {
+                        TempData["Message"] = refundResponse.ResultDetail;
+                    }
+                }
+                else
+                {
+                    TempData["Message"] = "Hata: Cevap alınamadı.";
+                }
+            }
+            return RedirectToAction("Details", new { id = model.orderId });
+        }
+        #endregion
+
+            #region Cancel
         public async Task<IActionResult> Cancel(CancelOrderModel model)
         {
             // TRPOS Tarafından verilen API bilgileri
@@ -46,7 +131,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             // Response da geri dönecek ekstra data bilgileri
             string extInfo = "";
             // HASH oluşturma fonksiyonu
-            string birlestir = string.Concat(apiKey, publicKey, rnd, oid, txnNo);
+            string birlestir = string.Concat(apiKey.ToUpper(), publicKey, rnd, oid, txnNo);
             HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
             byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(birlestir));
             string hash = Convert.ToBase64String(b);
@@ -60,7 +145,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             requestModel.Oid = oid;
             requestModel.ExtInfo = extInfo;
             // TRPOS işlem iptal POST URL
-            string cancelURL = "https://vpostest.trpos.com/Payment/CancelRequest";
+            string cancelURL = _config["TrPosAPI:CancelURL"];
             using (HttpClient client = new())
             {
                 HttpResponseMessage response = await
@@ -76,26 +161,28 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                         if (cancelResponse.ResultCode == "0000" && hash == cancelResponse.Hash)
                         {
                             TempData["Message"] = "İptal işlemi başarıyla tamamlandı.";
-                            return View();
+                            return RedirectToAction("Details", new { id = model.orderId });
                         }
                         else
                         {
-                              TempData["Message"]= cancelResponse.ResultDetail;
+                            TempData["Message"] = cancelResponse.ResultDetail;
                         }
                     }
                     else
                     {
-                        TempData["Message"]= cancelResponse.ResultDetail;
+                        TempData["Message"] = cancelResponse.ResultDetail;
                     }
                 }
                 else
                 {
-                   TempData["Message"] = "Hata: Cevap alınamadı.";
+                    TempData["Message"] = "Hata: Cevap alınamadı.";
                 }
             }
             return RedirectToAction("Details", new { id = model.orderId });
         }
 
+
+        #endregion
 
         // GET: Admin/Orders
         public async Task<IActionResult> Index(
