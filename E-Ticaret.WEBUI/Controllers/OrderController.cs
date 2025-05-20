@@ -19,6 +19,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 namespace E_Ticaret.WEBUI.Controllers
 {
+    [Route("Order")]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
