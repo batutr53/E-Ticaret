@@ -17,7 +17,6 @@ using System.Text;
 
 namespace E_Ticaret.WEBUI.Controllers
 {
-    [Route("Order")]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
