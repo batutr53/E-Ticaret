@@ -1,31 +1,39 @@
-﻿namespace E_Ticaret.WEBUI.Middlewares
+﻿public class AdminRedirectMiddleware
 {
-    public class AdminRedirectMiddleware
+    private readonly RequestDelegate _next;
+
+    public AdminRedirectMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public AdminRedirectMiddleware(RequestDelegate next)
+    public async Task Invoke(HttpContext context)
+    {
+        // Response'u geçici olarak buffer'la
+        var originalBodyStream = context.Response.Body;
+        using (var memStream = new MemoryStream())
         {
-            _next = next;
-        }
+            context.Response.Body = memStream;
 
-        public async Task Invoke(HttpContext context)
-        {
-            var path = context.Request.Path.ToString().ToLower();
+            await _next(context); // Akışı çalıştır
 
-            if (path.StartsWith("/admin") && !path.Contains("/admin/auth/login"))
+            // 401 mi kontrol et
+            if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
             {
-                var token = context.Request.Cookies["jwt"];
-
-                if (string.IsNullOrEmpty(token))
+                var path = context.Request.Path.ToString().ToLower();
+                if (path.StartsWith("/admin") && !path.Contains("/admin/auth/login"))
                 {
+                    // Login'e yönlendir
+                    context.Response.Clear();
                     context.Response.Redirect("/Admin/Auth/Login");
                     return;
                 }
             }
 
-            await _next(context);
+            // Buffer'daki response'u tekrar orijinale yaz
+            memStream.Seek(0, SeekOrigin.Begin);
+            await memStream.CopyToAsync(originalBodyStream);
+            context.Response.Body = originalBodyStream;
         }
     }
-
 }

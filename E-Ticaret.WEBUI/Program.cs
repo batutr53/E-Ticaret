@@ -3,6 +3,7 @@ using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.Service.Concrete;
 using E_Ticaret.Service.Helpers;
+using E_Ticaret.WEBUI.Helpers;
 using E_Ticaret.WEBUI.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,6 +38,27 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
+builder.Services.AddSingleton<TelegramHelper>();
+
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Admin/Auth/Login";
+    options.AccessDeniedPath = "/Admin/Auth/Login";
+    options.Events.OnRedirectToLogin = context =>
+    {
+        // API/AJAX istekleri için yönlendirme yapma
+        if (context.Request.Path.StartsWithSegments("/api") ||
+            context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        }
+        context.Response.Redirect(context.RedirectUri);
+        return Task.CompletedTask;
+    };
+});
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

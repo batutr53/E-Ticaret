@@ -383,5 +383,35 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             return _context.Orders.Any(e => e.Id == id);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int orderId, string orderStatus)
+        {
+            if (string.IsNullOrEmpty(orderStatus))
+            {
+                TempData["Error"] = "Sipariş durumu boş olamaz!";
+                return RedirectToAction("Index");
+            }
+
+            if (!Enum.TryParse(typeof(E_Ticaret.Core.Entities.OrderStatus), orderStatus, out var statusEnum))
+            {
+                TempData["Error"] = "Geçersiz sipariş durumu!";
+                return RedirectToAction("Index");
+            }
+
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+            {
+                TempData["Error"] = "Sipariş bulunamadı!";
+                return RedirectToAction("Index");
+            }
+
+            order.OrderStatus = (E_Ticaret.Core.Entities.OrderStatus)statusEnum;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Sipariş durumu başarıyla güncellendi!";
+            return RedirectToAction("Index");
+        }
     }
 }

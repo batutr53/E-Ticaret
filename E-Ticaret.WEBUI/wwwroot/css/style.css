@@ -2646,3 +2646,43 @@ ul.category-level-2 {
             display: inline-block;
         }
 }
+
+.status-bekliyor {
+    background-color: #6c757d; /* Gri */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-onaylandi {
+    background-color: #007bff; /* Mavi */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-yolda {
+    background-color: #fd7e14; /* Turuncu */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-tamamlandi {
+    background-color: #28a745; /* Yeşil */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-odeme-hatali {
+    background-color: #dc3545; /* Kırmızı */
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
