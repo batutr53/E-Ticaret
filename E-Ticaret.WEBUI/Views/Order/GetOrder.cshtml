@@ -24,7 +24,9 @@
         <div class="order-info-box">
             <div><strong>Sipariş Numarası:</strong> @Model.Oid</div>
             <div><strong>Tarih:</strong> @Model.OrderDate.ToString("dd MMM yyyy HH:mm")</div>
-            <div><strong>Durum:</strong> <span class="status @Model.OrderStatus.ToString().ToLower()">@Model.OrderStatus.ToText()</span></div>
+            <div>
+                <strong>Durum:</strong> <span class="status @(Model.OrderStatus switch { E_Ticaret.Core.Entities.OrderStatus.Pending => "status-bekliyor", E_Ticaret.Core.Entities.OrderStatus.Approved => "status-onaylandi", E_Ticaret.Core.Entities.OrderStatus.OnWay => "status-yolda", E_Ticaret.Core.Entities.OrderStatus.Completed => "status-tamamlandi", E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "status-odeme-hatali", _ => "" }) ">@Model.OrderStatus.ToText()</span>
+            </div>
         </div>
 
         <div class="receiver-sender">
@@ -63,9 +65,8 @@
             <div>Kargo Ücreti: @Model.DeliveryFree.ToString("C")</div>
             <div class="total-amount">Toplam: @Model.GetTotal().ToString("C")</div>
         </div>
-    }
-</div>
+        }
+    </div>
 
-<style>
-
-</style>
+    <style>
+    </style>

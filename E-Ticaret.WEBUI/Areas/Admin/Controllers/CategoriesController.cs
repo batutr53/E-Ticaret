@@ -50,18 +50,18 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         // GET: Admin/Categories/Create
         public IActionResult Create()
         {
-            ViewBag.Categories = new SelectList(_context.Categories,"Id","Name");
+            ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name");
             return View();
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category,IFormFile? Image)
+        public async Task<IActionResult> Create(Category category, IFormFile? Image)
         {
             if (ModelState.IsValid)
             {
-                category.Image = await FileHelper.FileLoaderAsync(Image);
+                category.Image = await FileHelper.FileLoaderAsync(Image) ?? "";
                 await _service.AddAsync(category);
                 await _service.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -76,7 +76,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-          
+
             var category = await _service.FindAsync(id.Value);
             if (category == null)
             {

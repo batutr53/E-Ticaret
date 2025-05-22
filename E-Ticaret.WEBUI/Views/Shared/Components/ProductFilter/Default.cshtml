@@ -2,7 +2,7 @@
 
 <p>Sepetiniz için ekstra ürün ekleyin (Opsiyonel)</p>
 <div class="basket-addon-container">
-    @foreach (var item in Model)
+    @foreach (var item in Model.Take(6))
     {
         var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
 

@@ -44,7 +44,12 @@
         </div>
     </div>
 </div>
-
+<section class="products-section">
+    <div class="section-header">
+        <h2>Hediyelik</h2>
+    </div>
+        @await Component.InvokeAsync("ProductFilter", new { categoryId = 2 })
+</section>
 <section class="products-section">
     <div class="section-header">
         <h2>Benzer Ürünler</h2>

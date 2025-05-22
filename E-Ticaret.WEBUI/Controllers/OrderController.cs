@@ -8,15 +8,18 @@ using E_Ticaret.Service.Concrete;
 using E_Ticaret.WEBUI.ExtensionMethods;
 using E_Ticaret.WEBUI.Helpers;
 using E_Ticaret.WEBUI.Models;
+using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
 using System.Security.Cryptography;
 using System.Text;
-
+using Telegram.Bot;
+using Telegram.Bot.Types;
 namespace E_Ticaret.WEBUI.Controllers
 {
+    [Route("Order")]
     public class OrderController : Controller
     {
         private readonly IOrderService _orderService;
@@ -26,7 +29,8 @@ namespace E_Ticaret.WEBUI.Controllers
         private readonly IEmailService _emailService;
         private readonly EmailSettings _emailSettings;
         private readonly IRazorViewToStringRenderer _razorRenderer;
-        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context, ICartService cartService, IEmailService emailService, IOptions<EmailSettings> emailSettings, IRazorViewToStringRenderer razorRenderer)
+        private readonly TelegramHelper _telegramHelper;
+        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context, ICartService cartService, IEmailService emailService, IOptions<EmailSettings> emailSettings, IRazorViewToStringRenderer razorRenderer, TelegramHelper telegramHelper)
         {
             _orderService = orderService;
             _config = config;
@@ -35,6 +39,7 @@ namespace E_Ticaret.WEBUI.Controllers
             _emailService = emailService;
             _emailSettings = emailSettings.Value;
             _razorRenderer = razorRenderer;
+            _telegramHelper = telegramHelper;
         }
         [HttpGet("GetOrder")]
         public async Task<IActionResult> GetOrder()
@@ -234,7 +239,7 @@ namespace E_Ticaret.WEBUI.Controllers
              deliveryFee: order.DeliveryFree,
              total: order.GetTotal()
          );
-
+                await _telegramHelper.SendTelegramOrderMessage(order.Id, "Yeni siparişin var!" + " " + order.Id + " ");
 
                 return View(model);
             }
