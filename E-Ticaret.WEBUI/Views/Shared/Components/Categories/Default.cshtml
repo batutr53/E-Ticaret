@@ -2,9 +2,12 @@
 @model IEnumerable<Category>
 
 @functions {
+    int i = 1;
     void RenderCategoryTree(IEnumerable<Category> categories, int parentId, int depth = 0)
     {
-        var children = categories.Where(x => x.ParentId == parentId).ToList();
+        var children = (i == 1 ? categories.Where(x => x.ParentId == 1).ToList() :  categories.Where(x => x.ParentId == parentId).ToList());
+        i = i + 1;
+
         if (!children.Any()) return;
 
         <ul class="category-level-@depth">

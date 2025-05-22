@@ -109,22 +109,7 @@
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Image">Görsel</label>
-                            <input asp-for="Image" type="file" class="form-control-file" />
-                            <span asp-validation-for="Image" class="text-danger"></span>
-
-                            @if (!string.IsNullOrEmpty(Model.Image))
-                            {
-                                <div class="mt-2">
-                                    <img src="/img/@Model.Image" height="75" class="img-thumbnail" />
-                                    <div class="form-check mt-1">
-                                        <input type="checkbox" name="cbRemoveImage" class="form-check-input" id="removeImage" />
-                                        <label for="removeImage" class="form-check-label">Görseli Sil</label>
-                                    </div>
-                                </div>
-                            }
-                        </div>
+                  
 
                         <div class="form-group">
                             <label class="d-block mb-2">Kategori Simgesi</label>

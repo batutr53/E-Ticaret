@@ -4,7 +4,7 @@
     </div>
     <div class="social-icons">
         <a href="https://www.instagram.com/detayflowers" target="_blank">
-            <i class="fa-brands fa-instagram fa-2x"></i> 
+            <i class="fa-brands fa-instagram fa-3x"></i> 
         </a>
     </div>
     <div class="auth-links">
@@ -18,7 +18,9 @@
     <a href="/" class="logo">
         <img src="/img/logo.png" height="150" width="100" alt="Detay Çiçekçilik">
     </a>
+
     <div class="contact-numbers">
+      
         <div class="phone-row">
             <i class="fa-solid fa-phone phone-icon"></i>
             <a href="tel:+905333612554">+90 533 361 25 54</a>
@@ -54,10 +56,11 @@
                     </div>
                 </div>
             </li>
-            <li><a href="/Category?id=5"><i class="fa-solid fa-gift"></i> KADINLAR GÜNÜ ÇİÇEKLERİ</a></li>
+            @await Component.InvokeAsync("CategoriesMain")
+            @*<li><a href="/Category?id=5"><i class="fa-solid fa-gift"></i> KADINLAR GÜNÜ ÇİÇEKLERİ</a></li>
             <li><a href="/Category?id=6"><i class="fa-solid fa-leaf"></i> ARANJMANLAR</a></li>
             <li><a href="/Category?id=7"><i class="fa-solid fa-seedling"></i> ORKİDELER</a></li>
-            <li><a href="/Category?id=8"><i class="fa-solid fa-fan"></i> ÇİÇEK BUKETLERİ</a></li>
+            <li><a href="/Category?id=8"><i class="fa-solid fa-fan"></i> ÇİÇEK BUKETLERİ</a></li>*@
         </ul>
         <div class="cart-container">
             @await Component.InvokeAsync("Basket")

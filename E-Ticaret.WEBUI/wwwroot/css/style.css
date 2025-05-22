@@ -2646,3 +2646,37 @@ ul.category-level-2 {
             display: inline-block;
         }
 }
+.whatsapp-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom:75px;
+    right: 24px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 38px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+    .whatsapp-float:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        transform: scale(1.08);
+        color: #fff;
+        text-decoration: none;
+    }
+.category-root {
+    display: flex;
+    flex-direction: row;
+    gap: 18px; /* dilediğin gibi aralık ver */
+}
+
+.category-level-1, .category-level-2, .category-level-3 {
+    margin-left: 18px; /* alt seviye ağaç için istersen */
+}

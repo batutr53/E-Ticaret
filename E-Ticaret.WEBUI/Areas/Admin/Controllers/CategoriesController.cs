@@ -105,8 +105,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
                     if (cbRemoveImage)
                         category.Image = string.Empty;
-                    if (Image is not null)
-                      category.Image = await FileHelper.FileLoaderAsync(Image);
+                      category.Image = await FileHelper.FileLoaderAsync(Image) ?? "";
                     _service.Update(category);
                     await _service.SaveChangesAsync();
                 }
