@@ -1,69 +1,49 @@
-// Tüm sayfa için gerekli fonksiyonlar
+// Toggle Mobile Menu
+function toggleMobileMenu() {
+    const mainMenu = document.getElementById('mainMenu');
+    mainMenu.classList.toggle('active');
+}
 
-// Mobil Menü Geçişi
-const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-const mobileMenu = document.querySelector('.mobile-menu');
-const mobileMenuClose = document.querySelector('.mobile-menu-close');
+// Toggle Dropdown in Mobile
+function toggleDropdown(event, element) {
+    event.preventDefault();
 
-mobileMenuBtn.addEventListener('click', () => {
-    mobileMenu.classList.add('active');
-    document.body.style.overflow = 'hidden';
-});
+    // Only toggle in mobile view
+    if (window.innerWidth <= 768) {
+        const menuItem = element.parentElement;
+        const wasActive = menuItem.classList.contains('active');
 
-mobileMenuClose.addEventListener('click', () => {
-    mobileMenu.classList.remove('active');
-    document.body.style.overflow = 'auto';
-});
+        // Close all other dropdowns
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
 
-// Mobil Alt Kategori Geçişleri
-const mobileCategoryToggles = document.querySelectorAll('.toggle-submenu');
-mobileCategoryToggles.forEach(toggle => {
-    toggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        const parent = toggle.closest('.mobile-category');
-        parent.classList.toggle('active');
-
-        // İkon değiştir
-        const icon = toggle.querySelector('i');
-        if (parent.classList.contains('active')) {
-            icon.classList.remove('fa-chevron-down');
-            icon.classList.add('fa-chevron-up');
-        } else {
-            icon.classList.remove('fa-chevron-up');
-            icon.classList.add('fa-chevron-down');
+        // Toggle current dropdown
+        if (!wasActive) {
+            menuItem.classList.add('active');
         }
-    });
-});
+    }
+}
 
+// Close mobile menu when clicking outside
+document.addEventListener('click', function (event) {
+    const mainMenu = document.getElementById('mainMenu');
+    const mobileToggle = document.querySelector('.mobile-toggle');
 
-
-//// Hızlı Görünüm İşlevi
-//document.querySelectorAll('.quick-view').forEach(quickView => {
-//    quickView.addEventListener('click', function (e) {
-//        e.stopPropagation(); // Kart hover durumunu etkilemesin
-
-//        const productCard = this.closest('.product-card');
-//        const productTitle = productCard.querySelector('.product-title').textContent;
-//        const productImg = productCard.querySelector('.product-image img').src;
-
-//        alert(`Hızlı görünüm: ${productTitle}`);
-//        // Gerçek uygulamada burada bir modal açılabilir
-//    });
-//});
-
-// Masaüstü için Navigasyon Açılır Menüsü (gerekirse)
-document.querySelectorAll('.nav-links li').forEach(item => {
-    if (item.querySelector('ul')) {
-        item.addEventListener('mouseover', () => {
-            item.querySelector('ul').style.display = 'block';
-        });
-
-        item.addEventListener('mouseout', () => {
-            item.querySelector('ul').style.display = 'none';
-        });
+    if (!mainMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
+        mainMenu.classList.remove('active');
     }
 });
 
+// Handle window resize
+window.addEventListener('resize', function () {
+    if (window.innerWidth > 768) {
+        document.getElementById('mainMenu').classList.remove('active');
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+});
 // Duyarlı Görsel Yükleme
 
 feather.replace();

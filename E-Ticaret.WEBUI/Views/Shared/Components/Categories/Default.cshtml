@@ -1,44 +1,12 @@
 ﻿@using E_Ticaret.Core.Entities
 @model IEnumerable<Category>
 
-@functions {
-    int i = 1;
-    void RenderCategoryTree(IEnumerable<Category> categories, int parentId, int depth = 0)
-    {
-        var children = (i == 1 ? categories.Where(x => x.ParentId == 1).ToList() : categories.Where(x => x.ParentId == parentId).ToList());
-        i = i + 1;
-
-        if (!children.Any()) return;
-
-        <ul class="category-level-@depth">
-            @foreach (var category in children)
-            {
-                var hasChildren = categories.Any(x => x.ParentId == category.Id);
-                <li class="category-item @(hasChildren ? "has-children" : "")">
-                    <div class="category-header">
-                        <a href="/Category?id=@category.Id">
-                            <i class="@category.ClassImage"></i>
-                            <span class="category-name">@category.Name</span>
-                            @if (hasChildren)
-                            {
-                                <span class="arrow">▼</span>
-                            }
-                        </a>
-                    </div>
-                    @if (hasChildren)
-                    {
-                        <div class="subcategory-wrapper">
-                            @{ RenderCategoryTree(categories, category.Id, depth + 1); }
-                        </div>
-                    }
-                </li>
-            }
-        </ul>
-    }
+@foreach (var category in Model)
+{
+    <a href="/Category?id=@category.Id">
+        <i class="@category.ClassImage"></i>
+        @category.Name
+    </a>
 }
-
-<div class="category-menu">
-    @{RenderCategoryTree(Model, 0); }
-</div>
 
 

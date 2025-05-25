@@ -3,7 +3,9 @@
 
 @foreach (var item in Model)
 {
-    <li><a href="/Category?id=@item.Id"><i class="fa-solid @item.ClassImage"></i>@item.Name</a></li>
+    <div class="menu-item">
+        <a href="/Category?id=@item.Id"><i class="fa-solid @item.ClassImage"></i>@item.Name</a>
+    </div>
 
 }
 

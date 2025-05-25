@@ -38,37 +38,85 @@
             <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
     </form>
-</header> <!-- Navigation -->
+</header>
 <nav class="main-nav">
     <div class="nav-container">
-        <button class="mobile-menu-btn" aria-label="Menü">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-        <ul class="nav-links nav-left">
-            <li>
-                <a href="/" aria-label="Ana Sayfa">
-                    <i class="fa-solid fa-house"></i>
+        <!-- Home Icon -->
+        <a href="#" class="nav-home">
+            <i class="fas fa-home"></i>
+        </a>
+
+        <!-- Mobile Toggle -->
+        <div class="mobile-toggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <!-- Main Menu -->
+        <div class="main-menu" id="mainMenu">
+            <div class="menu-item">
+                <a href="#" onclick="toggleDropdown(event, this)">
+                    <i class="fas fa-th-large"></i>
+                    KATEGORİLERİMİZ
                 </a>
-            </li>
-        </ul>
-        <ul class="nav-links nav-center">
-            <li class="has-dropdown">
-                <a href="#"><i class="fa-solid fa-list-ul"></i><span>TÜM KATEGORİLER</span><i class="fa-solid fa-chevron-down"></i></a>
-                <div class="dropdown-menu"><div class="dropdown-content">@await Component.InvokeAsync("Categories")</div></div>
-            </li>
-            @await Component.InvokeAsync("CategoriesMain")
-        </ul>
-        <div class="cart-container">
-            @await Component.InvokeAsync("Basket")
+                <div class="dropdown-menu">
+                    @await Component.InvokeAsync("Categories")
+                    </div>
+            </div>
+                @await Component.InvokeAsync("CategoriesMain")
+        </div>
+
+        <!-- Cart Section -->
+        <div class="nav-cart">
+            <div class="cart-icon">
+                @await Component.InvokeAsync("Basket")
+            </div>
         </div>
     </div>
 </nav>
 
+<!-- Navigation -->
+<!--<nav class="main-nav">
+    <div class="nav-container">-->
+<!-- Mobile Menu Button -->
+<!--<button class="mobile-menu-btn" aria-label="Menü">
+    <i class="fa-solid fa-bars"></i>
+</button>-->
+<!-- Home Link -->
+<!--<ul class="nav-links nav-left">
+    <li>
+        <a href="/" aria-label="Ana Sayfa">
+            <i class="fa-solid fa-house"></i>
+        </a>
+    </li>
+</ul>-->
+<!-- Main Navigation -->
+<!--<ul class="nav-links nav-center">-->
+<!-- Categories Dropdown -->
+<!--<li class="has-dropdown">
+    <a href="#" aria-haspopup="true" aria-expanded="false">
+        <i class="fa-solid fa-list-ul"></i>
+        <span>TÜM KATEGORİLER</span>
+        <i class="fa-solid fa-chevron-down"></i>
+    </a>
+    <div class="dropdown-menu" aria-label="Kategoriler">
+        <div class="dropdown-content">
+            @await Component.InvokeAsync("Categories")
+        </div>
+    </div>
+</li>-->
+<!-- Main Categories -->
+<!--@await Component.InvokeAsync("CategoriesMain")
+</ul>-->
+<!-- Cart -->
+<!--<div class="cart-container">
+            @await Component.InvokeAsync("Basket")
+        </div>
+    </div>
+</nav>-->
 <!-- Mobile Menu Overlay -->
-<div class="mobile-menu-overlay"></div>
-
+<!--<div class="mobile-menu-overlay"></div>-->
 <!-- Mobile Menu -->
-<div class="mobile-menu">
+<!--<div class="mobile-menu">
     <button class="mobile-menu-close">
         <i class="fa-solid fa-xmark"></i>
     </button>
@@ -87,5 +135,5 @@
             @await Component.InvokeAsync("CategoriesMain")
         <li><a href="/Home/About"><i class="fa-solid fa-info-circle"></i> Hakkımızda</a></li>
         <li><a href="/Home/ContactUs"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
-    </ul>
-</div>
+</ul>
+</div>-->
