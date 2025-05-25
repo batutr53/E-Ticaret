@@ -188,11 +188,12 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     // Temel alanları güncelle
                     existingProduct.Name = product.Name;
                     existingProduct.Description = product.Description;
+                    existingProduct.Detail = product.Detail; // Yeni eklenen detay alanı
                     existingProduct.Price = product.Price;
                     existingProduct.Stock = product.Stock;
                     existingProduct.IsHome = product.IsHome;
                     existingProduct.IsActive = product.IsActive;
-                    existingProduct.BrandId = product.BrandId;
+                    existingProduct.BrandId = 1;
                     existingProduct.OrderNo = product.OrderNo;
 
                     // Görselleri kaldır

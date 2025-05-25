@@ -200,6 +200,18 @@
                 $('.icon-dropdown-menu').hide();
             });
         });
+    </script> 
+    <!-- TinyMCE Entegresi (API key gerekmez) -->
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: '#Description',
+            menubar: false,
+            language: 'tr',
+            plugins: 'lists link image code',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+            branding: false
+        });
     </script>
 }
 
@@ -208,7 +220,7 @@
     public List<SelectListItem> AvailableIcons()
     {
         return new List<SelectListItem>
-        {
+{
             new("Canlı Aranjmanlar", "fa-solid fa-seedling"),
             new("Gül Aranjmanlar", "fa-solid fa-heart"),
             new("Buketler", "fa-solid fa-fan"),
@@ -233,4 +245,5 @@
     {
         return AvailableIcons().FirstOrDefault(i => i.Value == iconClass)?.Text ?? "Simge Seçin";
     }
+
 }

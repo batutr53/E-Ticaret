@@ -5,7 +5,7 @@
     int i = 1;
     void RenderCategoryTree(IEnumerable<Category> categories, int parentId, int depth = 0)
     {
-        var children = (i == 1 ? categories.Where(x => x.ParentId == 1).ToList() :  categories.Where(x => x.ParentId == parentId).ToList());
+        var children = (i == 1 ? categories.Where(x => x.ParentId == 1).ToList() : categories.Where(x => x.ParentId == parentId).ToList());
         i = i + 1;
 
         if (!children.Any()) return;
@@ -16,7 +16,7 @@
                 var hasChildren = categories.Any(x => x.ParentId == category.Id);
                 <li class="category-item @(hasChildren ? "has-children" : "")">
                     <div class="category-header">
-                        <a href="/Category?id=@category.Id" >
+                        <a href="/Category?id=@category.Id">
                             <i class="@category.ClassImage"></i>
                             <span class="category-name">@category.Name</span>
                             @if (hasChildren)

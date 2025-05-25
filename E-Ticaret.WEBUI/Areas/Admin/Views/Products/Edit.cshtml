@@ -33,6 +33,12 @@
                         </div>
 
                         <div class="form-group">
+                            <label asp-for="Detail">Ürün Detayı</label>
+                            <textarea asp-for="Detail" id="Detail" class="form-control" rows="6"></textarea>
+                            <span asp-validation-for="Detail" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
                             <label>Yeni Görseller Yükle</label>
                             <input name="Images" type="file" multiple class="form-control-file" />
                             <small class="form-text text-muted">Birden fazla görsel seçebilirsiniz.</small>
@@ -188,6 +194,19 @@
         $('.img-thumbnail').click(function () {
             const imgSrc = $(this).data("img");
             $('#zoomModalImage').attr('src', imgSrc);
+        });
+    </script>
+
+    <!-- TinyMCE Entegresi (API key gerekmez) -->
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: '#Detail',
+            menubar: false,
+            language: 'tr',
+            plugins: 'lists link image code',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+            branding: false
         });
     </script>
 }

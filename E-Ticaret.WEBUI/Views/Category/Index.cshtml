@@ -3,7 +3,39 @@
 @{
     ViewData["Title"] = Model?.Name ?? "Kategoriler";
 }
+<style>
+    .pagination-container {
+        text-align: center;
+        margin-top: 20px;
+    }
 
+    .pagination {
+        list-style: none;
+        padding: 0;
+        display: inline-flex;
+        gap: 5px;
+    }
+
+    .page-item {
+        display: inline;
+    }
+
+    .page-link {
+        display: block;
+        padding: 6px 12px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .page-item.active .page-link {
+        background: #66dc1d;
+        color: white;
+        font-weight: bold;
+    }
+
+</style>
 <section class="products-section">
     <div class="section-header">
         <h2>@(Model?.Name ?? "Kategoriler")</h2>
@@ -33,6 +65,7 @@
                         <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
                     </button>
                 </div>
+
             }
         }
         else
@@ -42,4 +75,24 @@
             </div>
         }
     </div>
+    <div class="pagination-container">
+        <ul class="pagination">
+            @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { id = ViewBag.CategoryId, page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    </div>
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <div class="product-details-section">
+            <h3 class="product-details-title">Kategori Açıklaması</h3>
+            <div class="product-details-content">
+                @Html.Raw(Model.Description)
+            </div>
+        </div>
+    }
+
 </section>

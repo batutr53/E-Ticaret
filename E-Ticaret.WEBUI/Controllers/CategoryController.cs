@@ -13,17 +13,42 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             _categoryService = categoryService;
         }
+        [HttpGet]
+        public async Task<IActionResult> Index(int id, int page = 1, int pageSize = 20)
 
-        public async Task<IActionResult> Index(int id)
         {
             var category = await _categoryService.GetQueryable()
                 .Include(c => c.ProductCategories)
                     .ThenInclude(pc => pc.Product)
-                    .ThenInclude(x=>x.ProductImages)
+                        .ThenInclude(p => p.ProductImages)
                 .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var products = category.ProductCategories
+                .Select(pc => pc.Product)
+                .OrderByDescending(p => p.Id)
+                .ToList();
+
+            var pagedProducts = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPages = (int)Math.Ceiling((double)products.Count / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.CategoryId = id;
+
+            category.ProductCategories = pagedProducts
+                .Select(p => new E_Ticaret.Core.Entities.ProductCategory { Product = p })
+                .ToList();
 
             return View(category);
         }
+
 
     }
 }

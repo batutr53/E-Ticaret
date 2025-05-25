@@ -3,17 +3,21 @@
     ViewData["Title"] = Model.Product?.Name ?? "Detay";
 }
 
-<div class="product-detail-container">
+<!-- Mevcut CSS'inize eklenecek stiller -->
+<style>
+  
+</style>
 
+<div class="product-detail-container">
     <div class="product-detail-image-wrapper">
-        <div class="product-detail-main-image">
+        <div class="product-detail-main-image" onclick="openZoom()">
             <img id="mainImage"
                  src="/img/@(Model.Product?.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
                  ?? Model.Product?.ProductImages?.FirstOrDefault()?.ImageUrl
                  ?? "no-image.png")"
                  alt="@Model.Product?.Name">
+            <div class="zoom-icon">🔍</div>
         </div>
-
         <div class="product-detail-thumbnails">
             @if (Model.Product?.ProductImages != null && Model.Product.ProductImages.Any())
             {
@@ -22,18 +26,15 @@
                     <img src="/img/@image.ImageUrl"
                          onclick="changeImage(this)"
                          class="@(image.IsDefault || image == Model.Product.ProductImages.FirstOrDefault() ? "active" : "")" />
-
                 }
             }
         </div>
     </div>
-
     <div class="product-detail-info-wrapper">
         <div class="product-detail-title">@Model.Product?.Name</div>
         <div class="product-detail-description">
             @Model.Product?.Description
         </div>
-
         <div class="product-detail-order-box">
             <div class="product-detail-price">@Model.Product?.Price.ToString("c")</div>
             <form asp-action="AddItemToCart" asp-controller="Cart">
@@ -43,18 +44,29 @@
             </form>
         </div>
     </div>
+    @if (!string.IsNullOrEmpty(Model.Product?.Detail))
+    {
+        <div class="product-details-section">
+            <h3 class="product-details-title">Ürün Detayları</h3>
+            <div class="product-details-content">
+                @Html.Raw(Model.Product?.Detail)
+            </div>
+        </div>
+    }
+
 </div>
+
 <section class="products-section">
     <div class="section-header">
         <h2>Hediyelik</h2>
     </div>
-        @await Component.InvokeAsync("ProductFilter", new { categoryId = 2 })
+    @await Component.InvokeAsync("ProductFilter", new { categoryId = 2 })
 </section>
+
 <section class="products-section">
     <div class="section-header">
         <h2>Benzer Ürünler</h2>
     </div>
-
     <div class="products-grid">
         @foreach (var item in Model.RelatedProducts!)
         {
@@ -81,14 +93,243 @@
     </div>
 </section>
 
+<!-- Zoom Modal - Sayfanın sonuna eklenen -->
+<div id="zoomModal" class="zoom-modal">
+    <span class="zoom-close" onclick="closeZoom()">&times;</span>
+    <div class="zoom-info">
+        <span id="zoomLevel">Zoom: 100%</span>
+    </div>
+    <div class="zoom-instructions">
+        Sürükleyerek hareket ettirin • Tekerlek ile yakınlaştırın
+    </div>
+    <div class="zoom-content">
+        <img id="zoomImage" class="zoom-image" draggable="false">
+    </div>
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomOut()" title="Uzaklaştır">-</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Sıfırla">⌂</button>
+        <button class="zoom-btn" onclick="zoomIn()" title="Yakınlaştır">+</button>
+    </div>
+</div>
+
 <script>
+    // Mevcut changeImage fonksiyonunuz - değişiklik yok
     function changeImage(thumbnail) {
         document.getElementById("mainImage").src = thumbnail.src;
-
         // Aktif class'ı güncelle
         document.querySelectorAll(".product-detail-thumbnails img").forEach(img => {
             img.classList.remove("active");
         });
         thumbnail.classList.add("active");
     }
+
+    // Yeni eklenen zoom fonksiyonları
+    let currentZoom = 1;
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let imagePosition = { x: 0, y: 0 };
+    const zoomStep = 0.2;
+    const maxZoom = 5;
+    const minZoom = 0.5;
+
+    function openZoom() {
+        const modal = document.getElementById("zoomModal");
+        const zoomImage = document.getElementById("zoomImage");
+        const mainImage = document.getElementById("mainImage");
+
+        // Görseli modal'a yükle
+        zoomImage.src = mainImage.src;
+
+        // Modal'ı göster
+        modal.classList.add("active");
+
+        // Zoom değerlerini sıfırla
+        currentZoom = 1;
+        imagePosition = { x: 0, y: 0 };
+
+        // Görsel yüklendikten sonra güncelle
+        zoomImage.onload = function () {
+            updateZoomImage();
+            // Her zaman sürüklenebilir yap
+            zoomImage.style.cursor = 'grab';
+        };
+
+        // Body scroll'unu kapat
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeZoom() {
+        const modal = document.getElementById("zoomModal");
+        modal.classList.remove("active");
+        document.body.style.overflow = 'auto';
+    }
+
+    function zoomIn() {
+        if (currentZoom < maxZoom) {
+            currentZoom += zoomStep;
+            updateZoomImage();
+        }
+    }
+
+    function zoomOut() {
+        if (currentZoom > minZoom) {
+            currentZoom -= zoomStep;
+            updateZoomImage();
+        }
+    }
+
+    function resetZoom() {
+        currentZoom = 1;
+        imagePosition = { x: 0, y: 0 };
+        updateZoomImage();
+    }
+
+    function updateZoomImage() {
+        const zoomImage = document.getElementById("zoomImage");
+        const zoomLevel = document.getElementById("zoomLevel");
+
+        // Transform'u uygula
+        zoomImage.style.transform = `scale(${currentZoom}) translate(${imagePosition.x / currentZoom}px, ${imagePosition.y / currentZoom}px)`;
+        zoomLevel.textContent = `Zoom: ${Math.round(currentZoom * 100)}%`;
+    }
+
+    // Mouse olayları - her zoom seviyesinde sürükleme
+    let zoomImage = null;
+    let lastTouchDistance = 0;
+    let initialTouchDistance = 0;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        zoomImage = document.getElementById("zoomImage");
+
+        // Mouse down - her zoom seviyesinde çalışır
+        zoomImage.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            dragStart.x = e.clientX - imagePosition.x;
+            dragStart.y = e.clientY - imagePosition.y;
+            zoomImage.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+
+        // Mouse wheel zoom
+        zoomImage.addEventListener("wheel", (e) => {
+            e.preventDefault();
+
+            // Mouse pozisyonuna göre zoom
+            const rect = zoomImage.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            if (e.deltaY < 0) {
+                zoomIn();
+            } else {
+                zoomOut();
+            }
+        });
+
+        // Touch start
+        zoomImage.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 2) {
+                // İki parmak - pinch zoom
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialTouchDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                lastTouchDistance = initialTouchDistance;
+            } else if (e.touches.length === 1) {
+                // Tek parmak - sürükleme
+                isDragging = true;
+                const touch = e.touches[0];
+                dragStart.x = touch.clientX - imagePosition.x;
+                dragStart.y = touch.clientY - imagePosition.y;
+            }
+            e.preventDefault();
+        });
+
+        // Touch move
+        zoomImage.addEventListener("touchmove", (e) => {
+            if (e.touches.length === 2) {
+                // Pinch zoom
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const distance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+
+                if (lastTouchDistance > 0) {
+                    const scale = distance / lastTouchDistance;
+                    const newZoom = currentZoom * scale;
+
+                    if (newZoom >= minZoom && newZoom <= maxZoom) {
+                        currentZoom = newZoom;
+                        updateZoomImage();
+                    }
+                }
+                lastTouchDistance = distance;
+            } else if (e.touches.length === 1 && isDragging) {
+                // Tek parmak sürükleme
+                const touch = e.touches[0];
+                imagePosition.x = touch.clientX - dragStart.x;
+                imagePosition.y = touch.clientY - dragStart.y;
+                updateZoomImage();
+            }
+            e.preventDefault();
+        });
+
+        // Touch end
+        zoomImage.addEventListener("touchend", (e) => {
+            isDragging = false;
+            lastTouchDistance = 0;
+            initialTouchDistance = 0;
+        });
+    });
+
+    // Mouse move - her zoom seviyesinde çalışır
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            imagePosition.x = e.clientX - dragStart.x;
+            imagePosition.y = e.clientY - dragStart.y;
+            updateZoomImage();
+        }
+    });
+
+    // Mouse up
+    document.addEventListener("mouseup", () => {
+        if (isDragging) {
+            isDragging = false;
+            if (zoomImage) {
+                zoomImage.style.cursor = 'grab';
+            }
+        }
+    });
+
+    // Klavye kısayolları
+    document.addEventListener("keydown", (e) => {
+        if (document.getElementById("zoomModal").classList.contains("active")) {
+            switch (e.key) {
+                case "Escape":
+                    closeZoom();
+                    break;
+                case "+":
+                case "=":
+                    zoomIn();
+                    break;
+                case "-":
+                    zoomOut();
+                    break;
+                case "0":
+                    resetZoom();
+                    break;
+            }
+        }
+    });
+
+    // Modal dışına tıklayınca kapat
+    document.getElementById("zoomModal").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("zoomModal")) {
+            closeZoom();
+        }
+    });
 </script>

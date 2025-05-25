@@ -13,6 +13,8 @@
         public int BrandId { get; set; }
         public Brand? Brand { get; set; }
         public int OrderNo { get; set; }
+        public string? Detail { get; set; } 
+
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public IList<ProductCategory>? ProductCategories { get; set; }

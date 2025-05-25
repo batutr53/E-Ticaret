@@ -4,7 +4,7 @@
     </div>
     <div class="social-icons">
         <a href="https://www.instagram.com/detayflowers" target="_blank">
-            <i class="fa-brands fa-instagram fa-3x"></i> 
+            <i class="fa-brands fa-instagram fa-3x"></i>
         </a>
     </div>
     <div class="auth-links">
@@ -20,7 +20,7 @@
     </a>
 
     <div class="contact-numbers">
-      
+
         <div class="phone-row">
             <i class="fa-solid fa-phone phone-icon"></i>
             <a href="tel:+905333612554">+90 533 361 25 54</a>
@@ -41,32 +41,31 @@
 </header> <!-- Navigation -->
 <nav class="main-nav">
     <div class="nav-container">
-        <button class="mobile-menu-btn">
+        <button class="mobile-menu-btn" aria-label="Menü">
             <i class="fa-solid fa-bars"></i>
         </button>
         <ul class="nav-links nav-left">
-            <li><a href="/"><i class="fa-solid fa-house"></i></a></li>
+            <li>
+                <a href="/" aria-label="Ana Sayfa">
+                    <i class="fa-solid fa-house"></i>
+                </a>
+            </li>
         </ul>
         <ul class="nav-links nav-center">
             <li class="has-dropdown">
-                <a href="#"><i class="fa-solid fa-list-ul"></i> KATEGORİLERİMİZ <i class="fa-solid fa-chevron-down"></i></a>
-                <div class="dropdown-menu">
-                    <div class="dropdown-content">
-                        @await Component.InvokeAsync("Categories")
-                    </div>
-                </div>
+                <a href="#"><i class="fa-solid fa-list-ul"></i><span>TÜM KATEGORİLER</span><i class="fa-solid fa-chevron-down"></i></a>
+                <div class="dropdown-menu"><div class="dropdown-content">@await Component.InvokeAsync("Categories")</div></div>
             </li>
             @await Component.InvokeAsync("CategoriesMain")
-            @*<li><a href="/Category?id=5"><i class="fa-solid fa-gift"></i> KADINLAR GÜNÜ ÇİÇEKLERİ</a></li>
-            <li><a href="/Category?id=6"><i class="fa-solid fa-leaf"></i> ARANJMANLAR</a></li>
-            <li><a href="/Category?id=7"><i class="fa-solid fa-seedling"></i> ORKİDELER</a></li>
-            <li><a href="/Category?id=8"><i class="fa-solid fa-fan"></i> ÇİÇEK BUKETLERİ</a></li>*@
         </ul>
         <div class="cart-container">
             @await Component.InvokeAsync("Basket")
         </div>
     </div>
 </nav>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay"></div>
 
 <!-- Mobile Menu -->
 <div class="mobile-menu">
@@ -85,10 +84,7 @@
             <div class="mobile-category-content">
                 @await Component.InvokeAsync("Categories")
             </div>
-        <li><a href="/Category?id=5"><i class="fa-solid fa-gift"></i> KADINLAR GÜNÜ ÇİÇEKLERİ</a></li>
-        <li><a href="/Category?id=6"><i class="fa-solid fa-leaf"></i> ARANJMANLAR</a></li>
-        <li><a href="/Category?id=7"><i class="fa-solid fa-seedling"></i> ORKİDELER</a></li>
-        <li><a href="/Category?id=8"><i class="fa-solid fa-fan"></i> ÇİÇEK BUKETLERİ</a></li>
+            @await Component.InvokeAsync("CategoriesMain")
         <li><a href="/Home/About"><i class="fa-solid fa-info-circle"></i> Hakkımızda</a></li>
         <li><a href="/Home/ContactUs"><i class="fa-solid fa-envelope"></i> İletişim</a></li>
     </ul>
