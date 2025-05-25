@@ -5532,3 +5532,415 @@ ul.category-level-2 {
 .mobile-menu-btn {
     display: none; /* JS ile active yapılır */
 }
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 5%;
+    background-color: #fff;
+    width: 100%;
+    min-height: 80px;
+}
+
+/* Logo */
+.logo {
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+    .logo img {
+        height: 120px;
+        width: auto;
+        max-width: 420px;
+        padding: 5px;
+        margin: 5px;
+        display: block;
+    }
+
+/* Contact Numbers */
+.contact-numbers {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.6;
+    flex-shrink: 0;
+}
+
+.phone-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+    .phone-row a {
+        color: #333;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+        .phone-row a:hover {
+            color: #2E8B57;
+        }
+
+.phone-icon {
+    color: #333;
+    flex-shrink: 0;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+    width: 500px;
+    max-width: 100%;
+    flex-shrink: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 45px 12px 20px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    background-color: #f1f1f1;
+    transition: all 0.3s;
+}
+
+    .search-input:focus {
+        outline: none;
+        border-color: #2E8B57;
+        box-shadow: 0 0 5px rgba(46, 139, 87, 0.3);
+    }
+
+.search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #777;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+}
+
+/* ============================== */
+/* RESPONSIVE BREAKPOINTS */
+/* ============================== */
+
+/* Extra Large Screens (1400px+) */
+@media (min-width: 1400px) {
+    .main-header {
+        padding: 0px 8%;
+    }
+
+    .logo img {
+        height: 140px;
+        max-width: 460px;
+    }
+
+    .search-container {
+        width: 600px;
+    }
+
+    .contact-numbers,
+    .phone-row {
+        font-size: 18px;
+    }
+}
+
+/* Large Screens (1200px - 1399px) */
+@media (max-width: 1399px) {
+    .main-header {
+        padding: 0px 6%;
+    }
+
+    .logo img {
+        height: 130px;
+        max-width: 450px;
+    }
+
+    .search-container {
+        width: 550px;
+    }
+}
+
+/* Medium Screens (992px - 1199px) */
+@media (max-width: 1199px) {
+    .main-header {
+        padding: 0px 4%;
+    }
+
+    .logo img {
+        height: 110px;
+        max-width: 380px;
+    }
+
+    .search-container {
+        width: 450px;
+    }
+}
+
+/* Tablets (768px - 991px) */
+@media (max-width: 991px) {
+    .main-header {
+        padding: 15px 3%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        min-height: auto;
+    }
+
+    .logo {
+        order: 1;
+        width: 100%;
+        text-align: center;
+    }
+
+        .logo img {
+            height: 100px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+    .search-container {
+        order: 2;
+        width: 60%;
+        min-width: 300px;
+    }
+
+    .contact-numbers {
+        order: 3;
+        width: auto;
+        align-items: center;
+        text-align: center;
+    }
+
+    .phone-row {
+        font-size: 15px;
+    }
+}
+
+/* Large Mobiles (576px - 767px) */
+@media (max-width: 767px) {
+    .main-header {
+        padding: 15px 3%;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .logo {
+        width: 100%;
+        text-align: center;
+    }
+
+        .logo img {
+            height: 90px;
+            max-width: 320px;
+        }
+
+    .search-container {
+        width: 100%;
+        max-width: 400px;
+        order: 3;
+    }
+
+    .contact-numbers {
+        order: 2;
+        width: 100%;
+        align-items: center;
+    }
+
+    .phone-row {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+}
+
+/* Medium Mobiles (480px - 575px) */
+@media (max-width: 575px) {
+    .main-header {
+        padding: 12px 3%;
+        gap: 12px;
+    }
+
+    .logo img {
+        height: 80px;
+        max-width: 280px;
+    }
+
+    .search-container {
+        max-width: 350px;
+    }
+
+    .search-input {
+        padding: 10px 40px 10px 15px;
+        font-size: 13px;
+    }
+
+    .search-btn {
+        right: 8px;
+        font-size: 16px;
+    }
+
+    .contact-numbers,
+    .phone-row {
+        font-size: 15px;
+    }
+}
+
+/* Small Mobiles (360px - 479px) */
+@media (max-width: 479px) {
+    .main-header {
+        padding: 10px 2%;
+        gap: 10px;
+    }
+
+    .logo img {
+        height: 70px;
+        max-width: 250px;
+    }
+
+    .search-container {
+        max-width: 320px;
+    }
+
+    .search-input {
+        padding: 9px 35px 9px 12px;
+        font-size: 12px;
+    }
+
+    .search-btn {
+        right: 8px;
+        font-size: 14px;
+    }
+
+    .contact-numbers,
+    .phone-row {
+        font-size: 14px;
+    }
+
+    .phone-row {
+        gap: 6px;
+    }
+}
+
+/* Extra Small Mobiles (<360px) */
+@media (max-width: 359px) {
+    .main-header {
+        padding: 8px 2%;
+        gap: 8px;
+    }
+
+    .logo img {
+        height: 60px;
+        max-width: 220px;
+    }
+
+    .search-container {
+        max-width: 280px;
+    }
+
+    .search-input {
+        padding: 8px 30px 8px 10px;
+        font-size: 11px;
+        border-radius: 20px;
+    }
+
+    .search-btn {
+        right: 6px;
+        font-size: 12px;
+    }
+
+    .contact-numbers,
+    .phone-row {
+        font-size: 13px;
+    }
+
+    .phone-row {
+        gap: 5px;
+        margin-bottom: 3px;
+    }
+
+    .phone-icon {
+        font-size: 12px;
+    }
+}
+
+/* Landscape Orientation for Mobiles */
+@media (max-width: 767px) and (orientation: landscape) {
+    .main-header {
+        padding: 8px 3%;
+        gap: 8px;
+        min-height: auto;
+    }
+
+    .logo img {
+        height: 60px;
+        max-width: 200px;
+    }
+
+    .search-container {
+        max-width: 300px;
+    }
+
+    .search-input {
+        padding: 8px 35px 8px 12px;
+        font-size: 12px;
+    }
+
+    .contact-numbers,
+    .phone-row {
+        font-size: 13px;
+    }
+
+    .phone-row {
+        margin-bottom: 2px;
+    }
+}
+
+/* Ultra Small Screens (<=320px) */
+@media (max-width: 320px) {
+    .main-header {
+        padding: 6px 1%;
+        gap: 6px;
+    }
+
+    .logo img {
+        height: 50px;
+        max-width: 180px;
+    }
+
+    .search-container {
+        max-width: 250px;
+    }
+
+    .search-input {
+        padding: 6px 28px 6px 8px;
+        font-size: 10px;
+    }
+
+    .search-btn {
+        right: 5px;
+        font-size: 10px;
+    }
+
+    .contact-numbers,
+    .phone-row {
+        font-size: 11px;
+    }
+
+    .phone-row {
+        gap: 4px;
+    }
+
+    .phone-icon {
+        font-size: 10px;
+    }
+}
