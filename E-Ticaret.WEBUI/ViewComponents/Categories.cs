@@ -15,7 +15,7 @@ namespace E_Ticaret.WEBUI.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories = await _categoryService.GetAllAsync(x => x.IsActive && x.IsTopMenu);
+            var categories = await _categoryService.GetAllAsync(x => x.IsActive && x.IsTopMenu && x.ParentId == 1);
             return View(categories);
         }
     }
