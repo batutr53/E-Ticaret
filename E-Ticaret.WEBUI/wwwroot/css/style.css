@@ -4081,6 +4081,7 @@ ul.category-level-2 {
 
 .menu-item:hover .dropdown-menu {
     opacity: 1;
+    z-index: 9999;
     visibility: visible;
     display: grid;
     grid-template-columns: repeat(4, minmax(200px, 1fr));
@@ -4207,6 +4208,7 @@ ul.category-level-2 {
     }
 
         .main-menu.active {
+            z-index: 9999;
             display: flex;
         }
 
