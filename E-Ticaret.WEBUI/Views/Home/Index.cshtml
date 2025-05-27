@@ -34,7 +34,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model.OrderByDescending(x => x.OrderNo).Where(x=>x.IsHome))
+        @foreach (var item in Model.OrderBy(x => x.OrderNo).Where(x=>x.IsHome))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
                  ?? item.ProductImages?.FirstOrDefault()?.ImageUrl
