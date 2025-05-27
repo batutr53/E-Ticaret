@@ -94,3 +94,15 @@ quantitySelectors.forEach(selector => {
     parentLi.classList.toggle("open");
         });
     });
+window.addEventListener('DOMContentLoaded', function () {
+    const navbar = document.getElementById('mainNavbar');
+    const navOffsetTop = navbar.offsetTop;
+
+    window.addEventListener('scroll', function () {
+        if (window.scrollY >= navOffsetTop) {
+            navbar.classList.add('sticky');
+        } else {
+            navbar.classList.remove('sticky');
+        }
+    });
+});

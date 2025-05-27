@@ -1095,7 +1095,7 @@ ul.category-level-2 {
         height: 250px;
     }
 
-    
+
 
     /* Products */
     .section-header h2 {
@@ -3982,9 +3982,19 @@ ul.category-level-2 {
 /* Main Navigation Bar */
 .main-nav {
     background-color: #2E8B57;
-    position: relative;
+    width: 100%;
     z-index: 1000;
+    margin-top:10px;
+    transition: box-shadow 0.2s, background 0.2s;
 }
+
+    .main-nav.sticky {
+        position: fixed;
+        margin: 0px;
+        top: 0;
+        left: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
 
 .nav-container {
     max-width: 1400px;
