@@ -150,7 +150,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
 
             var product = await _context.Products
-                .Include(p => p.ProductImages) 
+                .Include(p => p.ProductImages)
                 .Include(p => p.ProductCategories)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -385,5 +385,37 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             return _context.Products.Any(e => e.Id == id);
         }
+
+
+        public async Task<IActionResult> Sort()
+        {
+            var products = await _context.Products.OrderByDescending(x=>x.Id)
+                       .Include(p => p.ProductCategories)
+                       .Include(p => p.ProductImages)
+                       .Where(x => x.IsHome)
+                .ToListAsync();
+            return View(products);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrder([FromBody] List<int> ids)
+        {
+            int order = 1;
+            foreach (var id in ids)
+            {
+                var product = await _context.Products
+                    .Include(p => p.ProductCategories)
+                    .Include(p => p.ProductImages)
+                    .Include(p=>p.Brand)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (product != null)
+                {
+                    product.OrderNo = order++;
+                }
+            }
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
     }
 }

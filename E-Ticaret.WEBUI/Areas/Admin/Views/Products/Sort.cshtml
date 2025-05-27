@@ -1,0 +1,150 @@
+﻿@model List<E_Ticaret.Core.Entities.Product>
+
+@{
+    ViewBag.Title = "Ürün Sıralama";
+}
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+
+<div class="container-fluid user-select-none">
+    <!-- user-select-none ile tüm alanda seçim engelli -->
+    <h1 class="h3 mb-4 text-gray-800"><i class="fas fa-sort-amount-up-alt"></i> Ürün Sıralama</h1>
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-arrows-alt"></i> Sürükle Bırak ile Sırala</h6>
+                    <button id="saveOrder" class="btn btn-success btn-sm">
+                        <i class="fas fa-save"></i> Sıralamayı Kaydet
+                    </button>
+                </div>
+                <div class="card-body">
+                    <ul id="sortable" class="sortable-flex">
+                        @foreach (var item in Model)
+                        {
+                            <li class="sortable-card" data-id="@item.Id" title="Sürükle ve yer değiştir">
+                                @{
+                                    var defaultImage = item.ProductImages?.FirstOrDefault(x => x.IsDefault)
+                                                      ?? item.ProductImages?.FirstOrDefault();
+                                    var imageUrl = defaultImage != null ? defaultImage.ImageUrl : "noimage.png";
+                                }
+                                <img src="/img/@imageUrl" alt="@item.Name" class="rounded-circle shadow-sm mb-2" width="120" height="120" style="object-fit:cover; user-drag: none;">
+                                <div class="font-weight-bold text-center mb-1" style="font-size:1rem;">@item.Name</div>
+                                <div class="badge badge-light border mb-1">ID: @item.Id</div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .user-select-none,
+    .user-select-none *,
+    .sortable-card,
+    .sortable-card * {
+        user-select: none !important; /* Yazı, görsel, hiçbir şey seçilemez */
+        -webkit-user-select: none !important;
+        -ms-user-select: none !important;
+    }
+
+    .sortable-flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        padding-left: 0;
+        list-style: none;
+        justify-content: flex-start;
+    }
+
+    .sortable-card {
+        width: 170px;
+        min-height: 220px;
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(58,59,69,.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 8px;
+        margin-bottom: 0;
+        cursor: grab !important; /* Kartın tamamı sürüklenebilir */
+        transition: box-shadow 0.2s, transform 0.13s;
+        z-index: 1;
+    }
+
+        .sortable-card:active {
+            cursor: grabbing !important;
+            z-index: 2;
+            box-shadow: 0 1rem 2rem rgba(0,0,0,.17);
+            transform: scale(1.03);
+        }
+
+        .sortable-card:hover {
+            box-shadow: 0 1rem 2rem rgba(0,0,0,.12);
+            z-index: 2;
+        }
+</style>
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script>
+        $(function () {
+            // Kartın tamamı sürüklenebilsin diye handle belirtmiyoruz
+            $("#sortable").sortable({
+                // Sadece kartlar taşınsın
+                items: "> li",
+                tolerance: "pointer",
+                scroll: true,
+                placeholder: "sortable-card sortable-placeholder",
+                revert: 120,
+                // axis: "y", // Eğer sadece dikey istersen aç, hem yatay hem dikey için bu satırı kaldır!
+                update: function (event, ui) {
+                    // Sürüklenme bittiğinde ekstra bir animasyon veya bildirim için kullanabilirsin.
+                }
+            });
+
+            // Placeholder için stil
+            $("<style>")
+                .prop("type", "text/css")
+                .html(`
+                    .sortable-placeholder {
+                        background: #f4f8fb;
+                        border: 2px dashed #60a5fa;
+                        min-height: 220px;
+                        border-radius: 1rem;
+                        box-shadow: none;
+                    }
+                `).appendTo("head");
+
+            // Kayıt işlemi
+            $("#saveOrder").click(function () {
+                var order = [];
+                $("#sortable li").each(function () {
+                    order.push($(this).data("id"));
+                });
+
+                $.ajax({
+                    url: '@Url.Action("UpdateOrder", "Products")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(order),
+                    success: function (res) {
+                        if (res.success)
+                            Swal.fire('Başarılı!', 'Sıralama başarıyla kaydedildi!', 'success');
+                        else
+                            Swal.fire('Hata!', 'Bir hata oluştu.', 'error');
+                    },
+                    error: function () {
+                        Swal.fire('Hata!', 'Bir hata oluştu.', 'error');
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+}
+    
