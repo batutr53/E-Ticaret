@@ -53,17 +53,30 @@
 
         <!-- Main Menu -->
         <div class="main-menu" id="mainMenu">
+
             <div class="menu-item">
-                <a href="#" onclick="toggleDropdown(event, this)">
+                <a href="#" onclick="toggleDropdown(event, 'menu-one')">
                     <i class="fas fa-th-large"></i>
-                    KATEGORİLERİMİZ
+                    KATEGORİLER
                 </a>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu menu-one">
                     @await Component.InvokeAsync("Categories")
-                    </div>
+                </div>
             </div>
-                @await Component.InvokeAsync("CategoriesMain")
+
+            <div class="menu-item">
+                <a href="#" onclick="toggleDropdown(event, 'menu-two')">
+                    <i class="fas fa-th-large"></i>
+                    GÖNDERİM TÜRÜ
+                </a>
+                <div class="dropdown-menu menu-two">
+                    @await Component.InvokeAsync("CategoriesTwo")
+                </div>
+            </div>
+
+            @await Component.InvokeAsync("CategoriesMain")
         </div>
+
 
         <!-- Cart Section -->
         <div class="nav-cart">

@@ -35,7 +35,7 @@ ul {
 }
 
     .top-links a {
-        font-size: 14px;
+        font-size: 12px;
         color: #333;
         transition: color 0.3s;
         display: flex;
@@ -166,7 +166,6 @@ ul {
     height: 300px;
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     margin-bottom: 20px;
 }
 
@@ -4039,16 +4038,16 @@ ul.category-level-2 {
     .menu-item > a {
         color: #fff;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 500;
         text-transform: uppercase;
-        padding: 0 20px;
+        padding: 0 15px;
         height: 100%;
         display: flex;
         align-items: center;
         white-space: nowrap;
         transition: background-color 0.3s;
-        letter-spacing: 0.5px;
+        /*letter-spacing: 0.5px;*/
         gap: 8px;
     }
 
@@ -4094,7 +4093,7 @@ ul.category-level-2 {
 
 /* Second dropdown - 2 columns */
 .menu-item:nth-child(2) .dropdown-menu {
-    grid-template-columns: repeat(2, minmax(250px, 1fr));
+    grid-template-columns: repeat(4, minmax(250px, 1fr));
 }
 
 .dropdown-menu a {
@@ -4102,7 +4101,7 @@ ul.category-level-2 {
     padding: 25px 50px;
     color: #333;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 12px;
     border-bottom: 1px solid #f0f0f0;
     transition: all 0.3s;
     white-space: nowrap;
@@ -4113,7 +4112,7 @@ ul.category-level-2 {
 
     /* Dropdown Icons */
     .dropdown-menu a i {
-        font-size: 14px;
+        font-size: 12px;
         color: #2e7d5f;
         opacity: 0.8;
         width: 20px;
@@ -4161,7 +4160,7 @@ ul.category-level-2 {
     right: 0;
     background-color: #ff4757;
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     min-width: 18px;
     height: 18px;
@@ -4176,7 +4175,7 @@ ul.category-level-2 {
 .mobile-toggle {
     display: none;
     color: #fff;
-    font-size: 20px;
+    font-size: 12px;
     padding: 10px;
     cursor: pointer;
 }
@@ -4185,7 +4184,7 @@ ul.category-level-2 {
 @media (max-width: 1024px) {
     .menu-item > a {
         padding: 0 10px;
-        font-size: 14px;
+        font-size: 12px;
     }
 }
 

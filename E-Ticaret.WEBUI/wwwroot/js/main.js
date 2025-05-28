@@ -5,25 +5,24 @@ function toggleMobileMenu() {
 }
 
 // Toggle Dropdown in Mobile
-function toggleDropdown(event, element) {
+function toggleDropdown(event, menuClass) {
     event.preventDefault();
 
-    // Only toggle in mobile view
     if (window.innerWidth <= 768) {
-        const menuItem = element.parentElement;
-        const wasActive = menuItem.classList.contains('active');
-
-        // Close all other dropdowns
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
+        // Tüm menüleri kapat
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
         });
 
-        // Toggle current dropdown
-        if (!wasActive) {
-            menuItem.classList.add('active');
+        const targetMenu = document.querySelector(`.${menuClass}`);
+        if (targetMenu.style.display === 'block') {
+            targetMenu.style.display = 'none';
+        } else {
+            targetMenu.style.display = 'block';
         }
     }
 }
+
 
 // Close mobile menu when clicking outside
 document.addEventListener('click', function (event) {

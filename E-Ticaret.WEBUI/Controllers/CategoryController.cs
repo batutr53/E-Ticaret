@@ -27,11 +27,10 @@ namespace E_Ticaret.WEBUI.Controllers
             {
                 return NotFound();
             }
-
             var products = category.ProductCategories
-                .Select(pc => pc.Product)
-                .OrderByDescending(p => p.Id)
-                .ToList();
+          .Select(pc => pc.Product)
+          .OrderBy(p => p.OrderNo)
+          .ToList();
 
             var pagedProducts = products
                 .Skip((page - 1) * pageSize)

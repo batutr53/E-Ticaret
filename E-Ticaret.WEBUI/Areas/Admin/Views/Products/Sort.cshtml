@@ -1,14 +1,32 @@
 ﻿@model List<E_Ticaret.Core.Entities.Product>
-
 @{
-    ViewBag.Title = "Ürün Sıralama";
+    var categories = ViewBag.Categories as List<E_Ticaret.Core.Entities.Category>;
+    var selectedCategoryId = (int)(ViewBag.SelectedCategoryId ?? 0);
 }
-
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
 
 <div class="container-fluid user-select-none">
-    <!-- user-select-none ile tüm alanda seçim engelli -->
-    <h1 class="h3 mb-4 text-gray-800"><i class="fas fa-sort-amount-up-alt"></i> Ürün Sıralama</h1>
+    <h1 class="h3 mb-4 text-gray-800">
+        <i class="fas fa-sort-amount-up-alt"></i> Ürün Sıralama
+    </h1>
+    <div class="row justify-content-center mb-3">
+        <div class="col-lg-6">
+            <select class="form-control" id="categorySelect">
+                @foreach (var cat in categories)
+                {
+                    if (cat.Id == selectedCategoryId)
+                    {
+                        <option value="@cat.Id" selected>@cat.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                }
+
+            </select>
+        </div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow mb-4">
@@ -22,13 +40,11 @@
                     <ul id="sortable" class="sortable-flex">
                         @foreach (var item in Model)
                         {
+                            var defaultImage = item.ProductImages?.FirstOrDefault(x => x.IsDefault)
+                                                ?? item.ProductImages?.FirstOrDefault();
+                            var imageUrl = defaultImage != null ? defaultImage.ImageUrl : "noimage.png";
                             <li class="sortable-card" data-id="@item.Id" title="Sürükle ve yer değiştir">
-                                @{
-                                    var defaultImage = item.ProductImages?.FirstOrDefault(x => x.IsDefault)
-                                                      ?? item.ProductImages?.FirstOrDefault();
-                                    var imageUrl = defaultImage != null ? defaultImage.ImageUrl : "noimage.png";
-                                }
-                                <img src="/img/@imageUrl" alt="@item.Name" class="rounded-circle shadow-sm mb-2" width="120" height="120" style="object-fit:cover; user-drag: none;">
+                                <img src="/img/@imageUrl" alt="@item.Name" class="rounded-circle shadow-sm mb-2" width="120" height="120" style="object-fit:cover;">
                                 <div class="font-weight-bold text-center mb-1" style="font-size:1rem;">@item.Name</div>
                                 <div class="badge badge-light border mb-1">ID: @item.Id</div>
                             </li>
@@ -45,7 +61,7 @@
     .user-select-none *,
     .sortable-card,
     .sortable-card * {
-        user-select: none !important; /* Yazı, görsel, hiçbir şey seçilemez */
+        user-select: none !important;
         -webkit-user-select: none !important;
         -ms-user-select: none !important;
     }
@@ -71,7 +87,7 @@
         align-items: center;
         padding: 16px 8px;
         margin-bottom: 0;
-        cursor: grab !important; /* Kartın tamamı sürüklenebilir */
+        cursor: grab !important;
         transition: box-shadow 0.2s, transform 0.13s;
         z-index: 1;
     }
@@ -91,20 +107,62 @@
 
 @section Scripts {
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function loadProducts(categoryId) {
+            $.get('@Url.Action("GetProductsByCategory", "Products")', { categoryId: categoryId }, function (data) {
+                var html = '';
+                data.forEach(function (item) {
+                    var defaultImage = (item.images.find(i => i.isDefault) || item.images[0] || { imageUrl: "noimage.png" }).imageUrl;
+                    html += `
+        <li class="sortable-card" data-id="${item.id}" title="Sürükle ve yer değiştir">
+            <img src="/img/${defaultImage}" alt="${item.name}" class="rounded-circle shadow-sm mb-2" width="120" height="120" style="object-fit:cover;">
+            <div class="font-weight-bold text-center mb-1" style="font-size:1rem;">${item.name}</div>
+            <div class="badge badge-light border mb-1">ID: ${item.id}</div>
+        </li>
+    `;
+                });
+                $("#sortable").html(html);
+                $("#sortable").sortable("refresh");
+            });
+        }
+
         $(function () {
-            // Kartın tamamı sürüklenebilsin diye handle belirtmiyoruz
             $("#sortable").sortable({
-                // Sadece kartlar taşınsın
                 items: "> li",
                 tolerance: "pointer",
                 scroll: true,
                 placeholder: "sortable-card sortable-placeholder",
-                revert: 120,
-                // axis: "y", // Eğer sadece dikey istersen aç, hem yatay hem dikey için bu satırı kaldır!
-                update: function (event, ui) {
-                    // Sürüklenme bittiğinde ekstra bir animasyon veya bildirim için kullanabilirsin.
-                }
+                revert: 120
+            });
+
+            $("#categorySelect").change(function () {
+                var catId = $(this).val();
+                loadProducts(catId);
+            });
+
+            $("#saveOrder").click(function () {
+                var order = [];
+                $("#sortable li").each(function () {
+                    order.push($(this).data("id"));
+                });
+                var selectedCatId = $("#categorySelect").val();
+
+                $.ajax({
+                    url: '@Url.Action("UpdateOrder", "Products")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ ids: order, categoryId: selectedCatId }),
+                    success: function (res) {
+                        if (res.success)
+                            Swal.fire('Başarılı!', 'Sıralama başarıyla kaydedildi!', 'success');
+                        else
+                            Swal.fire('Hata!', 'Bir hata oluştu.', 'error');
+                    },
+                    error: function () {
+                        Swal.fire('Hata!', 'Bir hata oluştu.', 'error');
+                    }
+                });
             });
 
             // Placeholder için stil
@@ -119,32 +177,6 @@
                         box-shadow: none;
                     }
                 `).appendTo("head");
-
-            // Kayıt işlemi
-            $("#saveOrder").click(function () {
-                var order = [];
-                $("#sortable li").each(function () {
-                    order.push($(this).data("id"));
-                });
-
-                $.ajax({
-                    url: '@Url.Action("UpdateOrder", "Products")',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(order),
-                    success: function (res) {
-                        if (res.success)
-                            Swal.fire('Başarılı!', 'Sıralama başarıyla kaydedildi!', 'success');
-                        else
-                            Swal.fire('Hata!', 'Bir hata oluştu.', 'error');
-                    },
-                    error: function () {
-                        Swal.fire('Hata!', 'Bir hata oluştu.', 'error');
-                    }
-                });
-            });
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 }
-    

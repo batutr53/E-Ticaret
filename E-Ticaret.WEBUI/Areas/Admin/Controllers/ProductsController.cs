@@ -389,26 +389,48 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> Sort()
         {
-            var products = await _context.Products.OrderByDescending(x=>x.Id)
-                       .Include(p => p.ProductCategories)
-                       .Include(p => p.ProductImages)
-                       .Where(x => x.IsHome)
+            var categories = await _context.Categories.OrderByDescending(x => x.Name).ToListAsync();
+            var firstCatId = categories.FirstOrDefault()?.Id ?? 0;
+            var products = await _context.Products
+                .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == firstCatId))
+                .Include(p => p.ProductImages)
+                .OrderBy(p => p.OrderNo)
                 .ToListAsync();
+
+            ViewBag.Categories = categories;
+            ViewBag.SelectedCategoryId = firstCatId;
             return View(products);
         }
+
+        public async Task<IActionResult> GetProductsByCategory(int categoryId)
+        {
+            var products = await _context.Products
+                .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
+                .Include(p => p.ProductImages)
+                .OrderByDescending(p => p.OrderNo)
+              .Select(p => new
+              {
+                  id = p.Id,
+                  name = p.Name,
+                  images = p.ProductImages.Select(i => new { imageUrl = i.ImageUrl, isDefault = i.IsDefault }).ToList()
+              })
+
+                .ToListAsync();
+
+            return Json(products);
+        }
         [HttpPost]
-        public async Task<IActionResult> UpdateOrder([FromBody] List<int> ids)
+        public async Task<IActionResult> UpdateOrder([FromBody] OrderUpdateRequest data)
         {
             int order = 1;
-            foreach (var id in ids)
+            foreach (var id in data.ids)
             {
                 var product = await _context.Products
                     .Include(p => p.ProductCategories)
-                    .Include(p => p.ProductImages)
-                    .Include(p=>p.Brand)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
-                if (product != null)
+                var pc = product?.ProductCategories?.FirstOrDefault(pc => pc.CategoryId == data.categoryId);
+                if (pc != null)
                 {
                     product.OrderNo = order++;
                 }
