@@ -1,0 +1,336 @@
+﻿@model E_Ticaret.WEBUI.Areas.Admin.Models.FooterAdminViewModel
+@{
+    ViewData["Title"] = "Footer Yönetimi";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Footer Yönetimi</h1>
+    <ul class="nav nav-tabs mb-3" id="footerTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="sections-tab" data-toggle="tab" href="#sections" role="tab">Footer Bölümleri</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="links-tab" data-toggle="tab" href="#links" role="tab">Footer Linkleri</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="contacts-tab" data-toggle="tab" href="#contacts" role="tab">İletişim Alanları</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="mobile-tab" data-toggle="tab" href="#mobile" role="tab">Mobil Menü</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="footerTabContent">
+        <!-- Footer Sections -->
+        <div class="tab-pane fade show active" id="sections" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <span class="m-0 font-weight-bold text-primary">Footer Bölümleri</span>
+                    <button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#addSectionForm">+ Yeni Ekle</button>
+                </div>
+                <div class="collapse" id="addSectionForm">
+                    <div class="card-body">
+                        <form asp-action="AddSection" method="post" class="form-inline">
+                            <input name="Title" class="form-control mr-2" placeholder="Başlık" required />
+                            <input name="OrderNo" class="form-control mr-2" type="number" min="1" placeholder="Sıra No" required />
+                            <label class="mr-2">Aktif?</label>
+                            <input name="IsActive" type="checkbox" value="true" class="form-control mr-2" checked />
+                            <button type="submit" class="btn btn-primary btn-sm">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Başlık</th>
+                                <th>Sıra</th>
+                                <th>Aktif</th>
+                                <th style="width:120px;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Sections)
+                            {
+                                <tr>
+                                    <form asp-action="EditSection" method="post">
+                                        <input type="hidden" name="Id" value="@s.Id" />
+                                    <td><input name="Title" class="form-control form-control-sm" value="@s.Title" required /></td>
+                                    <td><input name="OrderNo" class="form-control form-control-sm" type="number" value="@s.OrderNo" min="1" required /></td>
+                                    <td>
+                                        <input name="IsActive" type="checkbox" value="true" @(s.IsActive ? "checked" : "") />
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                                        <form asp-action="DeleteSection" method="post" style="display:inline">
+                                            <input type="hidden" name="id" value="@s.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm ml-1" onclick="return confirm('Silinsin mi?')">Sil</button>
+                                        </form>
+                                    </td>
+                                    </form>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="tab-pane fade" id="links" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <span class="m-0 font-weight-bold text-primary">Footer Linkleri</span>
+                    <button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#addLinkForm">+ Yeni Ekle</button>
+                </div>
+                <div class="collapse" id="addLinkForm">
+                    <div class="card-body">
+                        <form asp-action="AddLink" method="post" class="form-inline">
+                            <select name="SectionId" class="form-control mr-2" required>
+                                <option value="">Bölüm Seç...</option>
+                                @foreach (var sec in Model.Sections)
+                                {
+                                    <option value="@sec.Id">@sec.Title</option>
+                                }
+                            </select>
+                            <input name="Title" class="form-control mr-2" placeholder="Başlık" required />
+                            <input name="Url" class="form-control mr-2" placeholder="URL" required />
+                            <input name="IconClass" class="form-control mr-2" placeholder="İkon Sınıfı" />
+                            <input name="OrderNo" class="form-control mr-2" type="number" min="1" placeholder="Sıra No" required />
+                            <label class="mr-2">Aktif?</label>
+                            <input name="IsActive" type="checkbox" value="true" class="form-control mr-2" checked />
+                            <button type="submit" class="btn btn-primary btn-sm">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Bölüm</th>
+                                <th>Başlık</th>
+                                <th>URL</th>
+                                <th>İkon</th>
+                                <th>Sıra</th>
+                                <th>Aktif</th>
+                                <th style="width:120px;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sec in Model.Sections)
+                            {
+                                foreach (var l in sec.Links)
+                                {
+                                    <tr>
+                                        <form asp-action="EditLink" method="post">
+                                            <input type="hidden" name="Id" value="@l.Id" />
+                                        <td>
+                                            <select name="SectionId" class="form-control form-control-sm" required>
+                                                @foreach (var s in Model.Sections)
+                                                {
+                                                    if (s.Id == l.SectionId)
+                                                    {
+                                                        <option value="@s.Id" selected="selected">@s.Title</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@s.Id">@s.Title</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </td>
+                                        <td><input name="Title" class="form-control form-control-sm" value="@l.Title" required /></td>
+                                        <td><input name="Url" class="form-control form-control-sm" value="@l.Url" required /></td>
+                                        <td><input name="IconClass" class="form-control form-control-sm" value="@l.IconClass" /></td>
+                                        <td><input name="OrderNo" class="form-control form-control-sm" type="number" value="@l.OrderNo" min="1" required /></td>
+                                        <td>
+                                            <input name="IsActive" type="checkbox" value="true" @(l.IsActive ? "checked" : "") />
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                                            <form asp-action="DeleteLink" method="post" style="display:inline">
+                                                <input type="hidden" name="id" value="@l.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm ml-1" onclick="return confirm('Silinsin mi?')">Sil</button>
+                                            </form>
+                                        </td>
+                                        </form>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Contact -->
+        <div class="tab-pane fade" id="contacts" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <span class="m-0 font-weight-bold text-primary">İletişim Alanları</span>
+                    <button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#addContactForm">+ Yeni Ekle</button>
+                </div>
+                <div class="collapse" id="addContactForm">
+                    <div class="card-body">
+                        <form asp-action="AddContact" method="post" class="form-inline">
+                            <input name="Title" class="form-control mr-2" placeholder="Başlık" required />
+                            <input name="Value" class="form-control mr-2" placeholder="Değer (Telefon, mail, vs)" required />
+                            <select name="Type" class="form-control mr-2" required>
+                                <option value="">Tip</option>
+                                <option value="phone">Telefon</option>
+                                <option value="mail">Mail</option>
+                                <option value="whatsapp">WhatsApp</option>
+                                <option value="custom">Diğer</option>
+                            </select>
+                            <input name="IconClass" class="form-control mr-2" placeholder="İkon Sınıfı" />
+                            <input name="OrderNo" class="form-control mr-2" type="number" min="1" placeholder="Sıra No" required />
+                            <label class="mr-2">Aktif?</label>
+                            <input name="IsActive" type="checkbox" value="true" class="form-control mr-2" checked />
+                            <button type="submit" class="btn btn-primary btn-sm">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Başlık</th>
+                                <th>Değer</th>
+                                <th>Tip</th>
+                                <th>İkon</th>
+                                <th>Sıra</th>
+                                <th>Aktif</th>
+                                <th style="width:120px;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in Model.Contacts)
+                            {
+                                <tr>
+                                    <form asp-action="EditContact" method="post">
+                                        <input type="hidden" name="Id" value="@c.Id" />
+                                    <td><input name="Title" class="form-control form-control-sm" value="@c.Title" required /></td>
+                                    <td><input name="Value" class="form-control form-control-sm" value="@c.Value" required /></td>
+                                    <td>
+                                        <select name="Type" class="form-control form-control-sm" required>
+                                            @if (c.Type == "phone")
+                                            {
+                                                <option value="phone" selected="selected">Telefon</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="phone">Telefon</option>
+                                            }
+                                            @if (c.Type == "mail")
+                                            {
+                                                <option value="mail" selected="selected">Mail</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="mail">Mail</option>
+                                            }
+                                            @if (c.Type == "whatsapp")
+                                            {
+                                                <option value="whatsapp" selected="selected">WhatsApp</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="whatsapp">WhatsApp</option>
+                                            }
+                                            @if (c.Type == "custom")
+                                            {
+                                                <option value="custom" selected="selected">Diğer</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="custom">Diğer</option>
+                                            }
+
+                                        </select>
+                                    </td>
+                                    <td><input name="IconClass" class="form-control form-control-sm" value="@c.IconClass" /></td>
+                                    <td><input name="OrderNo" class="form-control form-control-sm" type="number" value="@c.OrderNo" min="1" required /></td>
+                                    <td>
+                                        <input name="IsActive" type="checkbox" value="true" @(c.IsActive ? "checked" : "") />
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                                        <form asp-action="DeleteContact" method="post" style="display:inline">
+                                            <input type="hidden" name="id" value="@c.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm ml-1" onclick="return confirm('Silinsin mi?')">Sil</button>
+                                        </form>
+                                    </td>
+                                    </form>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="tab-pane fade" id="mobile" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <span class="m-0 font-weight-bold text-primary">Mobil Menü</span>
+                    <button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#addMobileForm">+ Yeni Ekle</button>
+                </div>
+                <div class="collapse" id="addMobileForm">
+                    <div class="card-body">
+                        <form asp-action="AddMobileMenu" method="post" class="form-inline">
+                            <input name="Title" class="form-control mr-2" placeholder="Başlık" required />
+                            <input name="Url" class="form-control mr-2" placeholder="URL" required />
+                            <input name="IconClass" class="form-control mr-2" placeholder="İkon Sınıfı" />
+                            <input name="OrderNo" class="form-control mr-2" type="number" min="1" placeholder="Sıra No" required />
+                            <label class="mr-2">Aktif?</label>
+                            <input name="IsActive" type="checkbox" value="true" class="form-control mr-2" checked />
+                            <button type="submit" class="btn btn-primary btn-sm">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Başlık</th>
+                                <th>URL</th>
+                                <th>İkon</th>
+                                <th>Sıra</th>
+                                <th>Aktif</th>
+                                <th style="width:120px;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var m in Model.MobileMenus)
+                            {
+                                <tr>
+                                    <form asp-action="EditMobileMenu" method="post">
+                                        <input type="hidden" name="Id" value="@m.Id" />
+                                    <td><input name="Title" class="form-control form-control-sm" value="@m.Title" required /></td>
+                                    <td><input name="Url" class="form-control form-control-sm" value="@m.Url" required /></td>
+                                    <td><input name="IconClass" class="form-control form-control-sm" value="@m.IconClass" /></td>
+                                    <td><input name="OrderNo" class="form-control form-control-sm" type="number" value="@m.OrderNo" min="1" required /></td>
+                                    <td>
+                                        <input name="IsActive" type="checkbox" value="true" @(m.IsActive ? "checked" : "") />
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary btn-sm">Güncelle</button>
+                                        <form asp-action="DeleteMobileMenu" method="post" style="display:inline">
+                                            <input type="hidden" name="id" value="@m.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm ml-1" onclick="return confirm('Silinsin mi?')">Sil</button>
+                                        </form>
+                                    </td>
+                                    </form>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>

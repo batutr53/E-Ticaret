@@ -1,0 +1,92 @@
+﻿@model FooterViewModel
+<!-- Footer -->
+<footer class="footer">
+    <!-- İletişim Bölümü -->
+    <div class="contact-bar">
+        <div class="contact-container">
+            @foreach (var contact in Model.Contacts)
+            {
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="@contact.IconClass"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>@contact.Title</h4>
+                        @if (contact.Type == "phone")
+                        {
+                            <a href="tel:@contact.Value">@contact.Value</a>
+                        }
+                        else if (contact.Type == "mail")
+                        {
+                            <a href="mailto:@contact.Value">@contact.Value</a>
+                        }
+                        else if (contact.Type == "whatsapp")
+                        {
+                            <a href="https://wa.me/@(contact.Value.Replace(" ", "").Replace("+", ""))" target="_blank">@contact.Value</a>
+                        }
+                        else
+                        {
+                            <a href="@contact.Value" target="_blank">@contact.Value</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mobile-bottom-menu">
+        @foreach (var item in Model.MobileMenus)
+        {
+            <div class="mobile-menu-item">
+                <a href="@item.Url" style="text-align:center" @(item.Url?.StartsWith("http") == true ? "target=\"_blank\"" : "")>
+                    <i data-feather="@item.IconClass"></i>
+                    <span style="display: flex;">@item.Title</span>
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Footer Ana İçerik -->
+    <div class="footer-main">
+        <div class="footer-container">
+            @foreach (var item in Model.Sections)
+            {
+                <div class="footer-column">
+                    <h3>@item.Title</h3>
+                    <ul class="footer-links">
+                        @foreach (var link in item.Links)
+                        {
+                            <li>
+                                <a href="@link.Url">
+                                    <i class="@link.IconClass"></i> @link.Title
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Telif Hakkı Bölümü -->
+    <div class="footer-bottom">
+        <div class="footer-container">
+            <div class="copyright">
+                <p>
+                    @* Copyright bilgisini da istersen modele ekleyebilirsin *@
+                    Copyright © 2010 Detay Çiçekçilik - Tüm Hakları Saklıdır.
+                </p>
+            </div>
+            <div class="social-icons">
+                <a href="https://www.instagram.com/detayflowers" aria-label="Instagram" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+            </div>
+            <div class="developer">
+                <p>
+                    Bu websitesi <a href="https://www.kolaymagaza.com/">Bahacan Bilişim Ltd.Şti.</a> tarafından hazırlanmıştır.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

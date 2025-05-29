@@ -3,6 +3,7 @@ using System;
 using E_Ticaret.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace E_Ticaret.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250529084123_finis")]
+    partial class finis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +69,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.AppUser", b =>
@@ -119,7 +122,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppUsers", (string)null);
+                    b.ToTable("AppUsers");
 
                     b.HasData(
                         new
@@ -166,7 +169,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
 
                     b.HasData(
                         new
@@ -194,7 +197,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.CartItem", b =>
@@ -220,7 +223,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItem", (string)null);
+                    b.ToTable("CartItem");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Category", b =>
@@ -264,7 +267,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -460,7 +463,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.DeliveryTimeRange", b =>
@@ -486,7 +489,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryTimeRanges", (string)null);
+                    b.ToTable("DeliveryTimeRanges");
 
                     b.HasData(
                         new
@@ -555,7 +558,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FooterContacts", (string)null);
+                    b.ToTable("FooterContacts");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.FooterLink", b =>
@@ -625,7 +628,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FooterMobileMenus", (string)null);
+                    b.ToTable("FooterMobileMenus");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.FooterSection", b =>
@@ -649,7 +652,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FooterSections", (string)null);
+                    b.ToTable("FooterSections");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.News", b =>
@@ -683,7 +686,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News", (string)null);
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Order", b =>
@@ -755,7 +758,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("DeliveryTimeRangeId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.OrderItem", b =>
@@ -792,7 +795,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItem", (string)null);
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Product", b =>
@@ -846,7 +849,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.ProductCategory", b =>
@@ -861,7 +864,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("ProductCategory", (string)null);
+                    b.ToTable("ProductCategory");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.ProductImage", b =>
@@ -892,7 +895,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.Slider", b =>
@@ -924,7 +927,7 @@ namespace E_Ticaret.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sliders", (string)null);
+                    b.ToTable("Sliders");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.CartItem", b =>

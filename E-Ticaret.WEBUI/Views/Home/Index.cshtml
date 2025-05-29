@@ -34,7 +34,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model.OrderBy(x => x.OrderNo).Where(x=>x.IsHome))
+        @foreach (var item in Model.OrderBy(x => x.OrderNo).Where(x => x.IsHome))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
                  ?? item.ProductImages?.FirstOrDefault()?.ImageUrl
@@ -70,86 +70,86 @@
     </div>
 </section>
 
-@* Canlı Çiçekler *@
-<section class="products-section">
-    <div class="section-header">
-        <h2>Canlı Çiçekler</h2>
-    </div>
+@* Canlı Çiçekler
+    <section class="products-section">
+        <div class="section-header">
+            <h2>Canlı Çiçekler</h2>
+        </div>
 
-    <div class="products-grid">
-        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 3)).OrderByDescending(x => x.Id))
-        {
-            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
-            <div class="product-card">
-                <div class="product-image" style="position: relative;">
-                    <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                        <img src="/img/@imageUrl" alt="@item.Name">
-                    </a>
-                    <div class="quick-view"
-                         data-name="@item.Name"
-                         data-image="/img/@imageUrl"
-                         data-price="@item.Price.ToString("c")"
-                         data-description="@(item.Description ?? "")"
-                         data-productid="@item.Id">
-                        <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
+        <div class="products-grid">
+            @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 3)).OrderByDescending(x => x.Id))
+            {
+                var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
+                <div class="product-card">
+                    <div class="product-image" style="position: relative;">
+                        <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                            <img src="/img/@imageUrl" alt="@item.Name">
+                        </a>
+                        <div class="quick-view"
+                             data-name="@item.Name"
+                             data-image="/img/@imageUrl"
+                             data-price="@item.Price.ToString("c")"
+                             data-description="@(item.Description ?? "")"
+                             data-productid="@item.Id">
+                            <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
+                        </div>
                     </div>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">@item.Name</h3>
-                    <div class="product-price">@item.Price.ToString("c")</div>
-                </div>
-                <form asp-action="AddItemToCart" asp-controller="Cart">
-                    <input type="hidden" name="productId" value="@item.Id" />
-                    <input type="hidden" value="1" name="quantity" />
-                    <button class="add-to-cart-btn" type="submit">
-                        <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
-                    </button>
-                </form>
-            </div>
-        }
-    </div>
-</section>
-
-@* Yapay Çiçekler *@
-<section class="products-section">
-    <div class="section-header">
-        <h2>Yapay Çiçekler</h2>
-    </div>
-
-    <div class="products-grid">
-        @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 4)).OrderByDescending(x => x.Id))
-        {
-            var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
-            <div class="product-card">
-                <div class="product-image" style="position: relative;">
-                    <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
-                        <img src="/img/@imageUrl" alt="@item.Name">
-                    </a>
-                    <div class="quick-view"
-                         data-name="@item.Name"
-                         data-image="/img/@imageUrl"
-                         data-price="@item.Price.ToString("c")"
-                         data-description="@(item.Description ?? "")"
-                         data-productid="@item.Id">
-                        <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
+                    <div class="product-info">
+                        <h3 class="product-title">@item.Name</h3>
+                        <div class="product-price">@item.Price.ToString("c")</div>
                     </div>
+                    <form asp-action="AddItemToCart" asp-controller="Cart">
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <input type="hidden" value="1" name="quantity" />
+                        <button class="add-to-cart-btn" type="submit">
+                            <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                        </button>
+                    </form>
                 </div>
-                <div class="product-info">
-                    <h3 class="product-title">@item.Name</h3>
-                    <div class="product-price">@item.Price.ToString("c")</div>
-                </div>
-                <form asp-action="AddItemToCart" asp-controller="Cart">
-                    <input type="hidden" name="productId" value="@item.Id" />
-                    <input type="hidden" value="1" name="quantity" />
-                    <button class="add-to-cart-btn" type="submit">
-                        <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
-                    </button>
-                </form>
-            </div>
-        }
-    </div>
-</section>
+            }
+        </div>
+    </section>
+*@
+@* Yapay Çiçekler
+    <section class="products-section">
+        <div class="section-header">
+            <h2>Yapay Çiçekler</h2>
+        </div>
 
+        <div class="products-grid">
+            @foreach (var item in Model.Where(x => x.ProductCategories.Any(x => x.CategoryId == 4)).OrderByDescending(x => x.Id))
+            {
+                var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
+                <div class="product-card">
+                    <div class="product-image" style="position: relative;">
+                        <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                            <img src="/img/@imageUrl" alt="@item.Name">
+                        </a>
+                        <div class="quick-view"
+                             data-name="@item.Name"
+                             data-image="/img/@imageUrl"
+                             data-price="@item.Price.ToString("c")"
+                             data-description="@(item.Description ?? "")"
+                             data-productid="@item.Id">
+                            <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">@item.Name</h3>
+                        <div class="product-price">@item.Price.ToString("c")</div>
+                    </div>
+                    <form asp-action="AddItemToCart" asp-controller="Cart">
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <input type="hidden" value="1" name="quantity" />
+                        <button class="add-to-cart-btn" type="submit">
+                            <i class="fa-solid fa-cart-plus"></i> Sepete Ekle
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    </section>
+*@
 @* Quick View Modal *@
 <div class="quick-view-modal" id="quickViewModal">
     <div class="modal-content">

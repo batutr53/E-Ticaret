@@ -21,7 +21,7 @@ namespace E_Ticaret.WEBUI.Controllers
 
 
         public async Task<IActionResult> Index()
-        {
+                 {
             ViewBag.Sliders = await _sliderService.GetAllAsync();
 
             var result = await _productService.GetQueryable()
