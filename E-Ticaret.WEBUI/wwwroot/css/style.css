@@ -1091,7 +1091,7 @@ ul.category-level-2 {
     }
 
     .banner-item {
-        height: 250px;
+        height: 100%;
     }
 
 
@@ -1679,10 +1679,9 @@ ul.category-level-2 {
 
 .banner-item {
     position: relative;
-    height: 300px;
+    height: 100%;
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     margin-bottom: 20px;
 }
 
@@ -1768,7 +1767,7 @@ ul.category-level-2 {
     }
 
     .banner-item {
-        height: 350px;
+        height: 100%;
     }
 
     .banner-title {
@@ -1793,7 +1792,7 @@ ul.category-level-2 {
     }
 
     .banner-item {
-        height: 320px;
+        height: 100%;
     }
 
     .banner-title {
