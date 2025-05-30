@@ -23,6 +23,8 @@ namespace E_Ticaret.Data
         public DbSet<FooterLink> FooterLinks { get; set; }
         public DbSet<FooterContact> FooterContacts { get; set; }
         public DbSet<FooterMobileMenu> FooterMobileMenus { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

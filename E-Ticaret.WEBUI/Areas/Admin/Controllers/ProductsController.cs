@@ -389,55 +389,99 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> Sort()
         {
-            var categories = await _context.Categories.OrderByDescending(x => x.Name).ToListAsync();
+            var categories = await _context.Categories.OrderBy(x => x.Name).ToListAsync();
+
+            categories.Insert(0, new Category { Id = -1, Name = "Ana Sayfa" });
+
             var firstCatId = categories.FirstOrDefault()?.Id ?? 0;
-            var products = await _context.Products
-                .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == firstCatId))
-                .Include(p => p.ProductImages)
-                .OrderBy(p => p.OrderNo)
-                .ToListAsync();
+            List<Product> products;
+
+            if (firstCatId == -1)
+            {
+                // Ana sayfa ürünleri
+                products = await _context.Products
+                    .Where(p => p.IsHome)
+                    .Include(p => p.ProductImages)
+                    .OrderBy(p => p.OrderNo)
+                    .ToListAsync();
+            }
+            else
+            {
+                products = await _context.Products
+                    .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == firstCatId))
+                    .Include(p => p.ProductImages)
+                    .OrderBy(p => p.OrderNo)
+                    .ToListAsync();
+            }
 
             ViewBag.Categories = categories;
             ViewBag.SelectedCategoryId = firstCatId;
             return View(products);
         }
 
+
         public async Task<IActionResult> GetProductsByCategory(int categoryId)
         {
-            var products = await _context.Products
-                .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
-                .Include(p => p.ProductImages)
-                .OrderByDescending(p => p.OrderNo)
-              .Select(p => new
-              {
-                  id = p.Id,
-                  name = p.Name,
-                  images = p.ProductImages.Select(i => new { imageUrl = i.ImageUrl, isDefault = i.IsDefault }).ToList()
-              })
+            List<Product> products;
 
-                .ToListAsync();
+            if (categoryId == -1)
+            {
+                // Ana sayfa ürünleri
+                products = await _context.Products
+                    .Where(p => p.IsHome)
+                    .Include(p => p.ProductImages)
+                    .OrderBy(p => p.OrderNo)
+                    .ToListAsync();
+            }
+            else
+            {
+                products = await _context.Products
+                    .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
+                    .Include(p => p.ProductImages)
+                    .OrderBy(p => p.OrderNo)
+                    .ToListAsync();
+            }
 
-            return Json(products);
+            var result = products.Select(p => new
+            {
+                id = p.Id,
+                name = p.Name,
+                images = p.ProductImages.Select(i => new { imageUrl = i.ImageUrl, isDefault = i.IsDefault }).ToList()
+            }).ToList();
+
+            return Json(result);
         }
+
         [HttpPost]
         public async Task<IActionResult> UpdateOrder([FromBody] OrderUpdateRequest data)
         {
             int order = 1;
-            foreach (var id in data.ids)
+            if (data.categoryId == -1)
             {
-                var product = await _context.Products
-                    .Include(p => p.ProductCategories)
-                    .FirstOrDefaultAsync(p => p.Id == id);
-
-                var pc = product?.ProductCategories?.FirstOrDefault(pc => pc.CategoryId == data.categoryId);
-                if (pc != null)
+                // Ana Sayfa için sıralama (IsHome olanların OrderNo'sunu güncelle)
+                foreach (var id in data.ids)
                 {
-                    product.OrderNo = order++;
+                    var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id && p.IsHome);
+                    if (product != null)
+                        product.OrderNo = order++;
+                }
+            }
+            else
+            {
+                // Diğer kategoriler için
+                foreach (var id in data.ids)
+                {
+                    var pc = await _context.ProductCategories
+                        .FirstOrDefaultAsync(pc => pc.ProductId == id && pc.CategoryId == data.categoryId);
+
+                    if (pc != null)
+                        pc.OrderNo = order++;
                 }
             }
             await _context.SaveChangesAsync();
             return Json(new { success = true });
         }
+
 
     }
 }
