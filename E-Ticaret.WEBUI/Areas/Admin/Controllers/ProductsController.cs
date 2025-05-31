@@ -436,12 +436,20 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             }
             else
             {
-                products = await _context.ProductCategories
+                var productIds = await _context.ProductCategories
                     .Where(pc => pc.CategoryId == categoryId)
                     .OrderBy(pc => pc.OrderNo)
-                    .Select(pc => pc.Product)
+                    .Select(pc => pc.ProductId)
+                    .ToListAsync();
+
+                products = await _context.Products
+                    .Where(p => productIds.Contains(p.Id))
                     .Include(p => p.ProductImages)
                     .ToListAsync();
+
+                products = productIds
+                    .Select(id => products.First(p => p.Id == id))
+                    .ToList();
             }
 
             var result = products.Select(p => new
@@ -453,6 +461,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
             return Json(result);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateOrder([FromBody] OrderUpdateRequest data)
