@@ -185,31 +185,28 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (existingProduct == null)
                         return NotFound();
 
-                    // Temel alanları güncelle
                     existingProduct.Name = product.Name;
                     existingProduct.Description = product.Description;
-                    existingProduct.Detail = product.Detail; // Yeni eklenen detay alanı
+                    existingProduct.Detail = product.Detail;
                     existingProduct.Price = product.Price;
                     existingProduct.Stock = product.Stock;
                     existingProduct.IsHome = product.IsHome;
                     existingProduct.IsActive = product.IsActive;
-                    existingProduct.BrandId = 1;
+                    existingProduct.BrandId = product.BrandId; 
                     existingProduct.OrderNo = product.OrderNo;
 
-                    // Görselleri kaldır
+
                     if (cbRemoveImage)
                     {
                         foreach (var img in existingProduct.ProductImages)
-                            FileHelper.FileRemover(img.ImageUrl); // Fiziksel dosyayı sil
+                            FileHelper.FileRemover(img.ImageUrl);
 
-                        _context.ProductImages.RemoveRange(existingProduct.ProductImages); // Veritabanından sil
+                        _context.ProductImages.RemoveRange(existingProduct.ProductImages);
                     }
 
-                    // Yeni görseller ekle
                     if (Images != null && Images.Any())
                     {
                         int order = existingProduct.ProductImages.Any() ? existingProduct.ProductImages.Max(i => i.Order) + 1 : 0;
-
                         foreach (var image in Images)
                         {
                             var imagePath = await FileHelper.FileLoaderAsync(image);
@@ -224,17 +221,39 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                         }
                     }
 
-                    // Kategorileri güncelle
-                    existingProduct.ProductCategories.Clear();
-                    foreach (var catId in CategoryIds)
+
+                    var oldProductCategories = existingProduct.ProductCategories.ToList();
+                    
+                    foreach (var oldPc in oldProductCategories)
                     {
-                        existingProduct.ProductCategories.Add(new ProductCategory
-                        {
-                            CategoryId = catId,
-                            ProductId = product.Id
-                        });
+                        if (!CategoryIds.Contains(oldPc.CategoryId))
+                            _context.ProductCategories.Remove(oldPc);
                     }
 
+                    foreach (var catId in CategoryIds)
+                    {
+                        var oldPC = oldProductCategories.FirstOrDefault(pc => pc.CategoryId == catId);
+                        if (oldPC != null)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            var lastOrderNo = _context.ProductCategories
+                                .Where(pc => pc.CategoryId == catId)
+                                .OrderByDescending(pc => pc.OrderNo)
+                                .Select(pc => pc.OrderNo)
+                                .FirstOrDefault();
+
+                            var newPc = new ProductCategory
+                            {
+                                CategoryId = catId,
+                                ProductId = product.Id,
+                                OrderNo = lastOrderNo + 1
+                            };
+                            existingProduct.ProductCategories.Add(newPc);
+                        }
+                    }
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -252,6 +271,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
             return View(product);
         }
+
         [HttpPost]
         public async Task<IActionResult> SetDefaultImage([FromBody] SetDefaultImageRequest request)
         {
