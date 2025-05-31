@@ -407,10 +407,11 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             }
             else
             {
-                products = await _context.Products
-                    .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == firstCatId))
+                products = await _context.ProductCategories
+                    .Where(pc => pc.CategoryId == firstCatId)
+                    .OrderBy(pc => pc.OrderNo)
+                    .Select(pc => pc.Product)
                     .Include(p => p.ProductImages)
-                    .OrderBy(p => p.OrderNo)
                     .ToListAsync();
             }
 
@@ -435,10 +436,11 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             }
             else
             {
-                products = await _context.Products
-                    .Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId))
+                products = await _context.ProductCategories
+                    .Where(pc => pc.CategoryId == categoryId)
+                    .OrderBy(pc => pc.OrderNo)
+                    .Select(pc => pc.Product)
                     .Include(p => p.ProductImages)
-                    .OrderBy(p => p.OrderNo)
                     .ToListAsync();
             }
 

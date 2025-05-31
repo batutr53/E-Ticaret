@@ -28,9 +28,9 @@ namespace E_Ticaret.WEBUI.Controllers
                 return NotFound();
             }
             var products = category.ProductCategories
-          .Select(pc => pc.Product)
-          .OrderBy(p => p.OrderNo)
-          .ToList();
+        .OrderBy(pc => pc.OrderNo) 
+        .Select(pc => pc.Product)
+        .ToList();
 
             var pagedProducts = products
                 .Skip((page - 1) * pageSize)

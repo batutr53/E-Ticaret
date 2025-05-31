@@ -21,7 +21,7 @@ namespace E_Ticaret.WEBUI.Controllers
 
 
         public async Task<IActionResult> Index()
-                 {
+        {
             ViewBag.Sliders = await _sliderService.GetAllAsync();
 
             var result = await _productService.GetQueryable()
@@ -29,13 +29,12 @@ namespace E_Ticaret.WEBUI.Controllers
                 .Include(x => x.ProductCategories)
                     .ThenInclude(pc => pc.Category)
                 .Include(x => x.Brand)
-                .Include(x => x.ProductImages) 
+                .Include(x => x.ProductImages)
+                .OrderBy(x => x.OrderNo) 
                 .ToListAsync();
 
             return View(result);
-
         }
-
 
         public IActionResult About()
         {

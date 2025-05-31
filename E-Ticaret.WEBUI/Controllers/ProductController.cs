@@ -36,7 +36,7 @@ namespace E_Ticaret.WEBUI.Controllers
             {
                 Product = product,
                 RelatedProducts = relatedProducts
-              .OrderByDescending(x => x.Id) // İsteğe bağlı sıralama
+              .OrderByDescending(x => x.Id) 
               .Take(20)
               .ToList()
             };

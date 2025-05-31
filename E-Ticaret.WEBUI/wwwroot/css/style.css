@@ -4064,7 +4064,7 @@ ul.category-level-2 {
 .dropdown-menu {
     position: absolute;
     top: 100%;
-    left: 300px;
+    left: 50%;
     transform: translateX(-29%);
     background-color: #fff;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
