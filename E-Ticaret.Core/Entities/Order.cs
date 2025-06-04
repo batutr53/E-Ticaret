@@ -59,8 +59,10 @@ namespace E_Ticaret.Core.Entities
         Approved,
         PaymentFailed,
         Completed,
-        OnWay
-
+        OnWay,
+        Cancel,
+        Refund,
+        Ready
     }
 
 }

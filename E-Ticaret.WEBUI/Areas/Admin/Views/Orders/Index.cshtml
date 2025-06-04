@@ -5,10 +5,48 @@
     var durumlar = Enum.GetValues(typeof(E_Ticaret.Core.Entities.OrderStatus)).Cast<E_Ticaret.Core.Entities.OrderStatus>();
 }
 
+<style>
+    .order-bg-cancel {
+        background-color: rgba(220, 53, 69, 0.8) !important;
+        color: white !important;
+    }
+
+    .order-bg-refund {
+        background-color: rgba(255, 193, 7, 0.8) !important;
+        color: white !important;
+    }
+
+    .order-bg-progress {
+        background-color: rgba(23, 162, 184, 0.8) !important;
+        color: white !important;
+    }
+
+    .order-bg-complete {
+        background-color: rgba(40, 167, 69, 0.8) !important;
+        color: white !important;
+    }
+
+    .order-bg-failed {
+        background-color: rgba(108, 117, 125, 0.8) !important;
+        color: white !important;
+    }
+</style>
+
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">
         <i class="fas fa-box-open text-primary"></i> Siparişler
     </h1>
+
+    <div class="alert alert-light border">
+        <strong>Renk Açıklamaları:</strong><br />
+        <span class="badge" style="background-color: rgba(220,53,69,0.8); color:white">İptal Edildi</span> /
+        <span class="badge" style="background-color: rgba(255,193,7,0.8); color:white">İade Edildi</span> /
+        <span class="badge" style="background-color: rgba(23,162,184,0.8); color:white">Devam Eden Sipariş</span> /
+        <span class="badge" style="background-color: rgba(40,167,69,0.8); color:white">Tamamlandı</span> /
+        <span class="badge" style="background-color: rgba(108,117,125,0.8); color:white">Ödeme Sorunu</span>
+    </div>
+
+    <!-- Filtre Formu -->
     <form method="get" class="mb-4">
         <div class="card shadow-sm border-left-primary">
             <div class="card-body py-3">
@@ -17,7 +55,7 @@
                         <label><i class="fas fa-filter text-primary"></i> Durum</label>
                         <select name="status" class="form-control">
                             <option value="">Tümü</option>
-                            @foreach (var s in Enum.GetValues(typeof(E_Ticaret.Core.Entities.OrderStatus)).Cast<E_Ticaret.Core.Entities.OrderStatus>())
+                            @foreach (var s in durumlar)
                             {
                                 var statusText = s switch
                                 {
@@ -26,6 +64,9 @@
                                     E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "Ödeme Hatalı",
                                     E_Ticaret.Core.Entities.OrderStatus.Completed => "Tamamlandı",
                                     E_Ticaret.Core.Entities.OrderStatus.OnWay => "Yolda",
+                                    E_Ticaret.Core.Entities.OrderStatus.Cancel => "İptal Edildi",
+                                    E_Ticaret.Core.Entities.OrderStatus.Ready => "Hazırlanıyor",
+                                    E_Ticaret.Core.Entities.OrderStatus.Refund => "İade Edildi",
                                     _ => s.ToString()
                                 };
                                 var selected = (ViewBag.StatusFilter?.ToString() == s.ToString()) ? "selected" : "";
@@ -33,27 +74,22 @@
                             }
                         </select>
                     </div>
-
                     <div class="form-group col-lg-2 col-md-4 col-sm-6">
                         <label><i class="fas fa-user text-info"></i> Alıcı</label>
                         <input type="text" name="receiver" class="form-control" value="@ViewBag.ReceiverFilter" placeholder="Ad, Soyad veya Tel" />
                     </div>
-
                     <div class="form-group col-lg-2 col-md-4 col-sm-6">
                         <label><i class="fas fa-paper-plane text-warning"></i> Gönderen</label>
                         <input type="text" name="sender" class="form-control" value="@ViewBag.SenderFilter" placeholder="Ad, Soyad veya Tel" />
                     </div>
-
                     <div class="form-group col-lg-2 col-md-4 col-sm-6">
                         <label><i class="fas fa-calendar-alt text-success"></i> Başlangıç</label>
                         <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
                     </div>
-
                     <div class="form-group col-lg-2 col-md-4 col-sm-6">
                         <label><i class="fas fa-calendar-check text-danger"></i> Bitiş</label>
                         <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
                     </div>
-
                     <div class="form-group col-lg-2 col-md-4 col-sm-6 text-right">
                         <button type="submit" class="btn btn-primary btn-block">
                             <i class="fas fa-search"></i> Filtrele
@@ -64,14 +100,11 @@
         </div>
     </form>
 
+    <!-- Sipariş Tablosu -->
     <div class="card shadow-sm">
         <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-list-ul"></i> Tüm Siparişler</h6>
-            @*<a asp-action="Create" class="btn btn-sm btn-success shadow-sm">
-                    <i class="fas fa-plus"></i> Yeni Sipariş
-                </a>*@
         </div>
-
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover table-striped text-center">
@@ -90,29 +123,26 @@
                     <tbody>
                         @foreach (var item in Model.OrderByDescending(x => x.OrderDate))
                         {
-                            <tr>
-                                <td><small class="text-muted">@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</small></td>
+                            <tr class="@GetStatusRowClass(item.OrderStatus)">
+                                <td><small>@item.OrderDate.ToString("dd.MM.yyyy HH:mm")</small></td>
                                 <td>
-                                    <span> @item.FirstName @item.LastName </span><br />
-                                    <small class="text-muted"> @item.Phone</small>
+                                    @item.FirstName @item.LastName<br />
+                                    <small>@item.Phone</small>
                                 </td>
-                                <td> <small class="text-muted">@item.AddresLine</small></td>
+                                <td><small>@item.AddresLine</small></td>
                                 <td>
-                                    <span>@item.SenderFirstName @item.SenderLastName</span><br />
-                                    <small class="text-muted">@item.SenderPhone</small>
-                                </td>
-                                <td>
-                                    <span> @(item.DeliveryDate?.ToString("dd.MM.yyyy") ?? "-")</span><br />
-                                    <small class="text-muted">  @(item.DeliveryTimeRange?.RangeText ?? "-")</small>
-
+                                    @item.SenderFirstName @item.SenderLastName<br />
+                                    <small>@item.SenderPhone</small>
                                 </td>
                                 <td>
-
+                                    @(item.DeliveryDate?.ToString("dd.MM.yyyy") ?? "-")<br />
+                                    <small>@(item.DeliveryTimeRange?.RangeText ?? "-")</small>
+                                </td>
+                                <td>
                                     <form asp-action="UpdateStatus" method="post" class="d-flex align-items-center justify-content-center">
                                         <input type="hidden" name="orderId" value="@item.Id" />
-
                                         <select name="orderStatus" class="form-control form-control-sm mr-2">
-                                            @foreach (var status in Enum.GetValues(typeof(E_Ticaret.Core.Entities.OrderStatus)).Cast<E_Ticaret.Core.Entities.OrderStatus>())
+                                            @foreach (var status in durumlar)
                                             {
                                                 var selected = item.OrderStatus == status ? "selected=\"selected\"" : "";
                                                 var statusText = status switch
@@ -122,30 +152,25 @@
                                                     E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "Ödeme Hatalı",
                                                     E_Ticaret.Core.Entities.OrderStatus.Completed => "Tamamlandı",
                                                     E_Ticaret.Core.Entities.OrderStatus.OnWay => "Yolda",
+                                                    E_Ticaret.Core.Entities.OrderStatus.Cancel => "İptal Edildi",
+                                                    E_Ticaret.Core.Entities.OrderStatus.Ready => "Hazırlanıyor",
+                                                    E_Ticaret.Core.Entities.OrderStatus.Refund => "İade Edildi",
                                                     _ => status.ToString()
                                                 };
                                                 @:<option value="@status" @Html.Raw(selected)>@statusText</option>
                                             }
                                         </select>
-
-                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="Durumu Güncelle">
+                                        <button type="submit" class="btn btn-sm btn-outline-light" title="Durumu Güncelle">
                                             <i class="fas fa-sync-alt"></i>
                                         </button>
                                     </form>
-
                                 </td>
                                 <td><strong>@(item.SubTotal + item.DeliveryFree) ₺</strong></td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" data-toggle="tooltip" title="Detay">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" data-toggle="tooltip" title="Düzenle">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" data-toggle="tooltip" title="Sil">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light" data-toggle="tooltip" title="Detay"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" data-toggle="tooltip" title="Düzenle"><i class="fas fa-edit"></i></a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-dark" data-toggle="tooltip" title="Sil"><i class="fas fa-trash-alt"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -153,6 +178,7 @@
                     </tbody>
                 </table>
             </div>
+
             @if (ViewBag.TotalPages > 1)
             {
                 <nav class="mt-4">
@@ -162,19 +188,18 @@
                             var active = (ViewBag.CurrentPage == i) ? "active" : "";
                             <li class="page-item @active">
                                 <a class="page-link" href="@Url.Action("Index", new {
-                        page = i,
-                        status = ViewBag.StatusFilter,
-                        receiver = ViewBag.ReceiverFilter,
-                        sender = ViewBag.SenderFilter,
-                        startDate = ViewBag.StartDate,
-                        endDate = ViewBag.EndDate
-                    })">@i</a>
-                </li>
-            }
+                                    page = i,
+                                    status = ViewBag.StatusFilter,
+                                    receiver = ViewBag.ReceiverFilter,
+                                    sender = ViewBag.SenderFilter,
+                                    startDate = ViewBag.StartDate,
+                                    endDate = ViewBag.EndDate
+                                })">@i</a>
+                            </li>
+                        }
                     </ul>
                 </nav>
             }
-
         </div>
     </div>
 </div>
@@ -185,4 +210,22 @@
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
+}
+
+@functions {
+    private string GetStatusRowClass(E_Ticaret.Core.Entities.OrderStatus status)
+    {
+        return status switch
+        {
+            E_Ticaret.Core.Entities.OrderStatus.Cancel => "order-bg-cancel",
+            E_Ticaret.Core.Entities.OrderStatus.Refund => "order-bg-refund",
+            E_Ticaret.Core.Entities.OrderStatus.Completed => "order-bg-complete",
+            E_Ticaret.Core.Entities.OrderStatus.Pending or
+            E_Ticaret.Core.Entities.OrderStatus.Approved or
+            E_Ticaret.Core.Entities.OrderStatus.Ready or
+            E_Ticaret.Core.Entities.OrderStatus.OnWay => "order-bg-progress",
+            E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "order-bg-failed",
+            _ => ""
+        };
+    }
 }

@@ -10,11 +10,15 @@ namespace E_Ticaret.Core.Enums
             {
                 OrderStatus.Pending => "Beklemede",
                 OrderStatus.Approved => "Onaylandı",
-                OrderStatus.PaymentFailed => "Ödeme Başarısız",
-                OrderStatus.Completed => "Ödeme Tamamlandı",
+                OrderStatus.Ready => "Hazırlanıyor",
                 OrderStatus.OnWay => "Yolda",
+                OrderStatus.Completed => "Ödeme Tamamlandı",
+                OrderStatus.Cancel => "İptal Edildi",
+                OrderStatus.Refund => "İade Edildi",
+                OrderStatus.PaymentFailed => "Ödeme Başarısız",
                 _ => "Bilinmiyor"
             };
         }
+
     }
 }

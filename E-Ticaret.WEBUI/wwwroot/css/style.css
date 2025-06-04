@@ -4288,3 +4288,48 @@ ul.category-level-2 {
     transform: scale(1.1);
     transition: transform 0.3s ease;
 }
+.status {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.status-bekliyor {
+    background-color: #ffc107cc;
+    color: #fff;
+}
+
+.status-onaylandi {
+    background-color: #17a2b8cc;
+    color: #fff;
+}
+
+.status-hazirlaniyor {
+    background-color: #007bffcc;
+    color: #fff;
+}
+
+.status-yolda {
+    background-color: #20c997cc;
+    color: #fff;
+}
+
+.status-tamamlandi {
+    background-color: #28a745cc;
+    color: #fff;
+}
+
+.status-iptal {
+    background-color: #dc3545cc;
+    color: #fff;
+}
+
+.status-iade {
+    background-color: #fd7e14cc;
+    color: #fff;
+}
+
+.status-odeme-hatali {
+    background-color: #6c757dcc;
+    color: #fff;
+}

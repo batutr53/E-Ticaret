@@ -25,8 +25,25 @@
             <div><strong>Sipariş Numarası:</strong> @Model.Oid</div>
             <div><strong>Tarih:</strong> @Model.OrderDate.ToString("dd MMM yyyy HH:mm")</div>
             <div>
-                <strong>Durum:</strong> <span class="status @(Model.OrderStatus switch { E_Ticaret.Core.Entities.OrderStatus.Pending => "status-bekliyor", E_Ticaret.Core.Entities.OrderStatus.Approved => "status-onaylandi", E_Ticaret.Core.Entities.OrderStatus.OnWay => "status-yolda", E_Ticaret.Core.Entities.OrderStatus.Completed => "status-tamamlandi", E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "status-odeme-hatali", _ => "" }) ">@Model.OrderStatus.ToText()</span>
+                <strong>Durum:</strong>
+                <span class="status @(
+        Model.OrderStatus switch
+        {
+            E_Ticaret.Core.Entities.OrderStatus.Pending => "status-bekliyor",
+            E_Ticaret.Core.Entities.OrderStatus.Approved => "status-onaylandi",
+            E_Ticaret.Core.Entities.OrderStatus.OnWay => "status-yolda",
+            E_Ticaret.Core.Entities.OrderStatus.Completed => "status-tamamlandi",
+            E_Ticaret.Core.Entities.OrderStatus.PaymentFailed => "status-odeme-hatali",
+            E_Ticaret.Core.Entities.OrderStatus.Cancel => "status-iptal",
+            E_Ticaret.Core.Entities.OrderStatus.Refund => "status-iade",
+            E_Ticaret.Core.Entities.OrderStatus.Ready => "status-hazirlaniyor",
+            _ => ""
+        }
+    )">
+                    @Model.OrderStatus.ToText()
+                </span>
             </div>
+
         </div>
 
         <div class="receiver-sender">

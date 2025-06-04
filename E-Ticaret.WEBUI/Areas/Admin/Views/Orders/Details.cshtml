@@ -3,6 +3,14 @@
 @{
     ViewData["Title"] = "Sipariş Detayı";
     var message = TempData["Message"] as string;
+
+    var isCancelable = Model.OrderDate.Date >= DateTime.Now.Date &&
+                   (Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Pending ||
+                    Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Approved ||
+                    Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Ready);
+
+    var isRefundable = Model.OrderDate.Date < DateTime.Now.Date &&
+                       Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Completed;
 }
 
 <div class="container-fluid">
@@ -49,9 +57,9 @@
                     <p><strong>Teslimat Saat Aralığı:</strong> @(Model.DeliveryTimeRange?.RangeText ?? "-")</p>
 
                     <h5 class="mt-3">Toplam: <span class="badge badge-pill badge-dark">@Model.GetTotal() ₺</span></h5>
-                    @if (Model.OrderDate.Date >= DateTime.Now.Date)
+                    @if (isCancelable)
                     {
-                        <form asp-action="Cancel" asp-asp-controller="Order">
+                        <form asp-action="Cancel" asp-controller="Order" method="post">
                             <input type="hidden" name="orderId" value="@Model.Id" />
                             <input type="hidden" name="oid" value="@Model.Oid" />
                             <input type="hidden" name="txnNo" value="@Model.TxnNo" />
@@ -61,15 +69,15 @@
                             </button>
                         </form>
                     }
-                    else
+                    else if (isRefundable)
                     {
-                        <form asp-action="Refund" asp-asp-controller="Order">
+                        <form asp-action="Refund" asp-controller="Order" method="post">
                             <input type="hidden" name="orderId" value="@Model.Id" />
                             <input type="hidden" name="Oid" value="@Model.Oid" />
                             <input type="hidden" name="TxnNo" value="@Model.TxnNo" />
 
                             <button type="submit" class="btn btn-secondary mt-2">
-                                <i class="fas fa-times"></i> Siparişi İade Et
+                                <i class="fas fa-undo"></i> Siparişi İade Et
                             </button>
                         </form>
                     }
