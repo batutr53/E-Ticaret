@@ -104,7 +104,13 @@ namespace E_Ticaret.Service.Concrete
         }
         public async Task<DashboardSummaryDto> GetDashboardSummaryAsync()
         {
-            var orders = await _context.Orders.Where(x=>x.OrderStatus == OrderStatus.Completed).ToListAsync();
+            // Query all orders to be able to calculate completion statistics
+            var allOrders = await _context.Orders.ToListAsync();
+
+            // Only completed orders are required for earning related statistics
+            var completedOrders = allOrders
+                .Where(x => x.OrderStatus == OrderStatus.Completed)
+                .ToList();
 
             var now = DateTime.UtcNow;
             var last6Months = Enumerable.Range(0, 6)
@@ -114,7 +120,7 @@ namespace E_Ticaret.Service.Concrete
 
             var monthlyData = last6Months.Select(date =>
             {
-                var monthOrders = orders
+                var monthOrders = completedOrders
                     .Where(o => o.OrderDate.Month == date.Month && o.OrderDate.Year == date.Year);
                 return new
                 {
@@ -125,18 +131,21 @@ namespace E_Ticaret.Service.Concrete
                 };
             }).ToList();
 
+            var pendingCount = allOrders.Count(o => o.OrderStatus == OrderStatus.Pending);
+            var totalForRatio = completedOrders.Count + pendingCount;
+
             return new DashboardSummaryDto
             {
                 MonthlyEarnings = monthlyData.LastOrDefault()?.Total ?? 0,
-                AnnualEarnings = orders
+                AnnualEarnings = completedOrders
                     .Where(o => o.OrderDate.Year == now.Year)
                     .Sum(o => o.SubTotal + o.DeliveryFree),
-                TaskCompletionPercent = monthlyData.Count > 0
-    ? (int)Math.Round((double)(monthlyData.Count(x => x.Completed == (int)OrderStatus.Completed)) - monthlyData.Count)
-    : 0,
-                TaskPendingPercent = monthlyData.Count > 0
-    ? (int)Math.Round((double)(monthlyData.Count(x => x.Pending == (int)OrderStatus.Pending)) - monthlyData.Count)
-    : 0,
+                TaskCompletionPercent = totalForRatio > 0
+                    ? (int)Math.Round((double)completedOrders.Count * 100 / totalForRatio)
+                    : 0,
+                TaskPendingPercent = totalForRatio > 0
+                    ? (int)Math.Round((double)pendingCount * 100 / totalForRatio)
+                    : 0,
                 Last6MonthsLabels = monthlyData.Select(m => m.Month).ToList(),
                 Last6MonthsTotals = monthlyData.Select(m => m.Total).ToList()
             };
