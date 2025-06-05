@@ -104,10 +104,8 @@ namespace E_Ticaret.Service.Concrete
         }
         public async Task<DashboardSummaryDto> GetDashboardSummaryAsync()
         {
-            // Query all orders to be able to calculate completion statistics
             var allOrders = await _context.Orders.ToListAsync();
 
-            // Only completed orders are required for earning related statistics
             var completedOrders = allOrders
                 .Where(x => x.OrderStatus == OrderStatus.Completed)
                 .ToList();
