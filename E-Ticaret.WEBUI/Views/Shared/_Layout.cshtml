@@ -1,30 +1,136 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=windows-1254">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="expires" content="0">
-    <meta http-equiv="Content-Language" content="Turkish">
-    <title>@(ViewData["Title"] != null ? @ViewData["Title"] + " -" : "") Detay Çiçekçilik</title>
-    <meta name="description" content="Detay Çiçekçilik 1992 yılında kurulmuştur... Firmamız 1992 yılından beri sizlere en iyiyi ve en kaliteli hizmeti sunmak için çalışıyor ve çalışacaktır. Detay Çiçekçilik gün geçtikçe kendini yeniledi ve son 18 yıldır sürekli en iyiyi ve en güzeli sizlere sunmaya devam etti ve edecek.
-Detay Çiçekçilik siz değerli müşterilerimiz var olduğu sürece hizmetine devam edecektir">
-    <meta name="keywords" content="çiçekçi, çiçekçiler, çiçek gönder, çiçek siparişi, online çiçek, Uluslararası Çiçekçilik, cicekciler, cicek gonder, cicek siparisi, çiçek sipariş, cicek siparis, online cicek, online çiçekçi, cicekci, çiçekçilik, çiçekçi, çiçek, online cicekcilik, çiçekci, online cicekci, çiçek yolla, çiçek satışı ev aksesuar,istanbul çiçekçi ,istanbulda çiçekçi , çiçekçi , çiçekçiler, çiçek , çiçekleri , çiçeği , cicekci, cicekciler,florists, flowers, send flowers, order flowers, online flowers, International Florist,order flowers, online florist floriculture, flower, flowers,send flowers, flower accessories, home sales, istanbul, flower, florist in Istanbul, flower, flowers, flower, flowers, flower,">
-    <meta name="copyright" content="detaycicek.com">
+    @{
+        var title = ViewData["Title"]?.ToString() ?? "Çiçek Siparişi ve Online Çiçekçi";
+        var description = ViewData["MetaDescription"]?.ToString() ?? 
+            "1992'den beri en taze çiçeklerle hizmetinizdeyiz. Doğum günü, yıldönümü, özel günler için çiçek siparişlerinizde güvenilir adresiniz.";
+        var keywords = ViewData["Keywords"]?.ToString() ?? 
+            "çiçek, çiçekçi, online çiçek, çiçek siparişi, İstanbul çiçekçi, aşk çiçeği, doğum günü çiçeği, tazeliğinde çiçekler";
+        
+        @Html.Raw(SeoHelper.GenerateMetaTags(
+            html: Html,
+            title: title,
+            description: description,
+            keywords: keywords
+        ))
+    }
+    
+    <!-- Yandex Verification -->
     <meta name="yandex-verification" content="4a1c2a032c508afd">
-    <meta name="revisit-after" content="7 Days">
-    <meta name="robots" content="INDEX,all">
-    <meta name="distribution" content="Global">
-    <meta name="rating" content="General">
-    <meta name="distribution" content="global">
-    <meta name="robots" content="all">
-    <meta name="googlebot" content="all">
-    <meta name="rating" content="General">
-    <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
-    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js"></script>
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="~/css/site.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" asp-append-version="true">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+    </noscript>
+    
+    <!-- Preload Critical Fonts -->
+    <link rel="preload" href="/fonts/your-font.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Defer Non-Critical JavaScript -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js" defer></script>
+    
+    <!-- Inline Critical CSS -->
+    <style>
+        /* Add critical above-the-fold CSS here */
+        .header, .main-navigation, .hero { opacity: 0; }
+        .fonts-loaded .header, .fonts-loaded .main-navigation, .fonts-loaded .hero { 
+            opacity: 1; 
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+    <script>
+        // Load CSS asynchronously
+        function loadCSS(href, before, media, attributes) {
+            var ss = window.document.createElement('link');
+            var ref = before || window.document.getElementsByTagName('script')[0];
+            var sheets = window.document.styleSheets;
+            ss.rel = 'stylesheet';
+            ss.href = href;
+            ss.media = 'only x';
+            if (attributes) {
+                Object.keys(attributes).forEach(function (key) {
+                    ss.setAttribute(key, attributes[key]);
+                });
+            }
+            ref.parentNode.insertBefore(ss, ref);
+            function toggleMedia() {
+                ss.media = media || 'all';
+            }
+            if (ss.addEventListener) {
+                ss.addEventListener('load', toggleMedia);
+            }
+            ss.onloadcssenabled = toggleMedia;
+            return ss;
+        }
+        
+        // Load non-critical CSS
+        loadCSS('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+        
+        // Font loading detection
+        document.documentElement.className += ' fonts-loading';
+        document.fonts.ready.then(function() {
+            document.documentElement.className = document.documentElement.className
+                .replace(/\bfonts-loading\b/, '')
+                .trim() + ' fonts-loaded';
+        });
+    </script>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Schema.org for LocalBusiness -->
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "Florist",
+        "name": "Detay Çiçekçilik",
+        "image": "@(Context.Request.Scheme)://@Context.Request.Host/images/logo.png",
+        "id": "@(Context.Request.Scheme)://@Context.Request.Host/#florist",
+        "url": "@(Context.Request.Scheme)://@Context.Request.Host",
+        "telephone": "+90 533 361 25 54",
+        "priceRange": "₺50 - ₺2000",
+        "openingHoursSpecification": [
+            {
+                "@@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday"
+                ],
+                "opens": "09:00",
+                "closes": "22:00"
+            },
+            {
+                "@@type": "OpeningHoursSpecification",
+                "dayOfWeek": "Sunday",
+                "opens": "10:00",
+                "closes": "20:00"
+            }
+        ],
+        "address": {
+            "@@type": "PostalAddress",
+            "streetAddress": "[ŞUBE ADRESİ] Cad. No:X Kat:X Daire:X",
+            "addressLocality": "İstanbul",
+            "addressRegion": "İstanbul",
+            "postalCode": "34000",
+            "addressCountry": "TR"
+        }
+    }
+    </script>
 
 </head>
 <body>
@@ -39,8 +145,38 @@ Detay Çiçekçilik siz değerli müşterilerimiz var olduğu sürece hizmetine 
 
     <partial name="_Footer" />
 
-    <script src="~/js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Load scripts with defer -->
+    <script src="~/js/site.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    
+    <!-- Lazy load images -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lazyImages = [].slice.call(document.querySelectorAll('img.lazy'));
+        
+        if ('IntersectionObserver' in window) {
+            const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        const lazyImage = entry.target;
+                        lazyImage.src = lazyImage.dataset.src;
+                        lazyImage.classList.remove('lazy');
+                        lazyImage.classList.add('loaded');
+                        lazyImageObserver.unobserve(lazyImage);
+                    }
+                });
+            });
+
+            lazyImages.forEach(function(lazyImage) {
+                lazyImageObserver.observe(lazyImage);
+            });
+        }
+    });
+    </script>
+    
+    <!-- Load non-critical CSS asynchronously -->
+    <link rel="preload" href="~/css/non-critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="~/css/non-critical.css"></noscript>
     @RenderSection("Scripts", required: false)
     @if (TempData["Message"] != null)
     {

@@ -50,7 +50,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Admin/Auth/Login";
     options.Events.OnRedirectToLogin = context =>
     {
-        // API/AJAX istekleri için yönlendirme yapma
+        // API/AJAX istekleri iï¿½in yï¿½nlendirme yapma
         if (context.Request.Path.StartsWithSegments("/api") ||
             context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
         {
@@ -82,6 +82,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
+builder.Services.AddMemoryCache();
 
 builder.Services.AddAuthorization();
 
@@ -100,6 +101,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate(); // otomatik update-database yapar
 }
 
+// URL yÃ¶nlendirme middleware'ini ekle
+app.UseMiddleware<UrlRedirectMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -108,8 +112,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 
 app.UseRouting();
 app.UseSession();
@@ -123,8 +126,6 @@ app.MapControllerRoute(
           name: "admin",
           pattern: "{area:exists}/{controller=Main}/{action=Index}/{id?}"
         );
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

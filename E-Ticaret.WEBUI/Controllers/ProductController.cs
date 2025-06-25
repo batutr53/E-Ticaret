@@ -1,5 +1,6 @@
-﻿using E_Ticaret.Core.Entities;
+using E_Ticaret.Core.Entities;
 using E_Ticaret.Service.Abstract;
+using E_Ticaret.WEBUI.Extensions;
 using E_Ticaret.WEBUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +22,31 @@ namespace E_Ticaret.WEBUI.Controllers
             return View(result);
         }
 
-        public async Task<IActionResult> Detail(int productCode)
+        [Route("urun/{id:int}/{seoUrl?}", Name = "ProductDetail")]
+        [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "id" })]
+        public async Task<IActionResult> Detail(int id, string seoUrl)
         {
-            var product = await _productService.GetProductDetailAsync(productCode);
+            var product = await _productService.GetProductDetailAsync(id);
 
             if (product == null)
             {
-                return View(); 
+                return NotFound();
             }
+
+            // SEO URL doğrulama ve yönlendirme
+            var expectedSeoUrl = product.Name.ToUrlFriendly();
+            
+            if (string.IsNullOrEmpty(seoUrl) || !string.Equals(seoUrl, expectedSeoUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToRoute("ProductDetail", new { id, seoUrl = expectedSeoUrl }, permanent: true);
+            }
+
+            // ViewBag ile SEO bilgilerini gönder
+            ViewBag.PageTitle = product.Name;
+            ViewBag.MetaDescription = product.Description?.Length > 160 ? 
+                product.Description.Substring(0, 157) + "..." : product.Description;
+            ViewBag.CanonicalUrl = Url.RouteUrl("ProductDetail", new { id, seoUrl = expectedSeoUrl }, Request.Scheme);
+            ViewBag.OgImage = product.MainImageUrl;
 
             var relatedProducts = await _productService.GetRelatedProductsAsync(product);
 
@@ -36,9 +54,9 @@ namespace E_Ticaret.WEBUI.Controllers
             {
                 Product = product,
                 RelatedProducts = relatedProducts
-              .OrderByDescending(x => x.Id) 
-              .Take(20)
-              .ToList()
+                    .OrderByDescending(x => x.Id)
+                    .Take(20)
+                    .ToList()
             };
 
             return View(model);

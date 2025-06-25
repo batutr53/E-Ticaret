@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /search/
+Disallow: /*?*view=
+Disallow: /*?*sort=
+Disallow: /*?*page=
+
+# Sitemap URL'si
+Sitemap: https://www.detaycicek.com/sitemap.xml
