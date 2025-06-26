@@ -14,10 +14,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Globalization;
+using System.Text;
 using System.Security.Claims;
 using System.Text;
+using E_Ticaret.WEBUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Image processing service
+builder.Services.AddScoped<IImageService, ImageService>();
+
 var cultureInfo = new CultureInfo("tr-TR");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
@@ -41,6 +47,9 @@ builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
 builder.Services.AddScoped(typeof(IFooterService), typeof(FooterService));
 builder.Services.AddScoped(typeof(IFooterContactService), typeof(FooterContactService));
 builder.Services.AddScoped(typeof(IFooterMobileMenuService), typeof(FooterMobileMenuService));
+
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
@@ -173,6 +182,25 @@ app.MapGet("/category", async (HttpContext context, int? id) =>
     }
     // Eğer id yoksa, ana kategori sayfasına yönlendir
     return Results.Redirect("/");
+});
+
+// Robots.txt endpoint
+app.MapGet("/robots.txt", (HttpContext context) => 
+{
+    var sb = new StringBuilder();
+    sb.AppendLine("User-agent: *");
+    sb.AppendLine("Allow: /");
+    sb.AppendLine("Disallow: /admin/");
+    sb.AppendLine("Disallow: /account/");
+    sb.AppendLine("Disallow: /cart/");
+    sb.AppendLine("Disallow: /checkout/");
+    sb.AppendLine("Disallow: /search/");
+    sb.AppendLine("Disallow: /*?*view=");
+    sb.AppendLine("Disallow: /*?*sort=");
+    sb.AppendLine("Disallow: /*?*page=\n");
+    sb.AppendLine($"Sitemap: {context.Request.Scheme}://{context.Request.Host}/sitemap.xml");
+    
+    return Results.Text(sb.ToString(), "text/plain", Encoding.UTF8);
 });
 
 // Default Route

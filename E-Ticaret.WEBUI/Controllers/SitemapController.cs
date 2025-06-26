@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using E_Ticaret.Service.Abstract;
+using E_Ticaret.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+using E_Ticaret.WEBUI.Extensions;
 
 namespace E_Ticaret.WEBUI.Controllers
 {
@@ -12,10 +16,17 @@ namespace E_Ticaret.WEBUI.Controllers
     public class SitemapController : Controller
     {
         private readonly IMemoryCache _cache;
+        private readonly IService<Category> _categoryService;
+        private readonly IService<Product> _productService;
 
-        public SitemapController(IMemoryCache cache)
+        public SitemapController(
+            IMemoryCache cache,
+            IService<Category> categoryService,
+            IService<Product> productService)
         {
             _cache = cache;
+            _categoryService = categoryService;
+            _productService = productService;
         }
 
         [HttpGet("sitemap.xml")]
@@ -58,8 +69,40 @@ namespace E_Ticaret.WEBUI.Controllers
                     ChangeFrequency = SitemapChangeFrequency.Yearly, 
                     Priority = 0.7 
                 }
-                // Buraya diğer sayfalarınızı ekleyebilirsiniz
             };
+
+            // Kategorileri ekle
+            var categories = await _categoryService.GetQueryable()
+                .Where(c => c.IsActive)
+                .ToListAsync();
+
+            foreach (var category in categories)
+            {
+                urls.Add(new SitemapUrl
+                {
+                    Url = $"kategori/{category.Id}/{category.Name.ToUrlFriendly()}",
+                    LastModified = category.CreatedDate,
+                    ChangeFrequency = SitemapChangeFrequency.Weekly,
+                    Priority = 0.8
+                });
+            }
+
+
+            // Ürünleri ekle
+            var products = await _productService.GetQueryable()
+                .Where(p => p.IsActive)
+                .ToListAsync();
+
+            foreach (var product in products)
+            {
+                urls.Add(new SitemapUrl
+                {
+                    Url = $"urun/{product.Id}/{product.Name.ToUrlFriendly()}",
+                    LastModified = product.CreatedDate,
+                    ChangeFrequency = SitemapChangeFrequency.Weekly,
+                    Priority = 0.9
+                });
+            }
 
             var sitemapNodes = urls.Select(u => new SitemapNode
             {

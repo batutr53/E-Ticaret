@@ -1,6 +1,17 @@
-﻿@model ProductDetailViewModel
+@model ProductDetailViewModel
 @{
     ViewData["Title"] = Model.Product?.Name ?? "Detay";
+    
+    // Breadcrumb verilerini ayarla    ViewData["Breadcrumb"] = new List<BreadcrumbItem>    {        new BreadcrumbItem { Text = "Anasayfa", Url = Url.Action("Index", "Home") },        new BreadcrumbItem { Text = "Ürünler", Url = Url.Action("Index", "Product") },        new BreadcrumbItem { Text = Model.Product?.Name ?? "Ürün Detayı", IsActive = true }    };
+}
+
+@section Head {
+    @if (ViewBag.JsonLd != null)
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewBag.JsonLd)
+        </script>
+    }
 }
 
 <!-- Mevcut CSS'inize eklenecek stiller -->

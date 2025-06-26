@@ -7,13 +7,15 @@
             "1992'den beri en taze çiçeklerle hizmetinizdeyiz. Doğum günü, yıldönümü, özel günler için çiçek siparişlerinizde güvenilir adresiniz.";
         var keywords = ViewData["Keywords"]?.ToString() ?? 
             "çiçek, çiçekçi, online çiçek, çiçek siparişi, İstanbul çiçekçi, aşk çiçeği, doğum günü çiçeği, tazeliğinde çiçekler";
+        var imageUrl = ViewData["ImageUrl"]?.ToString();
         
-        @Html.Raw(SeoHelper.GenerateMetaTags(
-            html: Html,
-            title: title,
-            description: description,
-            keywords: keywords
-        ))
+        <seo-meta 
+            title="@title"
+            description="@description"
+            keywords="@keywords"
+            image="@imageUrl"
+            type="@(ViewData["PageType"] ?? "website")">
+        </seo-meta>
     }
     
     <!-- Yandex Verification -->
@@ -28,6 +30,13 @@
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    
+    @if (ViewBag.SchemaMarkup != null)
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewBag.SchemaMarkup)
+        </script>
+    }
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     
@@ -50,7 +59,7 @@
         "id": "@(Context.Request.Scheme)://@Context.Request.Host/#florist",
         "url": "@(Context.Request.Scheme)://@Context.Request.Host",
         "telephone": "+90 533 361 25 54",
-        "priceRange": "₺50 - ₺2000",
+        "priceRange": "₺1000 - ₺20000",
         "openingHoursSpecification": [
             {
                 "@@type": "OpeningHoursSpecification",
@@ -62,14 +71,14 @@
                     "Friday",
                     "Saturday"
                 ],
-                "opens": "09:00",
-                "closes": "22:00"
+                "opens": "00:00",
+                "closes": "23:59"
             },
             {
                 "@@type": "OpeningHoursSpecification",
                 "dayOfWeek": "Sunday",
-                "opens": "10:00",
-                "closes": "20:00"
+                "opens": "00:00",
+                "closes": "23:59"
             }
         ],
         "address": {
@@ -87,6 +96,26 @@
     <partial name="_Header" />
 
     <div class="container">
+        <!-- Breadcrumb -->
+        @if (ViewData["Breadcrumb"] is List<BreadcrumbItem> breadcrumbs && breadcrumbs.Any())
+        {
+            <nav aria-label="breadcrumb" class="mt-3">
+                <ol class="breadcrumb">
+                    @foreach (var item in breadcrumbs)
+                    {
+                        if (item.IsActive)
+                        {
+                            <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
+                        }
+                        else
+                        {
+                            <li class="breadcrumb-item"><a href="@item.Url">@item.Text</a></li>
+                        }
+                    }
+                </ol>
+            </nav>
+        }
+        
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -128,6 +157,7 @@
         });
     </script>
     
+    @RenderSection("Head", required: false)
     @RenderSection("Scripts", required: false)
     
     @if (TempData["Message"] != null)
@@ -140,5 +170,8 @@
     <a href="https://wa.me/905333612554" target="_blank" class="whatsapp-float">
         <i class="fab fa-whatsapp"></i>
     </a>
+    
+    <!-- Mobile Menu Script -->
+    <script src="~/js/mobile-menu.js" asp-append-version="true"></script>
 </body>
 </html>

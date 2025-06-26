@@ -1,9 +1,12 @@
 @using E_Ticaret.WEBUI
 @using E_Ticaret.WEBUI.Models
 @using E_Ticaret.WEBUI.Helpers
+@using E_Ticaret.WEBUI.TagHelpers
 @using Microsoft.Extensions.Caching.Memory
+@using Microsoft.AspNetCore.Http
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, E-Ticaret.WEBUI
 @namespace E_Ticaret.WEBUI.Pages
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject IHttpContextAccessor HttpContextAccessor

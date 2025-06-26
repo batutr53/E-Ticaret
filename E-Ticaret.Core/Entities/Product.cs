@@ -1,4 +1,4 @@
-﻿namespace E_Ticaret.Core.Entities
+namespace E_Ticaret.Core.Entities
 {
      public class Product : IEntity
     {

@@ -1,4 +1,4 @@
-﻿@model FooterViewModel
+@model FooterViewModel
 <!-- Footer -->
 <footer class="footer">
     <!-- İletişim Bölümü -->
@@ -35,14 +35,37 @@
     </div>
 
     <div class="mobile-bottom-menu">
-        @foreach (var item in Model.MobileMenus)
-        {
-            <div class="mobile-menu-item">
-                <a href="@item.Url" style="text-align:center" @(item.Url?.StartsWith("http") == true ? "target=\"_blank\"" : "")>
-                    <i data-feather="@item.IconClass"></i>
-                    <span style="display: flex;">@item.Title</span>
+        @{
+            // Map Feather icon names to Font Awesome icons
+            var iconMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "phone", "fa-phone-alt" },
+                { "message-circle", "fa-whatsapp" },
+                { "shopping-cart", "fa-shopping-cart" },
+                { "map-pin", "fa-map-marker-alt" },
+                { "truck", "fa-truck" },
+                { "home", "fa-home" },
+                { "user", "fa-user" },
+                { "search", "fa-search" },
+                { "heart", "fa-heart" },
+                { "info", "fa-info-circle" }
+            };
+            
+            // Default icon if not found in mappings
+            const string defaultIcon = "fa-circle";
+            
+            foreach (var item in Model.MobileMenus)
+            {
+                // Get the appropriate icon class from the mapping or use the original if not found
+                var iconClass = item.IconClass != null && iconMappings.TryGetValue(item.IconClass, out var faIcon) 
+                    ? $"fas {faIcon}" 
+                    : $"fas {defaultIcon}";
+                    
+                <a href="@item.Url" class="mobile-menu-item" @(item.Url?.StartsWith("http") == true ? "target=\"_blank\"" : "")>
+                    <i class="@iconClass"></i>
+                    <span>@item.Title</span>
                 </a>
-            </div>
+            }
         }
     </div>
 
