@@ -31,25 +31,18 @@ namespace E_Ticaret.WEBUI.Controllers
         {
             try
             {
-                _logger.LogInformation("Ürün detayı isteği alındı - ID: {ProductId}, SEO URL: {SeoUrl}", id, seoUrl);
-
                 var product = await _productService.GetProductDetailAsync(id);
-                _logger.LogInformation("Ürün sorgulandı: {Product}", product != null ? "Bulundu" : "Bulunamadı");
 
                 if (product == null)
                 {
-                    _logger.LogWarning("Ürün bulunamadı - ID: {ProductId}", id);
                     return NotFound();
                 }
 
-
                 // SEO URL doğrulama ve yönlendirme
                 var expectedSeoUrl = product.Name.ToUrlFriendly();
-                _logger.LogInformation("Beklenen SEO URL: {ExpectedSeoUrl}, Gelen SEO URL: {SeoUrl}", expectedSeoUrl, seoUrl);
                 
                 if (string.IsNullOrEmpty(seoUrl) || !string.Equals(seoUrl, expectedSeoUrl, StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.LogInformation("SEO URL uyumsuz, yönlendiriliyor...");
                     return RedirectToRoute("ProductDetail", new { id, seoUrl = expectedSeoUrl });
                 }
 
@@ -60,9 +53,7 @@ namespace E_Ticaret.WEBUI.Controllers
                 ViewBag.CanonicalUrl = Url.RouteUrl("ProductDetail", new { id, seoUrl = expectedSeoUrl }, Request.Scheme);
                 ViewBag.OgImage = product.ProductImages?.FirstOrDefault()?.ImageUrl;
                 
-                _logger.LogInformation("İlgili ürünler sorgulanıyor...");
                 var relatedProducts = await _productService.GetRelatedProductsAsync(product);
-                _logger.LogInformation("{Count} adet ilgili ürün bulundu", relatedProducts?.Count ?? 0);
                 
                 var viewModel = new ProductDetailViewModel 
                 { 
@@ -70,13 +61,12 @@ namespace E_Ticaret.WEBUI.Controllers
                     RelatedProducts = relatedProducts ?? new List<Product>()
                 };
                 
-                _logger.LogInformation("Ürün detay sayfası gösteriliyor");
                 return View(viewModel);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ürün detayı yüklenirken bir hata oluştu - ID: {ProductId}", id);
-                throw; // Hata detaylarını görmek için hatayı tekrar fırlatıyoruz
+                throw;
             }
         }
 
