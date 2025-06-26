@@ -55,7 +55,7 @@ namespace E_Ticaret.WEBUI.Controllers
                     id, 
                     seoUrl = expectedSeoUrl,
                     page = page > 1 ? page : (int?)null 
-                }, permanent: true);
+                });
             }
 
             // SEO bilgilerini ayarla
@@ -70,8 +70,8 @@ namespace E_Ticaret.WEBUI.Controllers
             // Sayfalama için ürünleri al
             var products = category.ProductCategories
                 .Select(pc => pc.Product)
-                .Where(p => p != null && p.IsActive && !p.IsDeleted)
-                .OrderByDescending(p => p.CreatedAt)
+                .Where(p => p != null && p.IsActive)
+                .OrderByDescending(p => p.CreatedDate)
                 .ToList();
 
             var totalItems = products.Count;

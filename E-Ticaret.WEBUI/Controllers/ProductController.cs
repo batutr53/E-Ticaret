@@ -38,7 +38,7 @@ namespace E_Ticaret.WEBUI.Controllers
             
             if (string.IsNullOrEmpty(seoUrl) || !string.Equals(seoUrl, expectedSeoUrl, StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToRoute("ProductDetail", new { id, seoUrl = expectedSeoUrl }, permanent: true);
+                return RedirectToRoute("ProductDetail", new { id, seoUrl = expectedSeoUrl });
             }
 
             // ViewBag ile SEO bilgilerini gönder
@@ -46,7 +46,7 @@ namespace E_Ticaret.WEBUI.Controllers
             ViewBag.MetaDescription = product.Description?.Length > 160 ? 
                 product.Description.Substring(0, 157) + "..." : product.Description;
             ViewBag.CanonicalUrl = Url.RouteUrl("ProductDetail", new { id, seoUrl = expectedSeoUrl }, Request.Scheme);
-            ViewBag.OgImage = product.MainImageUrl;
+            ViewBag.OgImage = product.ProductImages?.FirstOrDefault()?.ImageUrl;
 
             var relatedProducts = await _productService.GetRelatedProductsAsync(product);
 
