@@ -115,6 +115,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 
 app.UseRouting();
+app.UseStaticFiles();
 app.UseSession();
 
 app.UseMiddleware<AdminRedirectMiddleware>();
@@ -127,5 +128,8 @@ app.MapControllerRoute(
           pattern: "{area:exists}/{controller=Main}/{action=Index}/{id?}"
         );
 
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

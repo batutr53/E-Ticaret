@@ -19,75 +19,26 @@
     <!-- Yandex Verification -->
     <meta name="yandex-verification" content="4a1c2a032c508afd">
     
-    <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="~/css/site.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" asp-append-version="true">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     
-    <noscript>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-        <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
-    </noscript>
-    
-    <!-- Preload Critical Fonts -->
-    <link rel="preload" href="/fonts/your-font.woff2" as="font" type="font/woff2" crossorigin>
-    
-    <!-- Defer Non-Critical JavaScript -->
-    <script src="https://unpkg.com/feather-icons/dist/feather.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js" defer></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
     
     <!-- Inline Critical CSS -->
     <style>
-        /* Add critical above-the-fold CSS here */
-        .header, .main-navigation, .hero { opacity: 0; }
-        .fonts-loaded .header, .fonts-loaded .main-navigation, .fonts-loaded .hero { 
-            opacity: 1; 
-            transition: opacity 0.3s ease-in-out;
-        }
+        /* Basic styles to prevent FOUC */
+        html { font-family: sans-serif; line-height: 1.15; -webkit-text-size-adjust: 100%; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .header, .main-navigation, .hero { opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .fonts-loaded .header, .fonts-loaded .main-navigation, .fonts-loaded .hero { opacity: 1; }
     </style>
-    <script>
-        // Load CSS asynchronously
-        function loadCSS(href, before, media, attributes) {
-            var ss = window.document.createElement('link');
-            var ref = before || window.document.getElementsByTagName('script')[0];
-            var sheets = window.document.styleSheets;
-            ss.rel = 'stylesheet';
-            ss.href = href;
-            ss.media = 'only x';
-            if (attributes) {
-                Object.keys(attributes).forEach(function (key) {
-                    ss.setAttribute(key, attributes[key]);
-                });
-            }
-            ref.parentNode.insertBefore(ss, ref);
-            function toggleMedia() {
-                ss.media = media || 'all';
-            }
-            if (ss.addEventListener) {
-                ss.addEventListener('load', toggleMedia);
-            }
-            ss.onloadcssenabled = toggleMedia;
-            return ss;
-        }
-        
-        // Load non-critical CSS
-        loadCSS('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-        
-        // Font loading detection
-        document.documentElement.className += ' fonts-loading';
-        document.fonts.ready.then(function() {
-            document.documentElement.className = document.documentElement.className
-                .replace(/\bfonts-loading\b/, '')
-                .trim() + ' fonts-loaded';
-        });
-    </script>
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
     <!-- Schema.org for LocalBusiness -->
     <script type="application/ld+json">
@@ -131,10 +82,8 @@
         }
     }
     </script>
-
 </head>
 <body>
-
     <partial name="_Header" />
 
     <div class="container">
@@ -145,45 +94,49 @@
 
     <partial name="_Footer" />
 
-    <!-- Load scripts with defer -->
-    <script src="~/js/site.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <!-- JavaScript Libraries -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    
+    <!-- Site Scripts -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
     
     <!-- Lazy load images -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const lazyImages = [].slice.call(document.querySelectorAll('img.lazy'));
-        
-        if ('IntersectionObserver' in window) {
-            const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
-                entries.forEach(function(entry) {
-                    if (entry.isIntersecting) {
-                        const lazyImage = entry.target;
-                        lazyImage.src = lazyImage.dataset.src;
-                        lazyImage.classList.remove('lazy');
-                        lazyImage.classList.add('loaded');
-                        lazyImageObserver.unobserve(lazyImage);
-                    }
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyImages = [].slice.call(document.querySelectorAll('img.lazy'));
+            
+            if ('IntersectionObserver' in window) {
+                const lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            const lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.classList.remove('lazy');
+                            lazyImage.classList.add('loaded');
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
                 });
-            });
 
-            lazyImages.forEach(function(lazyImage) {
-                lazyImageObserver.observe(lazyImage);
-            });
-        }
-    });
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            }
+        });
     </script>
     
-    <!-- Load non-critical CSS asynchronously -->
-    <link rel="preload" href="~/css/non-critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="~/css/non-critical.css"></noscript>
     @RenderSection("Scripts", required: false)
+    
     @if (TempData["Message"] != null)
     {
         <script>
-        @Html.Raw(TempData["Message"])
+            @Html.Raw(TempData["Message"])
         </script>
     }
+    
     <a href="https://wa.me/905333612554" target="_blank" class="whatsapp-float">
         <i class="fab fa-whatsapp"></i>
     </a>
