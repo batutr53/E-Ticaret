@@ -1,4 +1,4 @@
-﻿using E_Ticaret.Core.DTO;
+using E_Ticaret.Core.DTO;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
@@ -27,14 +27,28 @@ namespace E_Ticaret.Service.Concrete
 
             return await queryable.ToListAsync();
         }
-        public async Task<Product> GetProductDetailAsync(int productCode)
+        public async Task<Product> GetProductDetailAsync(int productId)
         {
             return await _context.Products
                 .Include(x => x.Brand)
                 .Include(p => p.ProductImages)
                 .Include(x => x.ProductCategories)
                     .ThenInclude(pc => pc.Category)
-                .FirstOrDefaultAsync(x => x.ProductCode == productCode && x.IsActive);
+                .FirstOrDefaultAsync(x => x.Id == productId && x.IsActive);
+        }
+
+        public async Task<Product> GetProductByCodeAsync(string productCode)
+        {
+            if (int.TryParse(productCode, out int code))
+            {
+                return await _context.Products
+                    .Include(x => x.Brand)
+                    .Include(p => p.ProductImages)
+                    .Include(x => x.ProductCategories)
+                        .ThenInclude(pc => pc.Category)
+                    .FirstOrDefaultAsync(x => x.ProductCode == code && x.IsActive);
+            }
+            return null;
         }
 
         public async Task<List<Product>> GetRelatedProductsAsync(Product product)
