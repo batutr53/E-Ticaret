@@ -1,0 +1,12 @@
+﻿@using E_Ticaret.Core.Entities
+@model IEnumerable<Category>
+
+@foreach (var category in Model)
+{
+    <a href="/Category?id=@category.Id">
+        <i class="@category.ClassImage"></i>
+        @category.Name
+    </a>
+}
+
+

@@ -74,6 +74,16 @@
                 </div>
             </div>
 
+            <div class="menu-item">
+                <a href="#" onclick="toggleDropdown(event, 'menu-three')">
+                    <i class="fas fa-th-large"></i>
+                    YAPAY ÇİÇEKLER
+                </a>
+                <div class="dropdown-menu menu-three">
+                    @await Component.InvokeAsync("CategoriesThree")
+                </div>
+            </div>
+
             @await Component.InvokeAsync("CategoriesMain")
         </div>
 
