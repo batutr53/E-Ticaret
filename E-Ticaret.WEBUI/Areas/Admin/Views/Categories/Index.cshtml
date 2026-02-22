@@ -4,6 +4,15 @@
     ViewData["Title"] = "Kategoriler";
 }
 
+<style>
+    /* Kategori hücresindeki isim kısalınca ... ile gösterilsin ve sağdaki ikon sabit kalsın */
+    .category-cell { position: relative; }
+    .category-name { display: block; padding-right: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .category-site-link { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); }
+    .category-site-link .btn { width: 36px; height: 36px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; }
+    .category-site-link .btn i { font-size: 14px; }
+</style>
+
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Kategori Listesi</h1>
 
@@ -33,7 +42,19 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.Name</td>
+                                <td class="category-cell">
+                                    <span class="category-name">
+                                        <a asp-area="Admin" asp-controller="Products" asp-action="Index" asp-route-categoryId="@item.Id">@item.Name</a>
+                                    </span>
+                                    @{
+                                        var categoryUrl = $"/Category?id={item.Id}";
+                                    }
+                                    <span class="category-site-link">
+                                        <a class="btn btn-outline-primary rounded-circle" target="_blank" rel="noopener noreferrer" href="@categoryUrl" title="">
+                                            <i class="fas fa-external-link-square-alt"></i>
+                                        </a>
+                                    </span>
+                                </td>
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.Image))
                                     {

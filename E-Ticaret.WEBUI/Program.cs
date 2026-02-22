@@ -97,7 +97,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-    db.Database.Migrate(); // otomatik update-database yapar
+    //db.Database.Migrate(); // otomatik update-database yapar
 }
 
 // Configure the HTTP request pipeline.

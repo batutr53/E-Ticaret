@@ -23,7 +23,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(string? name, bool? isActive, bool? isHome, int? brandId, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(string? name, bool? isActive, bool? isHome, int? brandId, int? categoryId, int page = 1, int pageSize = 20)
         {
             var query = _context.Products
                 .Include(x => x.Brand)
@@ -43,6 +43,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             if (brandId.HasValue)
                 query = query.Where(p => p.BrandId == brandId);
 
+            if (categoryId.HasValue)
+                query = query.Where(p => p.ProductCategories.Any(pc => pc.CategoryId == categoryId.Value));
+
             var totalCount = await query.CountAsync();
             var pagedProducts = await query
                 .OrderByDescending(p => p.CreatedDate)
@@ -56,6 +59,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             ViewBag.NameFilter = name;
             ViewBag.IsActiveFilter = isActive?.ToString().ToLower();
             ViewBag.IsHomeFilter = isHome?.ToString().ToLower();
+            ViewBag.CategoryFilter = categoryId;
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             return View(pagedProducts);
