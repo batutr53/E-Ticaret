@@ -1,65 +1,8 @@
-﻿<td align="center" valign="top" width="690" bgcolor="#FFFFFF">
-    <div align="center">
-        <center>
-            <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tbody>
-                    <tr>
-                        <td width="50%" style="background:url(https://www.detaycicek.com/img/site/ortaust.gif);height:35px">
-                            <div align="left">
-                                <table border="0" cellpadding="0" cellspacing="0">
-                                    <tbody>
-                                        <tr>
-                                            <td width="20">&nbsp;</td>
-                                            <td style="font-size:16px;color:black;font-weight:bold">Gizlilik ve Güvenlik</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                        <td align="right" width="50%" style="background:url(https://www.detaycicek.com/img/site/ortaust.gif);height:35px">
-                            <div align="right">
-                                <table border="0" cellpadding="0" cellspacing="0">
-                                    <tbody>
-                                        <tr>
-                                            <td style="font-size:13px">
-                                                Telefon
-                                                ile Sipariş :
-                                            </td>
-                                            <td>&nbsp;</td>
-                                            <td style="font-size:16px"><font color="#000000"><strong>0533 361 25 54</strong></font></td>
-                                            <td width="20" style="font-size:16px;color:black;font-weight:bold">&nbsp;</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </center>
-    </div><p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <p></p>
-    <div align="center">
-        <center>
-            <table border="0" cellpadding="0" cellspacing="0">
-                <tbody>
-                    <tr>
-                        <td width="650" style="font-size:14px">
-                            <p align="justify">
-                                Sipariş formu sayfamız RapidSSL teknolojisi ile 128 Bit şifrelenmiştir. Gizlilik arzeden tüm kredi kartı bilgileriniz direkt ödeme yapılan bankaya pos edilir ve kesinlikle 3. kişi göremez. Kart bilgileriniz hiçbir şekilde herhangi bir veritabanına kayıt altında tutulmamaktadır. Yukarıda girmiş olduğunuz tüm Kredi Kartı bilgilerinin doğruluğu size aittir. Farklı bir şahıs ve/veya şirket adına kullanılan Kredi Kartlarından doğabilecek herhangi bir hukuki işlemlerde firmamız sorumlu değildir.<br>
-                                <br>
-                                <br>
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </center>
-    </div><p></p>
-</td>
+﻿@model E_Ticaret.Core.Entities.ContentPage
+@{
+    ViewData["Title"] = Model.Title;
+}
+<section class="content-page">
+    <h1>@Model.Title</h1>
+    <div class="content-page-body">@Html.Raw(Model.BodyHtml)</div>
+</section>

@@ -1,59 +1,8 @@
-﻿@{
-    ViewData["Title"] = "Hakkımızda";
+﻿@model E_Ticaret.Core.Entities.ContentPage
+@{
+    ViewData["Title"] = Model.Title;
 }
-
 <section class="aboutUs-container">
-    <header class="aboutUs-header">
-        <h1>Hakkımızda</h1>
-        <p>Biz kimiz ve neyi amaçlıyoruz?</p>
-    </header>
-
-    <section class="aboutUs-story">
-        <h2>Hikayemiz</h2>
-        <p>
-            Detay Çiçekçilik 1992 yılında kurulmuştur... Firmamız 1992 yılından beri sizlere en iyiyi ve en kaliteli hizmeti sunmak için çalışıyor ve çalışacaktır. Detay Çiçekçilik gün geçtikçe kendini yeniledi ve son 33 yıldır sürekli en iyiyi ve en güzeli sizlere sunmaya devam etti ve edecek. Detay Çiçekçilik siz değerli müşterilerimiz var olduğu sürece hizmetine devam edecektir
-        </p>
-    </section>
-
-    <section class="aboutUs-mission-vision">
-        <div>
-            <h3>Misyonumuz</h3>
-            <p>
-                Müşterilerimize en kaliteli ürünleri en iyi hizmetle sunmak ve onların hayatına değer katmak.
-            </p>
-        </div>
-        <div>
-            <h3>Vizyonumuz</h3>
-            <p>
-                Sektöründe lider, global ölçekte tanınan bir marka olmak.
-            </p>
-        </div>
-    </section>
-
-    <section class="aboutUs-values">
-        <h2>Değerlerimiz</h2>
-        <div class="aboutUs-values-grid">
-            <div class="aboutUs-value-box">
-                <span>🤝</span>
-                <h4>Güven</h4>
-                <p>İlişkilerimizin temelinde güven vardır.</p>
-            </div>
-            <div class="aboutUs-value-box">
-                <span>💡</span>
-                <h4>Yenilikçilik</h4>
-                <p>Her zaman daha iyisini ararız.</p>
-            </div>
-            <div class="aboutUs-value-box">
-                <span>📞</span>
-                <h4>İletişim</h4>
-                <p>Müşterimizle şeffaf iletişim kurarız.</p>
-            </div>
-            <div class="aboutUs-value-box">
-                <span>🌍</span>
-                <h4>Sürdürülebilirlik</h4>
-                <p>Gelecek nesiller için sorumluluk alırız.</p>
-            </div>
-        </div>
-    </section>
-
+    <header class="aboutUs-header"><h1>@Model.Title</h1></header>
+    <div class="content-page-body">@Html.Raw(Model.BodyHtml)</div>
 </section>

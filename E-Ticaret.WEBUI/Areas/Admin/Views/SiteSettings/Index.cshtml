@@ -1,0 +1,45 @@
+@model E_Ticaret.Core.Entities.SiteSetting
+@{
+    ViewData["Title"] = "Site Ayarları";
+}
+<h1 class="h3 mb-4 text-gray-800">Site Ayarları</h1>
+@if (TempData["SiteSettingMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SiteSettingMessage"]</div>
+}
+<div class="card shadow"><div class="card-body">
+    <form asp-action="Index" method="post" enctype="multipart/form-data">
+        <input asp-for="Id" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (!string.IsNullOrWhiteSpace(Model.Logo))
+        {
+            <div class="mb-3">
+                <img src="/img/@Model.Logo" alt="Site logosu" style="max-height:120px" class="img-thumbnail" />
+                <div class="form-check"><input id="removeLogo" name="removeLogo" value="true" type="checkbox" class="form-check-input" /><label for="removeLogo">Logoyu kaldır</label></div>
+            </div>
+        }
+        <div class="form-group">
+            <label>Logo yükle</label>
+            <input type="file" name="Logo" accept="image/*" class="form-control-file" />
+            <span asp-validation-for="Logo" class="text-danger"></span>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label asp-for="PrimaryColor">Ana Renk</label>
+                <div class="input-group"><input asp-for="PrimaryColor" class="form-control" maxlength="7" /><input type="color" class="form-control col-2 color-picker" data-target="PrimaryColor" value="@Model.PrimaryColor" /></div>
+                <span asp-validation-for="PrimaryColor" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="AccentColor">Vurgu Rengi</label>
+                <div class="input-group"><input asp-for="AccentColor" class="form-control" maxlength="7" /><input type="color" class="form-control col-2 color-picker" data-target="AccentColor" value="@Model.AccentColor" /></div>
+                <span asp-validation-for="AccentColor" class="text-danger"></span>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Kaydet</button>
+    </form>
+</div></div>
+@section Scripts {
+    <script>
+        $(".color-picker").on("input", function () { $("#" + $(this).data("target")).val(this.value.toUpperCase()); });
+    </script>
+}

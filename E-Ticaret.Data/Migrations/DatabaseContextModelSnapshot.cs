@@ -463,6 +463,59 @@ namespace E_Ticaret.Data.Migrations
                     b.ToTable("Contacts");
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.ContentPage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BodyHtml")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("ContentPages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BodyHtml = "<h2>Hikayemiz</h2>\r\n<p>Detay Çiçekçilik 1992 yılında kurulmuştur. Firmamız 1992 yılından beri sizlere en iyi ve en kaliteli hizmeti sunmak için çalışmaktadır.</p>\r\n<h3>Misyonumuz</h3>\r\n<p>Müşterilerimize en kaliteli ürünleri en iyi hizmetle sunmak ve onların hayatına değer katmak.</p>\r\n<h3>Vizyonumuz</h3>\r\n<p>Sektöründe lider, global ölçekte tanınan bir marka olmak.</p>\r\n<h2>Değerlerimiz</h2>\r\n<p>Güven, yenilikçilik, şeffaf iletişim ve sürdürülebilirlik.</p>",
+                            Key = "About",
+                            Title = "Hakkımızda"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BodyHtml = "<p>Sipariş formu sayfamız SSL teknolojisi ile şifrelenmiştir. Gizlilik arz eden kredi kartı bilgileriniz doğrudan ödeme yapılan bankaya iletilir ve üçüncü kişilerce görüntülenemez.</p>\r\n<p>Kart bilgileriniz hiçbir şekilde veritabanımızda kayıt altında tutulmamaktadır. Girmiş olduğunuz kredi kartı bilgilerinin doğruluğu size aittir.</p>",
+                            Key = "PrivacySecurity",
+                            Title = "Gizlilik ve Güvenlik"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BodyHtml = "<h2>Teslimat Şartları</h2>\r\n<p>Ürünlerimiz özenle hazırlanarak belirtilen teslimat aralığında alıcıya ulaştırılır. Özel günlerde yoğunluk nedeniyle saat garantisi verilemeyebilir.</p>\r\n<h3>Tazelik Garantisi</h3>\r\n<p>Tüm çiçeklerimiz günlük mezat ürünleri olup tazelik garantimiz altındadır. Mevsimsel veya lojistik nedenlerle aynı kalite ve değerde benzer ürün ya da renk kullanılabilir.</p>\r\n<h3>Adres ve Teslim Tarihi Değişiklikleri</h3>\r\n<p>Adres ve teslim tarihi değişiklikleri sipariş yola çıkmadan önce yapılabilir. Sipariş ancak hazırlanmadan veya yola çıkmadan iptal edilebilir.</p>",
+                            Key = "DeliveryWarranty",
+                            Title = "Teslimat ve Garanti"
+                        });
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.DeliveryTimeRange", b =>
                 {
                     b.Property<int>("Id")
@@ -650,6 +703,35 @@ namespace E_Ticaret.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FooterSections");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.MobileBanner", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Link")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("OrderNo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderNo");
+
+                    b.ToTable("MobileBanners");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.News", b =>
@@ -901,6 +983,44 @@ namespace E_Ticaret.Data.Migrations
                     b.ToTable("ProductImages");
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.SiteSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccentColor")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<string>("Logo")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<string>("PrimaryColor")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SiteSettings", t =>
+                        {
+                            t.HasCheckConstraint("CK_SiteSettings_Singleton", "\"Id\" = 1");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AccentColor = "#236B43",
+                            PrimaryColor = "#888888"
+                        });
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.Slider", b =>
                 {
                     b.Property<int>("Id")
@@ -913,6 +1033,13 @@ namespace E_Ticaret.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("DisplayType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Desktop");
+
                     b.Property<string>("Image")
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
@@ -924,11 +1051,18 @@ namespace E_Ticaret.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<int>("OrderNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Title")
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DisplayType", "OrderNo");
 
                     b.ToTable("Sliders");
                 });

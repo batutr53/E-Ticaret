@@ -1,7 +1,9 @@
 ﻿@model E_Ticaret.Core.Entities.Category
+@using E_Ticaret.WEBUI.Helpers
 
 @{
     ViewData["Title"] = Model?.Name ?? "Kategoriler";
+    var selectedSort = ViewBag.Sort as string ?? "default";
 }
 <style>
     .pagination-container {
@@ -30,7 +32,7 @@
     }
 
     .page-item.active .page-link {
-        background: #66dc1d;
+        background: #888;
         color: white;
         font-weight: bold;
     }
@@ -39,6 +41,19 @@
 <section class="products-section">
     <div class="section-header">
         <h2>@(Model?.Name ?? "Kategoriler")</h2>
+        <form method="get"
+              asp-controller="Category"
+              asp-action="Index"
+              asp-route-id="@ViewBag.CategoryId"
+              asp-route-slug="@SeoSlugHelper.Generate(Model.Name)"
+              class="product-sort-form">
+            <label for="category-product-sort">Sıralama</label>
+            <select id="category-product-sort" name="sort" onchange="this.form.submit()">
+                <option value="default" selected="@(selectedSort == "default")">Varsayılan sıralama</option>
+                <option value="price-asc" selected="@(selectedSort == "price-asc")">Fiyat: Artan</option>
+                <option value="price-desc" selected="@(selectedSort == "price-desc")">Fiyat: Azalan</option>
+            </select>
+        </form>
     </div>
 
     <div class="products-grid">
@@ -48,7 +63,7 @@
             {
                 <div class="product-card">
                     <div class="product-image">
-                        <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                        <a href="/urun/@item.ProductCode/@SeoSlugHelper.Generate(item.Name)" class="product-link">
                             <img src="/img/@(item.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
                  ?? item.ProductImages?.FirstOrDefault()?.ImageUrl
                  ?? "no-image.png")"
@@ -84,7 +99,7 @@
             @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
             {
                 <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new { id = ViewBag.CategoryId, page = i })">@i</a>
+                    <a class="page-link" href="/kategori/@ViewBag.CategoryId/@SeoSlugHelper.Generate(Model.Name)?page=@i&sort=@selectedSort">@i</a>
                 </li>
             }
         </ul>

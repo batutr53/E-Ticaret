@@ -24,12 +24,15 @@ namespace E_Ticaret.Data
         public DbSet<FooterContact> FooterContacts { get; set; }
         public DbSet<FooterMobileMenu> FooterMobileMenus { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<MobileBanner> MobileBanners { get; set; }
+        public DbSet<SiteSetting> SiteSettings { get; set; }
+        public DbSet<ContentPage> ContentPages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("Host=82.0.241.0;Port=5432;Database=0;Username=postgres;Password=+0");
+                optionsBuilder.UseNpgsql("Host=82.153.241.175;Port=5432;Database=eticaretdetaycicekdb;Username=postgres;Password=+12131213Qq1");
             }
             base.OnConfiguring(optionsBuilder);
         }

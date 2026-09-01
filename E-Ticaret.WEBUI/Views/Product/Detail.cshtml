@@ -1,4 +1,5 @@
 ﻿@model ProductDetailViewModel
+@using E_Ticaret.WEBUI.Helpers
 @{
     ViewData["Title"] = Model.Product?.Name ?? "Detay";
 }
@@ -74,7 +75,7 @@
                  ?? item.ProductImages.FirstOrDefault()?.ImageUrl
                  ?? "no-image.png";
             <div class="product-card">
-                <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                <a href="/urun/@item.ProductCode/@E_Ticaret.WEBUI.Helpers.SeoSlugHelper.Generate(item.Name)" class="product-link">
                     <div class="product-image">
                         <img src="/img/@imageUrl" alt="@item.Name">
                     </div>

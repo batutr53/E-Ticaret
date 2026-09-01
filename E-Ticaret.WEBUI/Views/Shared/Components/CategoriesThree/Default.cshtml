@@ -1,10 +1,10 @@
 ﻿@using E_Ticaret.Core.Entities
+@using E_Ticaret.WEBUI.Helpers
 @model IEnumerable<Category>
 
 @foreach (var category in Model)
 {
-    <a href="/Category?id=@category.Id">
-        <i class="@category.ClassImage"></i>
+    <a href="/kategori/@category.Id/@SeoSlugHelper.Generate(category.Name)">
         @category.Name
     </a>
 }

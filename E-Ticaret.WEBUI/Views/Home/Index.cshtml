@@ -1,9 +1,10 @@
-﻿@model IEnumerable<E_Ticaret.Core.Entities.Product>
+﻿@model E_Ticaret.WEBUI.Models.HomeIndexViewModel
+@using E_Ticaret.WEBUI.Helpers
 @{
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<partial name="_SLider" />
+<partial name="_Slider" model="Model" />
 
 <!-- Özellikler Kutuları -->
 <section class="features-section">
@@ -34,7 +35,7 @@
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model.Where(x => x.IsHome))
+        @foreach (var item in Model.Products.Where(x => x.IsHome))
         {
             var imageUrl = item.ProductImages?.FirstOrDefault(x => x.IsDefault)?.ImageUrl
                  ?? item.ProductImages?.FirstOrDefault()?.ImageUrl
@@ -42,7 +43,7 @@
 
             <div class="product-card">
                 <div class="product-image" style="position: relative;">
-                    <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                    <a href="/urun/@item.ProductCode/@SeoSlugHelper.Generate(item.Name)" class="product-link">
                         <img src="/img/@imageUrl" alt="@item.Name">
                     </a>
                     <div class="quick-view"
@@ -51,7 +52,7 @@
                          data-price="@item.Price.ToString("c")"
                          data-description="@(item.Description ?? "")"
                          data-productid="@item.Id">
-                        <i class="fa-solid fa-eye" style="color: #2E8B57; font-size: 18px;"></i>
+                        <i class="fa-solid fa-eye" style="color: #888; font-size: 18px;"></i>
                     </div>
                 </div>
                 <div class="product-info">

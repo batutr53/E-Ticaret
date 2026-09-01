@@ -1,5 +1,6 @@
 ﻿using E_Ticaret.Core.Entities;
 using E_Ticaret.Service.Abstract;
+using E_Ticaret.WEBUI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,19 @@ namespace E_Ticaret.WEBUI.Controllers
             _categoryService = categoryService;
         }
         [HttpGet]
-        public async Task<IActionResult> Index(int id, int page = 1, int pageSize = 20)
+        public async Task<IActionResult> Index(
+            int id,
+            string? slug = null,
+            int page = 1,
+            int pageSize = 20,
+            string sort = "default")
 
         {
+            var allowedSorts = new[] { "default", "price-asc", "price-desc" };
+            if (!allowedSorts.Contains(sort))
+                sort = "default";
+            page = Math.Max(page, 1);
+
             var category = await _categoryService.GetQueryable()
                 .Include(c => c.ProductCategories)
                     .ThenInclude(pc => pc.Product)
@@ -27,10 +38,23 @@ namespace E_Ticaret.WEBUI.Controllers
             {
                 return NotFound();
             }
-            var products = category.ProductCategories
-        .OrderBy(pc => pc.OrderNo) 
-        .Select(pc => pc.Product)
-        .ToList();
+
+            var canonicalSlug = SeoSlugHelper.Generate(category.Name);
+            if (!string.Equals(slug, canonicalSlug, StringComparison.Ordinal))
+            {
+                return RedirectToAction(nameof(Index), new { id = category.Id, slug = canonicalSlug, page, pageSize, sort });
+            }
+
+            var productQuery = category.ProductCategories
+                .OrderBy(pc => pc.OrderNo)
+                .Select(pc => pc.Product);
+
+            var products = sort switch
+            {
+                "price-asc" => productQuery.OrderBy(p => p.Price).ToList(),
+                "price-desc" => productQuery.OrderByDescending(p => p.Price).ToList(),
+                _ => productQuery.ToList()
+            };
 
             var pagedProducts = products
                 .Skip((page - 1) * pageSize)
@@ -40,6 +64,7 @@ namespace E_Ticaret.WEBUI.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling((double)products.Count / pageSize);
             ViewBag.CurrentPage = page;
             ViewBag.CategoryId = id;
+            ViewBag.Sort = sort;
 
             category.ProductCategories = pagedProducts
                 .Select(p => new E_Ticaret.Core.Entities.ProductCategory { Product = p })

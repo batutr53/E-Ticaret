@@ -1,14 +1,39 @@
-﻿<section class="banner-grid">
-    @foreach (var item in ViewBag.Sliders)
+﻿@model E_Ticaret.WEBUI.Models.HomeIndexViewModel
+
+@if (Model.DesktopSliders.Count > 0)
+{
+<section class="banner-grid desktop-slider" aria-label="Kampanyalar">
+    @foreach (var item in Model.DesktopSliders)
     {
         <div class="banner-item">
             <a href="@item.Link">
-                <img src="/img/@item.Image" alt="Özel Tasarım Çiçekler">
-                @*<div class="banner-overlay">
-                    <h2 class="banner-title">@item.Title</h2>
-                    <h3 class="banner-subtitle">@item.Description</h3>
-                </div>*@
+                <img src="/img/@item.Image" alt="@(string.IsNullOrWhiteSpace(item.Title) ? "Kampanya" : item.Title)">
             </a>
         </div>
     }
 </section>
+}
+
+@if (Model.MobileSliders.Count > 0)
+{
+<section class="banner-grid mobile-slider" aria-label="Mobil kampanyalar">
+    @foreach (var item in Model.MobileSliders)
+    {
+        <div class="banner-item">
+            <a href="@item.Link">
+                <img src="/img/@item.Image" alt="@(string.IsNullOrWhiteSpace(item.Title) ? "Mobil kampanya" : item.Title)">
+            </a>
+        </div>
+    }
+</section>
+}
+
+@if (Model.MobileBanners.Count > 0)
+{
+<section class="mobile-banner-grid">
+    @foreach (var item in Model.MobileBanners)
+    {
+        <a href="@item.Link" class="mobile-banner-item"><img src="/img/@item.Image" alt="Mobil kampanya bannerı"></a>
+    }
+</section>
+}

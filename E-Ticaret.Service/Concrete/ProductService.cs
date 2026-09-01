@@ -14,9 +14,9 @@ namespace E_Ticaret.Service.Concrete
         {
             _context = context;
         }
-        public async Task<List<Product>> GetFilteredProductsAsync(string searchQuery)
+        public async Task<List<Product>> GetFilteredProductsAsync(string searchQuery, string sort = "default")
         {
-            var queryable = _context.Products
+            IQueryable<Product> queryable = _context.Products
                 .Where(x => x.IsActive &&
                             (EF.Functions.ILike(x.Name, $"%{searchQuery}%") ||
                              EF.Functions.ILike(x.ProductCode.ToString(), $"%{searchQuery}%")))
@@ -24,6 +24,13 @@ namespace E_Ticaret.Service.Concrete
                 .Include(p => p.ProductImages)
                 .Include(x => x.ProductCategories)
                     .ThenInclude(pc => pc.Category);
+
+            queryable = sort switch
+            {
+                "price-asc" => queryable.OrderBy(x => x.Price).ThenByDescending(x => x.OrderNo),
+                "price-desc" => queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.OrderNo),
+                _ => queryable.OrderByDescending(x => x.OrderNo)
+            };
 
             return await queryable.ToListAsync();
         }

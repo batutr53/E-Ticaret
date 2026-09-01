@@ -1,0 +1,24 @@
+@model List<E_Ticaret.Core.Entities.ContentPage>
+@{
+    ViewData["Title"] = "İçerik Sayfaları";
+}
+<h1 class="h3 mb-4 text-gray-800">İçerik Sayfaları</h1>
+@if (TempData["ContentPageMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["ContentPageMessage"]</div>
+}
+<div class="card shadow"><div class="card-body">
+    <table class="table table-bordered">
+        <thead><tr><th>Sabit Anahtar</th><th>Başlık</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var contentPage in Model)
+        {
+            <tr>
+                <td><code>@contentPage.Key</code></td>
+                <td>@contentPage.Title</td>
+                <td class="text-right"><a asp-action="Edit" asp-route-key="@contentPage.Key" class="btn btn-sm btn-warning">Düzenle</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div></div>

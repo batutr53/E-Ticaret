@@ -44,11 +44,11 @@ ul {
     }
 
         .top-links a i {
-            color: #2E8B57;
+            color: #888;
         }
 
         .top-links a:hover {
-            color: #2E8B57;
+            color: #888;
         }
 
 .social-icons {
@@ -79,7 +79,7 @@ ul {
     }
 
         .auth-links a:hover {
-            color: #2E8B57;
+            color: #888;
         }
 
 /* Main Header */
@@ -135,8 +135,8 @@ ul {
 
     .search-input:focus {
         outline: none;
-        border-color: #2E8B57;
-        box-shadow: 0 0 5px rgba(46, 139, 87, 0.3);
+        border-color: #888;
+        box-shadow: 0 0 5px rgba(136, 136, 136, 0.3);
     }
 
 .search-btn {
@@ -212,7 +212,7 @@ ul {
 .banner-btn {
     align-self: flex-end;
     background-color: #fff;
-    color: #2E8B57;
+    color: #888;
     border: none;
     padding: 8px 20px;
     border-radius: 20px;
@@ -266,7 +266,7 @@ ul {
 
     .feature-box i {
         font-size: 32px;
-        color: #2E8B57;
+        color: #888;
         margin-bottom: 15px;
     }
 
@@ -322,7 +322,7 @@ ul {
             transform: translateX(-50%);
             width: 100px;
             height: 3px;
-            background-color: #2E8B57;
+            background-color: #888;
         }
 
 /* Ürün Grid - Responsive Düzenleme */
@@ -464,7 +464,7 @@ ul {
 .modal-price {
     font-size: 20px;
     font-weight: 600;
-    color: #2E8B57;
+    color: var(--site-primary, #888);
     margin: 10px 0 20px;
 }
 
@@ -508,7 +508,7 @@ ul {
 .product-price {
     font-size: 22px;
     font-weight: 600;
-    color: #2E8B57;
+    color: var(--site-primary, #888);
     margin-bottom: 15px;
 }
 
@@ -521,7 +521,7 @@ ul {
 .add-to-cart-btn {
     width: 100%;
     padding: 12px 0;
-    background-color: #2E8B57;
+    background-color: var(--site-primary, #888);
     color: #fff;
     border: none;
     border-radius: 0 0 8px 8px;
@@ -537,7 +537,7 @@ ul {
 }
 
     .add-to-cart-btn:hover {
-        background-color: #236b43;
+        background-color: var(--site-accent, #236b43);
     }
 
 /* Footer Stilleri */
@@ -548,7 +548,7 @@ ul {
 
 /* İletişim Bölümü */
 .contact-bar {
-    background-color: #2E8B57;
+    background-color: var(--site-primary, #888);
     padding: 25px 0;
 }
 
@@ -631,7 +631,7 @@ ul {
         color: #fff;
         margin: 0 0 20px;
         padding-bottom: 10px;
-        border-bottom: 2px solid #2E8B57;
+        border-bottom: 2px solid var(--site-primary, #888);
         display: inline-block;
     }
 
@@ -655,7 +655,7 @@ ul {
     }
 
         .footer-links a:hover {
-            color: #2E8B57;
+            color: var(--site-primary, #888);
         }
 
         .footer-links a i {
@@ -687,7 +687,7 @@ ul {
 }
 
 .developer a {
-    color: #2E8B57;
+    color: var(--site-primary, #888);
     text-decoration: none;
 }
 
@@ -712,6 +712,12 @@ ul {
 .product-detail-image-wrapper, .product-detail-info-wrapper {
     flex: 1;
     min-width: 300px;
+}
+
+.product-details-section {
+    flex: 0 0 100%;
+    width: 100%;
+    order: 3;
 }
 
 .product-detail-main-image {
@@ -783,7 +789,7 @@ ul {
 }
 
 .product-detail-btn {
-    background-color: #2E8B57;
+    background-color: var(--site-primary, #888);
     color: white;
     padding: 12px;
     width: 100%;
@@ -795,7 +801,7 @@ ul {
 }
 
     .product-detail-btn:hover {
-        background-color: #236b43;
+        background-color: var(--site-accent, #236b43);
     }
 
 /* Mobile Bottom Menu */
@@ -824,7 +830,7 @@ ul {
 }
 
     .mobile-menu-item:hover {
-        color: #007B5E;
+        color: var(--site-accent, #007B5E);
     }
 
     .mobile-menu-item svg {
@@ -943,7 +949,7 @@ ul.category-level-2 {
 }
 
     .contact-numbers .phone-icon {
-        color: #2E8B57;
+        color: var(--site-primary, #888);
         font-size: 18px;
         margin-bottom: 6px;
     }
@@ -955,7 +961,7 @@ ul.category-level-2 {
     }
 
         .contact-numbers a:hover {
-            color: #2E8B57;
+            color: #888;
         }
 
 .phone-row {
@@ -973,7 +979,7 @@ ul.category-level-2 {
     }
 
         .phone-row a:hover {
-            color: #2E8B57;
+            color: #888;
         }
 
 /* Utility Classes */
@@ -1737,7 +1743,7 @@ ul.category-level-2 {
 .banner-btn {
     align-self: flex-end;
     background-color: #fff;
-    color: #2E8B57;
+    color: #888;
     border: none;
     padding: 8px 20px;
     border-radius: 20px;
@@ -3136,8 +3142,8 @@ ul.category-level-2 {
 
     .search-input:focus {
         outline: none;
-        border-color: #2E8B57;
-        box-shadow: 0 0 5px rgba(46, 139, 87, 0.3);
+        border-color: #888;
+        box-shadow: 0 0 5px rgba(136, 136, 136, 0.3);
         /* Mevcut stil korunuyor */
     }
 
@@ -3180,7 +3186,7 @@ ul.category-level-2 {
     }
 
         .phone-row a:hover {
-            color: #2E8B57;
+            color: #888;
         }
 
 /* ============================== */
@@ -3617,7 +3623,7 @@ ul.category-level-2 {
     }
 
         .phone-row a:hover {
-            color: #2E8B57;
+            color: #888;
         }
 
 .phone-icon {
@@ -3645,8 +3651,8 @@ ul.category-level-2 {
 
     .search-input:focus {
         outline: none;
-        border-color: #2E8B57;
-        box-shadow: 0 0 5px rgba(46, 139, 87, 0.3);
+        border-color: #888;
+        box-shadow: 0 0 5px rgba(136, 136, 136, 0.3);
     }
 
 .search-btn {
@@ -3979,7 +3985,7 @@ ul.category-level-2 {
 
 /* Main Navigation Bar */
 .main-nav {
-    background-color: #2E8B57;
+    background-color: var(--site-primary, #888);
     width: 100%;
     z-index: 1000;
     margin-top:10px;
@@ -4112,7 +4118,7 @@ ul.category-level-2 {
     /* Dropdown Icons */
     .dropdown-menu a i {
         font-size: 12px;
-        color: #2e7d5f;
+        color: #888;
         opacity: 0.8;
         width: 20px;
         text-align: center;
@@ -4124,7 +4130,7 @@ ul.category-level-2 {
 
     .dropdown-menu a:hover {
         background-color: #f8f8f8;
-        color: #2e7d5f;
+        color: #888;
         padding-left: 25px;
     }
 
@@ -4174,9 +4180,12 @@ ul.category-level-2 {
 .mobile-toggle {
     display: none;
     color: #fff;
-    font-size: 12px;
+    font-size: 22px;
     padding: 10px;
     cursor: pointer;
+    background: transparent;
+    border: none;
+    appearance: none;
 }
 
 /* Responsive Design */
@@ -4198,7 +4207,7 @@ ul.category-level-2 {
         top: 60px;
         left: 0;
         right: 0;
-        background-color: #2e7d5f;
+        background-color: var(--site-primary, #888);
         flex-direction: column;
         height: auto;
         max-height: calc(100vh - 60px);
@@ -4220,13 +4229,6 @@ ul.category-level-2 {
             padding: 15px 10px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-            .menu-item > a::after {
-                content: close-quote;
-                font-family: 'Font Awesome 6 Free';
-                font-weight: 900;
-                margin-left: auto;
-            }
 
     .dropdown-menu {
         position: static;
@@ -4250,7 +4252,7 @@ ul.category-level-2 {
         grid-template-columns: none;
     }
 
-    .menu-item.active > a::after {
+    .menu-item.active > a .menu-chevron {
         transform: rotate(180deg);
     }
 
@@ -4278,7 +4280,8 @@ ul.category-level-2 {
 }
 
 /* Dropdown Arrow Animation */
-.menu-item > a::after {
+.menu-chevron {
+    margin-left: 8px;
     transition: transform 0.3s;
 }
 
@@ -4332,4 +4335,58 @@ ul.category-level-2 {
 .status-odeme-hatali {
     background-color: #6c757dcc;
     color: #fff;
+}
+
+.product-sort-form {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.product-sort-form select {
+    min-width: 190px;
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.mobile-slider,
+.mobile-banner-grid {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .product-sort-form {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .desktop-slider {
+        display: none;
+    }
+
+    .mobile-slider {
+        display: grid;
+    }
+
+    .mobile-banner-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin: 16px 3%;
+    }
+
+    .mobile-banner-item,
+    .mobile-banner-item img {
+        display: block;
+        width: 100%;
+    }
+
+    .mobile-banner-item img {
+        height: auto;
+        border-radius: 8px;
+    }
 }

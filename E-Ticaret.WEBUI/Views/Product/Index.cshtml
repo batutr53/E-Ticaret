@@ -1,17 +1,31 @@
 ﻿@model List<E_Ticaret.Core.Entities.Product>
+@using E_Ticaret.WEBUI.Helpers
+@{
+    var selectedSort = ViewBag.Sort as string ?? "default";
+    var searchQuery = ViewBag.SearchQuery as string ?? string.Empty;
+}
 
 <section class="products-section">
     <div class="section-header">
         <h2>Ürünler</h2>
+        <form method="get" asp-controller="Product" asp-action="Index" class="product-sort-form">
+            <input type="hidden" name="q" value="@searchQuery" />
+            <label for="product-sort">Sıralama</label>
+            <select id="product-sort" name="sort" onchange="this.form.submit()">
+                <option value="default" selected="@(selectedSort == "default")">Varsayılan sıralama</option>
+                <option value="price-asc" selected="@(selectedSort == "price-asc")">Fiyat: Artan</option>
+                <option value="price-desc" selected="@(selectedSort == "price-desc")">Fiyat: Azalan</option>
+            </select>
+        </form>
     </div>
 
     <div class="products-grid">
-        @foreach (var item in Model.OrderByDescending(x=>x.OrderNo))
+        @foreach (var item in Model)
         {
             var imageUrl = item.ProductImages?.FirstOrDefault()?.ImageUrl ?? "no-image.png";
 
             <div class="product-card">
-                <a href="/product/detail?productCode=@item.ProductCode" class="product-link">
+                <a href="/urun/@item.ProductCode/@SeoSlugHelper.Generate(item.Name)" class="product-link">
                     <div class="product-image">
                         <img src="/img/@imageUrl" alt="@item.Name">
                         <div class="quick-view">

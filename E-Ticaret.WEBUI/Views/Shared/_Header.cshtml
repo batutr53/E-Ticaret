@@ -1,4 +1,8 @@
-﻿<div class="top-bar">
+﻿@model E_Ticaret.WEBUI.Models.HeaderViewModel
+@{
+    var logo = string.IsNullOrWhiteSpace(Model.SiteSetting.Logo) ? "logo.png" : Model.SiteSetting.Logo;
+}
+<div class="top-bar">
     <div class="top-links">
         <a asp-area="" asp-controller="Home" asp-action="About">Hakkımızda</a>
     </div>
@@ -16,7 +20,7 @@
 <!-- Main Header -->
 <header class="main-header">
     <a href="/" class="logo">
-        <img src="/img/logo.png" height="150" width="100" alt="Detay Çiçekçilik">
+        <img src="/img/@logo" height="150" width="100" alt="Detay Çiçekçilik">
     </a>
 
     <div class="contact-numbers">
@@ -47,17 +51,21 @@
         </a>
 
         <!-- Mobile Toggle -->
-        <div class="mobile-toggle" onclick="toggleMobileMenu()">
-            <i class="fas fa-bars"></i>
-        </div>
+        <button type="button" class="mobile-toggle" onclick="toggleMobileMenu(this)"
+                aria-label="Menüyü aç veya kapat" aria-controls="mainMenu" aria-expanded="false">
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
 
         <!-- Main Menu -->
         <div class="main-menu" id="mainMenu">
 
             <div class="menu-item">
                 <a href="#" onclick="toggleDropdown(event, 'menu-one')">
-                    <i class="fas fa-th-large"></i>
                     KATEGORİLER
+                    @if (Model.CategoriesCount > 1)
+                    {
+                        <i class="fa-solid fa-chevron-down menu-chevron" aria-hidden="true"></i>
+                    }
                 </a>
                 <div class="dropdown-menu menu-one">
                     @await Component.InvokeAsync("Categories")
@@ -66,8 +74,11 @@
 
             <div class="menu-item">
                 <a href="#" onclick="toggleDropdown(event, 'menu-two')">
-                    <i class="fas fa-th-large"></i>
                     GÖNDERİM TÜRÜ
+                    @if (Model.DeliveryTypesCount > 1)
+                    {
+                        <i class="fa-solid fa-chevron-down menu-chevron" aria-hidden="true"></i>
+                    }
                 </a>
                 <div class="dropdown-menu menu-two">
                     @await Component.InvokeAsync("CategoriesTwo")
@@ -76,8 +87,11 @@
 
             <div class="menu-item">
                 <a href="#" onclick="toggleDropdown(event, 'menu-three')">
-                    <i class="fas fa-th-large"></i>
                     YAPAY ÇİÇEKLER
+                    @if (Model.ArtificialFlowersCount > 1)
+                    {
+                        <i class="fa-solid fa-chevron-down menu-chevron" aria-hidden="true"></i>
+                    }
                 </a>
                 <div class="dropdown-menu menu-three">
                     @await Component.InvokeAsync("CategoriesThree")

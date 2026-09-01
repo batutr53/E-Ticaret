@@ -26,7 +26,10 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         // GET: Admin/Sliders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Sliders.ToListAsync());
+            return View(await _context.Sliders
+                .OrderBy(x => x.DisplayType)
+                .ThenBy(x => x.OrderNo)
+                .ToListAsync());
         }
 
         // GET: Admin/Sliders/Details/5
@@ -48,9 +51,9 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         }
 
         // GET: Admin/Sliders/Create
-        public IActionResult Create()
+        public IActionResult Create(SliderDisplayType displayType = SliderDisplayType.Desktop)
         {
-            return View();
+            return View(new Slider { DisplayType = displayType });
         }
 
         // POST: Admin/Sliders/Create
@@ -60,9 +63,17 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Slider slider, IFormFile? Image)
         {
+            if (Image == null)
+                ModelState.AddModelError(nameof(Slider.Image), "Slider görseli zorunludur.");
+
             if (ModelState.IsValid)
             {
-                slider.Image = await FileHelper.FileLoaderAsync(Image);
+                slider.Image = await FileHelper.FileLoaderAsync(Image!);
+                if (string.IsNullOrWhiteSpace(slider.Image))
+                {
+                    ModelState.AddModelError(nameof(Slider.Image), "Geçerli bir görsel yükleyin.");
+                    return View(slider);
+                }
                 _context.Add(slider);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -91,7 +102,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,Slider slider, IFormFile? Image, bool cbRemoveImage = false)
+        public async Task<IActionResult> Edit(int id, Slider slider, IFormFile? Image, bool cbRemoveImage = false)
         {
             if (id != slider.Id)
             {
@@ -102,11 +113,34 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             {
                 try
                 {
-                    if (cbRemoveImage)
-                        slider.Image = string.Empty;
+                    var current = await _context.Sliders.FindAsync(id);
+                    if (current == null)
+                        return NotFound();
+
+                    current.Title = slider.Title;
+                    current.Description = slider.Description;
+                    current.Link = slider.Link;
+                    current.IsActive = slider.IsActive;
+                    current.DisplayType = slider.DisplayType;
+                    current.OrderNo = slider.OrderNo;
+
+                    if (cbRemoveImage && !string.IsNullOrWhiteSpace(current.Image))
+                    {
+                        FileHelper.FileRemover(current.Image);
+                        current.Image = null;
+                    }
                     if (Image is not null)
-                        slider.Image = await FileHelper.FileLoaderAsync(Image);
-                    _context.Update(slider);
+                    {
+                        var uploaded = await FileHelper.FileLoaderAsync(Image);
+                        if (string.IsNullOrWhiteSpace(uploaded))
+                        {
+                            ModelState.AddModelError(nameof(Slider.Image), "Geçerli bir görsel yükleyin.");
+                            return View(slider);
+                        }
+                        if (!string.IsNullOrWhiteSpace(current.Image))
+                            FileHelper.FileRemover(current.Image);
+                        current.Image = uploaded;
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

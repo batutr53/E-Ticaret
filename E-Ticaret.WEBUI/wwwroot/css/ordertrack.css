@@ -29,7 +29,7 @@
 
     .track-form button {
         padding: 10px 20px;
-        background-color: #2e8b57;
+        background-color: #888;
         color: white;
         border: none;
         border-radius: 8px;
@@ -87,7 +87,7 @@
     background: #f9f9f9;
     padding: 15px 20px;
     border-radius: 8px;
-    border-left: 4px solid #2e8b57;
+    border-left: 4px solid #888;
 }
 
 .order-items {

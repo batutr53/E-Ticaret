@@ -12,15 +12,18 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center bg-white">
             <h6 class="m-0 font-weight-bold text-dark"><i class="fas fa-images"></i> Tüm Sliderlar</h6>
-            <a asp-action="Create" class="btn btn-sm btn-success">
-                <i class="fas fa-plus-circle"></i> Yeni Slider Ekle
-            </a>
+            <div>
+                <a asp-action="Create" asp-route-displayType="Desktop" class="btn btn-sm btn-primary"><i class="fas fa-desktop"></i> Masaüstü Ekle</a>
+                <a asp-action="Create" asp-route-displayType="Mobile" class="btn btn-sm btn-success"><i class="fas fa-mobile-alt"></i> Mobil Ekle</a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped text-center">
                     <thead class="thead-light">
                         <tr>
+                            <th>Tip</th>
+                            <th>Sıra</th>
                             <th>Başlık</th>
                             <th>Açıklama</th>
                             <th>Görsel</th>
@@ -33,6 +36,12 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>
+                                    <span class="badge @(item.DisplayType == E_Ticaret.Core.Entities.SliderDisplayType.Desktop ? "badge-primary" : "badge-success")">
+                                        @(item.DisplayType == E_Ticaret.Core.Entities.SliderDisplayType.Desktop ? "Masaüstü" : "Mobil")
+                                    </span>
+                                </td>
+                                <td>@item.OrderNo</td>
                                 <td>@item.Title</td>
                                 <td>@item.Description</td>
                                 <td>

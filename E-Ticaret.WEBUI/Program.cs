@@ -38,6 +38,7 @@ builder.Services.AddScoped(typeof(IProductService), typeof(ProductService));
 builder.Services.AddScoped(typeof(IFooterService), typeof(FooterService));
 builder.Services.AddScoped(typeof(IFooterContactService), typeof(FooterContactService));
 builder.Services.AddScoped(typeof(IFooterMobileMenuService), typeof(FooterMobileMenuService));
+builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
@@ -123,6 +124,14 @@ app.MapControllerRoute(
           name: "admin",
           pattern: "{area:exists}/{controller=Main}/{action=Index}/{id?}"
         );
+app.MapControllerRoute(
+    name: "product-seo",
+    pattern: "urun/{productCode:int}/{slug?}",
+    defaults: new { controller = "Product", action = "Detail" });
+app.MapControllerRoute(
+    name: "category-seo",
+    pattern: "kategori/{id:int}/{slug?}",
+    defaults: new { controller = "Category", action = "Index" });
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

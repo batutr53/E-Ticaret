@@ -1,4 +1,5 @@
 ﻿@model E_Ticaret.Core.Entities.Cart
+@using E_Ticaret.WEBUI.Helpers
 
 @{
     var totalPrice = 0m;
@@ -15,7 +16,7 @@
                 totalPrice += lineTotal;
 
                 <div class="basket-product-header">
-                    <a href="/Product/Detail?productCode=@item.Product.ProductCode">
+                    <a href="/urun/@item.Product.ProductCode/@SeoSlugHelper.Generate(item.Product.Name)">
                         <img src="/img/@imageUrl" alt="@item.Product.Name" class="basket-product-img" />
                     </a>
 
@@ -42,11 +43,10 @@
             <div class="basket-order-summary">
                 <div class="basket-price-summary">
                     <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
-                    <p class="basket-price-item">(KDV Dahil)</p>
                     <p class="basket-price-value">@totalPrice.ToString("c")</p>
 
                     <div class="basket-total-price">
-                        <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
+                        <span>Toplam Ödeme Tutarı</span>
                         <span>@totalPrice.ToString("c")</span>
                     </div>
                 </div>

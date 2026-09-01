@@ -1,4 +1,5 @@
 ﻿@model E_Ticaret.Core.Entities.Cart
+@using E_Ticaret.WEBUI.Helpers
 @{
     ViewData["Title"] = "Sepetim";
 }
@@ -12,7 +13,7 @@
                 @foreach (var item in Model.CartItems)
                 {
                     <div class="basket-product-header">
-                        <a href="/Product/Detail?productCode=@item.Product.ProductCode">
+                        <a href="/urun/@item.Product.ProductCode/@SeoSlugHelper.Generate(item.Product.Name)">
                             <img src="/img/@(item.Product.ProductImages.FirstOrDefault(x => x.IsDefault)?.ImageUrl
                  ?? item.Product.ProductImages.FirstOrDefault()?.ImageUrl
                  ?? "no-image.png")"
@@ -59,11 +60,10 @@
                 <div class="basket-order-summary">
                     <div class="basket-price-summary">
                         <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
-                        <p class="basket-price-item">(KDV Dahil)</p>
                         <p class="basket-price-value">@ViewBag.TotalPrice.ToString("c")</p>
 
                         <div class="basket-total-price">
-                            <span>Toplam Ödeme Tutarı (KDV Dahil)</span>
+                            <span>Toplam Ödeme Tutarı</span>
                             <span>@ViewBag.TotalPrice.ToString("c")</span>
                         </div>
                     </div>

@@ -14,26 +14,27 @@
         using (var memStream = new MemoryStream())
         {
             context.Response.Body = memStream;
-
-            await _next(context); // Akışı çalıştır
-
-            // 401 mi kontrol et
-            if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+            try
             {
-                var path = context.Request.Path.ToString().ToLower();
-                if (path.StartsWith("/admin") && !path.Contains("/admin/auth/login"))
-                {
-                    // Login'e yönlendir
-                    context.Response.Clear();
-                    context.Response.Redirect("/Admin/Auth/Login");
-                    return;
-                }
-            }
+                await _next(context);
 
-            // Buffer'daki response'u tekrar orijinale yaz
-            memStream.Seek(0, SeekOrigin.Begin);
-            await memStream.CopyToAsync(originalBodyStream);
-            context.Response.Body = originalBodyStream;
+                if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+                {
+                    var path = context.Request.Path.ToString().ToLower();
+                    if (path.StartsWith("/admin") && !path.Contains("/admin/auth/login"))
+                    {
+                        context.Response.Clear();
+                        context.Response.Redirect("/Admin/Auth/Login");
+                    }
+                }
+
+                memStream.Seek(0, SeekOrigin.Begin);
+                await memStream.CopyToAsync(originalBodyStream);
+            }
+            finally
+            {
+                context.Response.Body = originalBodyStream;
+            }
         }
     }
 }
