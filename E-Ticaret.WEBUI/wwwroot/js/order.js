@@ -62,34 +62,3 @@ form.addEventListener('submit', (e) => {
         e.preventDefault();
     }
 });
-
-// ✅ Inputmask ayarlamaları
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof Inputmask !== "undefined") {
-        Inputmask({
-            mask: "9999 9999 9999 9999",
-            placeholder: " ",
-            showMaskOnHover: false
-        }).mask(document.querySelector('input[name="CardNumber"]'));
-
-        Inputmask({
-            mask: "99",
-            placeholder: " ",
-            showMaskOnHover: false
-        }).mask(document.querySelector('input[name="CardExpireMonth"]'));
-
-        Inputmask({
-            mask: "99",
-            placeholder: " ",
-            showMaskOnHover: false
-        }).mask(document.querySelector('input[name="CardExpireYear"]'));
-
-        Inputmask({
-            mask: "999[9]",
-            placeholder: " ",
-            showMaskOnHover: false
-        }).mask(document.querySelector('input[name="CardCvc"]'));
-    } else {
-        console.error("Inputmask kütüphanesi yüklü değil.");
-    }
-});

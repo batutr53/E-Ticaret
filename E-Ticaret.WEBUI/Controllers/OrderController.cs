@@ -1,302 +1,355 @@
-﻿using Azure.Core;
 using E_Ticaret.Core.DTO;
 using E_Ticaret.Core.Email;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.Service.Concrete;
-using E_Ticaret.WEBUI.ExtensionMethods;
 using E_Ticaret.WEBUI.Helpers;
 using E_Ticaret.WEBUI.Models;
-using MailKit.Search;
+using E_Ticaret.WEBUI.Payments;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System;
-using System.Security.Cryptography;
-using System.Text;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-namespace E_Ticaret.WEBUI.Controllers
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Net;
+
+namespace E_Ticaret.WEBUI.Controllers;
+
+[Route("Order")]
+public class OrderController : Controller
 {
-    [Route("Order")]
-    public class OrderController : Controller
+    private readonly IOrderService _orderService;
+    private readonly DatabaseContext _context;
+    private readonly ICartService _cartService;
+    private readonly IEmailService _emailService;
+    private readonly EmailSettings _emailSettings;
+    private readonly IRazorViewToStringRenderer _razorRenderer;
+    private readonly TelegramHelper _telegramHelper;
+    private readonly IPayTrService _payTrService;
+    private readonly PayTrOptions _payTrOptions;
+    private readonly ILogger<OrderController> _logger;
+
+    public OrderController(
+        IOrderService orderService,
+        DatabaseContext context,
+        ICartService cartService,
+        IEmailService emailService,
+        IOptions<EmailSettings> emailSettings,
+        IRazorViewToStringRenderer razorRenderer,
+        TelegramHelper telegramHelper,
+        IPayTrService payTrService,
+        IOptions<PayTrOptions> payTrOptions,
+        ILogger<OrderController> logger)
     {
-        private readonly IOrderService _orderService;
-        private readonly DatabaseContext _context;
-        private readonly IConfiguration _config;
-        private readonly ICartService _cartService;
-        private readonly IEmailService _emailService;
-        private readonly EmailSettings _emailSettings;
-        private readonly IRazorViewToStringRenderer _razorRenderer;
-        private readonly TelegramHelper _telegramHelper;
-        public OrderController(IOrderService orderService, IConfiguration config, DatabaseContext context, ICartService cartService, IEmailService emailService, IOptions<EmailSettings> emailSettings, IRazorViewToStringRenderer razorRenderer, TelegramHelper telegramHelper)
+        _orderService = orderService;
+        _context = context;
+        _cartService = cartService;
+        _emailService = emailService;
+        _emailSettings = emailSettings.Value;
+        _razorRenderer = razorRenderer;
+        _telegramHelper = telegramHelper;
+        _payTrService = payTrService;
+        _payTrOptions = payTrOptions.Value;
+        _logger = logger;
+    }
+
+    [HttpGet("GetOrder")]
+    public IActionResult GetOrder() => View();
+
+    [HttpPost("GetOrder")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> GetOrder(string oid)
+    {
+        var result = await _orderService.GetOrderByOId(oid);
+        if (result == null)
         {
-            _orderService = orderService;
-            _config = config;
-            _context = context;
-            _cartService = cartService;
-            _emailService = emailService;
-            _emailSettings = emailSettings.Value;
-            _razorRenderer = razorRenderer;
-            _telegramHelper = telegramHelper;
-        }
-        [HttpGet("GetOrder")]
-        public async Task<IActionResult> GetOrder()
-        {
+            ViewBag.Error = "Böyle bir sipariş bulunamadı.";
             return View();
         }
 
-        [HttpPost("GetOrder")]
-        public async Task<IActionResult> GetOrder(string oid)
-        {
-            var result = await _orderService.GetOrderByOId(oid!);
-            if (result == null) { ViewBag.Error = "Böyle bir sipariş bulunamadı."; return View(); }
-            ;
-            return View(result);
-        }
-        public async Task<IActionResult> Index()
-        {
-            var deliveryTimes = await _context.DeliveryTimeRanges
-      .Where(x => x.IsActive)
-      .OrderBy(x => x.StartTime)
-      .ToListAsync();
+        return View(result);
+    }
 
-            ViewBag.DeliveryTimeRanges = deliveryTimes;
-            return View();
-        }
+    [HttpGet("")]
+    public async Task<IActionResult> Index()
+    {
+        ViewBag.DeliveryTimeRanges = await _context.DeliveryTimeRanges
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.StartTime)
+            .ToListAsync();
+        return View();
+    }
 
-        [HttpPost("CreateOrder")]
-        public async Task<IActionResult> CreateOrder(CreateOrderDTO model)
+    [HttpPost("CreateOrder")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateOrder(CreateOrderDTO model, CancellationToken cancellationToken)
+    {
+        var validationError = ValidateOrderInput(model);
+        if (validationError != null)
         {
-            if (model.DeliveryDate.HasValue)
-            {
-                model.DeliveryDate = DateTime.SpecifyKind(model.DeliveryDate.Value, DateTimeKind.Utc);
-            }
-            var userCustomerId = Request.Cookies["customerId"];
-            model.CustomerId = userCustomerId;
-            var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.CustomerId == userCustomerId);
-            model.Oid = "SP" + DateTime.UtcNow.Year + DateTime.UtcNow.Month.ToString("D2") + DateTime.UtcNow.Day.ToString("D2") + DateTime.UtcNow.Minute.ToString("D2") + Request.Cookies["customerId"];
-            var result = await _orderService.CreateOrder(model);
-            var paymentResult = await Payment(model, cart, model.Oid);
-            return Content(paymentResult.Content, "text/html");
+            return PaymentResult(false, false, string.Empty, validationError);
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
-        private async Task<ContentResult> Payment(CreateOrderDTO input, Cart cart, string OrderId)
+        if (model.DeliveryDate.HasValue)
         {
-            string publicKey = _config["TrPosAPI:PublicKey"];
-            string apiKey = _config["TrPosAPI:APIKey"];
-            string secretKey = _config["TrPosAPI:SecretKey"];
-            // Altyapı sistemini sağlayan entegratörün kimlik numarası.
-            string integratorId = "";
-            // Her işlemde benzersiz gönderilmesi gereken RND
-            string rnd = DateTime.Now.Ticks.ToString();
-            // İşlem güvenlik şekli (Ödeme Yöntemi)
-            byte storeType = 1; // 1: 3D Secure, 2: None Secure
-                                // İşlem tipi
-            byte txnType = 1; // 1: Satış
-                              // dışarda
-            string cardHolder = input.CardName; // Kart sahibi adı
-            string cardNumber = input.CardNumber; // Kart
-            string expMonth = input.CardExpireMonth; // Kart Son Kullanım
-
-            string expYear = input.CardExpireYear; // Kart Son Kullanım Tarihi – YIL
-            string cv2 = input.CardCvc; // Kart Güvenlik Numarası
-                                        // Benzersiz sipariş numarası (Örnek olarak verilmiştir. Kendi sipariş numaranızı
-
-            string oid = OrderId;
-            // İşlem tutarı
-            string amount = cart.CalculateTotal().ToString("N2", new System.Globalization.CultureInfo("tr-TR"));
-            byte installment = input.Installment; // Örnek: 0,2,3,4,5,6,7,8,9,10,11,12
-                                                  // Para birimi
-            byte currency = 1; // 1:TL, 2:USD, 3:EUR
-
-            // Satış işlemine ait cevapların döneceği URL
-            string returnUrl = Request.GetBaseUrl(includePort: true) + "/Order/PaymentResponse";
-            string userIp = "1.1.1.1";
-            //------------
-            if (string.IsNullOrEmpty(userIp))
-            {
-                userIp = HttpContext.GetServerVariable("REMOTE_ADDR");
-            }
-
-            string birlestir = string.Concat(apiKey.ToUpper(), publicKey, rnd, oid, amount, currency);
-            HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
-            byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(birlestir));
-            string hash = Convert.ToBase64String(b);
-            Dictionary<string, string> formData = new Dictionary<string, string>
-            {
-            { "PublicKey", publicKey },
-            { "ApiKey", apiKey.ToUpper() },
-            { "Rnd", rnd },
-            { "Hash", hash },
-            { "StoreType", storeType.ToString() },
-            { "TxnType", txnType.ToString() },
-            { "CardHolder", cardHolder },
-            { "CardNumber", cardNumber },
-            { "ExpMonth",expMonth },
-            { "ExpYear", expYear },
-            { "Cv2", cv2 },
-            { "Oid", oid.ToString() },
-            { "Amount", amount },
-            { "Installment", installment.ToString() },
-            { "Currency", currency.ToString() },
-            { "ReturnUrl", returnUrl },
-            { "UserIP", userIp },
-            { "IntegratorId", integratorId }
-            };
-            // TRPOS Satış İşlemi POST URL
-            string paymentURL = _config["TrPosAPI:PaymentURL"];
-            try
-            {
-                using (HttpClient client = new())
-                {
-                    var formContent = new FormUrlEncodedContent(formData);
-                    HttpResponseMessage response = await client.PostAsync(paymentURL, formContent);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Ekrana yazdırılması gereken TRPOS tarafından dönen HTML
-                        var htmlContent = await response.Content.ReadAsStringAsync();
-                        return new ContentResult
-                        {
-                            Content = htmlContent,
-                            ContentType = "text/html",
-                            StatusCode = 200
-                        };
-                    }
-                    else
-                    {
-                        Console.WriteLine("HATA: " + response.StatusCode);
-                        return new ContentResult
-                        {
-                            Content = "HATA: " + response.StatusCode,
-                            ContentType = "text/html",
-                            StatusCode = 400
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception: {ex.Message}");
-                return new ContentResult
-                {
-                    Content = $"Exception: {ex.Message}",
-                    ContentType = "text/html",
-                    StatusCode = 500
-                };
-            }
+            model.DeliveryDate = DateTime.SpecifyKind(model.DeliveryDate.Value, DateTimeKind.Utc);
         }
 
-        [HttpPost("PaymentResponse")]
-        public async Task<IActionResult> PaymentResponse([FromForm] PaymentResponseDTO model)
+        var customerId = Request.Cookies["customerId"];
+        if (string.IsNullOrWhiteSpace(customerId))
         {
-            var order = await _orderService.GetOrderById(model.Oid);
-            if (model.ResultCode == "0000")
-            {
-                order.OrderStatus = OrderStatus.Approved;
-                order.TxnNo = model.TxnNo;
-                order.Oid = model.Oid;
+            return PaymentResult(false, false, string.Empty, "Sepet oturumu bulunamadı. Lütfen sepetinizi yenileyip tekrar deneyin.");
+        }
 
-                var customerId = model.Oid.Substring(12);
-                var cart = await _context.Carts
-                    .Include(c => c.CartItems)
-                    .ThenInclude(ci => ci.Product)
-                    .FirstOrDefaultAsync(c => c.CustomerId == model.Oid.Substring(12));
-
-                var products = (order?.OrderItems ?? new List<OrderItem>())
-        .Select(x => new OrderProductModel
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .ThenInclude(ci => ci.Product)
+            .FirstOrDefaultAsync(c => c.CustomerId == customerId, cancellationToken);
+        if (cart == null || cart.CartItems.Count == 0)
         {
-            Name = x.ProductName,
-            ImageUrl = ImageHelper.ToFullImageUrl(x.ProductImage ?? "no-image.png"),
-            Quantity = x.Quantity,
-            Price = x.Price
-        }).ToList();
+            return PaymentResult(false, false, string.Empty, "Sepetiniz boş. Ödeme başlatılamadı.");
+        }
 
-                _cartService.Remove(cart);
-                await _orderService.UpdateOrder(order);
+        model.CustomerId = customerId;
+        model.Oid = CreateMerchantOid();
+        var order = await _orderService.CreateOrder(model);
+        if (order.Id == 0)
+        {
+            return PaymentResult(false, false, model.Oid, "Sipariş oluşturulamadı. Lütfen tekrar deneyin.");
+        }
 
+        var siteUrl = GetSiteUrl();
+        var successUrl = $"{siteUrl}/Order/PaymentSuccess?merchantOid={Uri.EscapeDataString(order.Oid!)}";
+        var failureUrl = $"{siteUrl}/Order/PaymentFailed?merchantOid={Uri.EscapeDataString(order.Oid!)}";
+        var tokenResult = await _payTrService.CreatePaymentTokenAsync(
+            order,
+            GetClientIpAddress(),
+            successUrl,
+            failureUrl,
+            cancellationToken);
 
-                NotifyPaymentSuccess(
-             order.SenderEmail,
-             order.SenderFirstName + " " + order.SenderLastName,
-             order.Oid,
-             order.OrderDate,
-             order.DeliveryDate.Value,
-             order.DeliveryTimeRange.RangeText,
-             products,
-             senderFullName: order.SenderFirstName + " " + order.SenderLastName,
-             senderPhone: order.SenderPhone,
-             senderEmail: order.SenderEmail,
-             receiverFullName: order.FirstName + " " + order.LastName,
-             receiverPhone: order.Phone,
-             receiverAddress: order.City + " - " + order.AddresLine,
-             subTotal: order.SubTotal,
-             deliveryFee: order.DeliveryFree,
-             total: order.GetTotal()
-         );
-                await _telegramHelper.SendTelegramOrderMessage(order.Id, "Yeni siparişin var!" + " " + order.Id + " ");
-
-                return View(model);
-            }
+        if (!tokenResult.IsSuccess || string.IsNullOrWhiteSpace(tokenResult.Token))
+        {
             order.OrderStatus = OrderStatus.PaymentFailed;
             await _orderService.UpdateOrder(order);
-            return View(model);
-
+            _logger.LogWarning("PayTR token could not be created for order {MerchantOid}: {Reason}", order.Oid, tokenResult.ErrorMessage);
+            return PaymentResult(false, false, order.Oid!, tokenResult.ErrorMessage ?? "Ödeme ekranı açılamadı.");
         }
 
-        [HttpPost]
-        [Route("order/notify-payment")]
-        public IActionResult NotifyPaymentSuccess(
-    string customerEmail,
-    string customerName,
-    string orderNo,
-    DateTime orderDate,
-    DateTime deliveryDate,
-    string DeliveryTimeRange,
-    [FromBody] List<OrderProductModel> products,
-    string senderFullName,
-    string senderPhone,
-    string senderEmail,
-    string receiverFullName,
-    string receiverPhone,
-    string receiverAddress,
-    decimal subTotal,
-    decimal deliveryFee,
-    decimal total
-)
+        return View("PayTrPayment", new PayTrPaymentViewModel
         {
+            MerchantOid = order.Oid!,
+            PaymentUrl = _payTrService.GetPaymentUrl(tokenResult.Token)
+        });
+    }
+
+    [HttpPost("PayTrCallback")]
+    [IgnoreAntiforgeryToken]
+    public async Task<IActionResult> PayTrCallback(
+        [FromForm] PayTrCallbackModel callback,
+        CancellationToken cancellationToken)
+    {
+        if (!_payTrService.ValidateCallback(callback))
+        {
+            _logger.LogWarning("Invalid PayTR callback hash for order {MerchantOid}", callback.MerchantOid);
+            return BadRequest("PAYTR notification failed: bad hash");
+        }
+
+        var order = await _context.Orders
+            .Include(o => o.OrderItems)
+            .Include(o => o.DeliveryTimeRange)
+            .FirstOrDefaultAsync(o => o.Oid == callback.MerchantOid, cancellationToken);
+        if (order == null)
+        {
+            _logger.LogWarning("PayTR callback received for unknown order {MerchantOid}", callback.MerchantOid);
+            return NotFound("PAYTR notification failed: order not found");
+        }
+
+        if (order.OrderStatus != OrderStatus.Pending)
+        {
+            return Content("OK", "text/plain");
+        }
+
+        var expectedAmount = decimal.Round(order.GetTotal() * 100m, 0, MidpointRounding.AwayFromZero)
+            .ToString("0", CultureInfo.InvariantCulture);
+        if (!string.Equals(callback.PaymentAmount, expectedAmount, StringComparison.Ordinal))
+        {
+            _logger.LogError(
+                "PayTR callback amount mismatch for order {MerchantOid}. Expected {Expected}, received {Received}",
+                callback.MerchantOid,
+                expectedAmount,
+                callback.PaymentAmount);
+            return BadRequest("PAYTR notification failed: amount mismatch");
+        }
+
+        if (string.Equals(callback.Status, "success", StringComparison.OrdinalIgnoreCase))
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            var transitioned = await _context.Orders
+                .Where(o => o.Id == order.Id && o.OrderStatus == OrderStatus.Pending)
+                .ExecuteUpdateAsync(
+                    setters => setters.SetProperty(o => o.OrderStatus, OrderStatus.Approved),
+                    cancellationToken);
+            if (transitioned == 0)
+            {
+                return Content("OK", "text/plain");
+            }
+
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefaultAsync(c => c.CustomerId == order.CustomerId, cancellationToken);
+            if (cart != null)
+            {
+                _cartService.Remove(cart);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            await SendSuccessNotificationsSafelyAsync(order);
+        }
+        else
+        {
+            await _context.Orders
+                .Where(o => o.Id == order.Id && o.OrderStatus == OrderStatus.Pending)
+                .ExecuteUpdateAsync(
+                    setters => setters.SetProperty(o => o.OrderStatus, OrderStatus.PaymentFailed),
+                    cancellationToken);
+            _logger.LogInformation(
+                "PayTR payment failed for order {MerchantOid}. Code: {Code}, reason: {Reason}",
+                callback.MerchantOid,
+                callback.FailedReasonCode,
+                callback.FailedReasonMessage);
+        }
+
+        return Content("OK", "text/plain");
+    }
+
+    [HttpGet("PaymentSuccess")]
+    public async Task<IActionResult> PaymentSuccess(string merchantOid, CancellationToken cancellationToken)
+    {
+        var status = await _context.Orders
+            .Where(o => o.Oid == merchantOid)
+            .Select(o => (OrderStatus?)o.OrderStatus)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (status is OrderStatus.Approved or OrderStatus.Ready or OrderStatus.OnWay or OrderStatus.Completed)
+        {
+            return PaymentResult(true, false, merchantOid, "Ödemeniz onaylandı. Siparişiniz hazırlanmak üzere alındı.");
+        }
+
+        if (status == OrderStatus.PaymentFailed)
+        {
+            return PaymentResult(false, false, merchantOid, "Ödeme onaylanamadı. Lütfen tekrar deneyin.");
+        }
+
+        return PaymentResult(false, true, merchantOid, "Ödeme sonucunuz PayTR tarafından doğrulanıyor. Sipariş durumunuz kısa süre içinde güncellenecek.");
+    }
+
+    [HttpGet("PaymentFailed")]
+    public IActionResult PaymentFailed(string merchantOid) =>
+        PaymentResult(false, false, merchantOid, "Ödeme tamamlanamadı. Kartınızdan tahsilat yapıldıysa sipariş durumu PayTR bildirimi geldikten sonra otomatik güncellenecektir.");
+
+    private IActionResult PaymentResult(bool isSuccess, bool isPending, string merchantOid, string message) =>
+        View("PaymentResponse", new PaymentResultViewModel
+        {
+            IsSuccess = isSuccess,
+            IsPending = isPending,
+            MerchantOid = merchantOid,
+            Message = message
+        });
+
+    private async Task SendSuccessNotificationsSafelyAsync(Order order)
+    {
+        try
+        {
+            var products = order.OrderItems.Select(x => new OrderProductModel
+            {
+                Name = x.ProductName,
+                ImageUrl = ImageHelper.ToFullImageUrl(x.ProductImage ?? "no-image.png"),
+                Quantity = x.Quantity,
+                Price = x.Price
+            }).ToList();
             var emailModel = new OrderEmailModel
             {
-                CustomerName = customerName,
-                OrderNo = orderNo,
-                OrderDate = orderDate,
-                DeliveryDate = deliveryDate,
-                DeliveryTimeRange = DeliveryTimeRange,
+                CustomerName = $"{order.SenderFirstName} {order.SenderLastName}".Trim(),
+                OrderNo = order.Oid,
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate ?? order.OrderDate,
+                DeliveryTimeRange = order.DeliveryTimeRange?.RangeText ?? "-",
                 Products = products,
-                SenderFullName = senderFullName,
-                SenderPhone = senderPhone,
-                SenderEmail = senderEmail,
-                ReceiverFullName = receiverFullName,
-                ReceiverPhone = receiverPhone,
-                ReceiverAddress = receiverAddress,
-                SubTotal = subTotal,
-                DeliveryFee = deliveryFee,
-                Total = total
+                SenderFullName = $"{order.SenderFirstName} {order.SenderLastName}".Trim(),
+                SenderPhone = order.SenderPhone,
+                SenderEmail = order.SenderEmail,
+                ReceiverFullName = $"{order.FirstName} {order.LastName}".Trim(),
+                ReceiverPhone = order.Phone,
+                ReceiverAddress = $"{order.City} - {order.AddresLine}",
+                SubTotal = order.SubTotal,
+                DeliveryFee = order.DeliveryFree,
+                Total = order.GetTotal()
             };
 
+            var bodyHtml = await _razorRenderer.RenderViewToStringAsync("Emails/OrderConfirmation", emailModel);
+            if (!string.IsNullOrWhiteSpace(order.SenderEmail))
+            {
+                await _emailService.SendEmailAsync(order.SenderEmail, "Siparişiniz Alındı - Detay Çiçekcilik", bodyHtml);
+            }
+            await _emailService.SendEmailAsync(_emailSettings.AdminEmail, "Yeni Sipariş - Detay Çiçekcilik", bodyHtml);
+            await _telegramHelper.SendTelegramOrderMessage(order.Id, $"Yeni siparişin var! {order.Id}");
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Payment succeeded but notification delivery failed for order {MerchantOid}", order.Oid);
+        }
+    }
 
-            var bodyHtml = _razorRenderer.RenderViewToStringAsync("Emails/OrderConfirmation", emailModel).Result;
-
-            _emailService.SendEmailAsync(customerEmail, "Siparişiniz Alındı - Detay Çiçekcilik", bodyHtml);
-            _emailService.SendEmailAsync(_emailSettings.AdminEmail, $"Yeni Sipariş - Detay Çiçekcilik", bodyHtml);
-
-            return Ok();
+    private string GetSiteUrl()
+    {
+        if (!string.IsNullOrWhiteSpace(_payTrOptions.SiteUrl))
+        {
+            return _payTrOptions.SiteUrl.TrimEnd('/');
         }
 
+        return $"{Request.Scheme}://{Request.Host}";
+    }
+
+    private string GetClientIpAddress()
+    {
+        var forwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim();
+        if (IPAddress.TryParse(forwardedFor, out var forwardedIp))
+        {
+            return NormalizeIp(forwardedIp) ?? "127.0.0.1";
+        }
+
+        return NormalizeIp(HttpContext.Connection.RemoteIpAddress) ?? "127.0.0.1";
+    }
+
+    private static string? NormalizeIp(IPAddress? address) =>
+        address?.IsIPv4MappedToIPv6 == true ? address.MapToIPv4().ToString() : address?.ToString();
+
+    private static string CreateMerchantOid() =>
+        $"SP{DateTime.UtcNow:yyyyMMddHHmmss}{Guid.NewGuid():N}"[..40];
+
+    private static string? ValidateOrderInput(CreateOrderDTO model)
+    {
+        if (string.IsNullOrWhiteSpace(model.SenderFirstLastName) || model.SenderFirstLastName.Length > 60)
+            return "Gönderici adı zorunludur ve en fazla 60 karakter olabilir.";
+        if (string.IsNullOrWhiteSpace(model.SenderEmail) ||
+            model.SenderEmail.Length > 100 ||
+            model.SenderEmail.Any(character => character > 127) ||
+            !new EmailAddressAttribute().IsValid(model.SenderEmail))
+            return "Geçerli bir gönderici e-posta adresi girin.";
+        if (string.IsNullOrWhiteSpace(model.SenderPhone) || model.SenderPhone.Length > 20)
+            return "Geçerli bir gönderici telefonu girin.";
+        if (string.IsNullOrWhiteSpace(model.FirstLastName))
+            return "Alıcı adı zorunludur.";
+        if (string.IsNullOrWhiteSpace(model.AddressLine) || model.AddressLine.Length > 400)
+            return "Alıcı adresi zorunludur ve en fazla 400 karakter olabilir.";
+        if (string.IsNullOrWhiteSpace(model.Phone) || model.Phone.Length > 20)
+            return "Geçerli bir alıcı telefonu girin.";
+        if (!model.DeliveryDate.HasValue || !model.DeliveryTimeRangeId.HasValue)
+            return "Teslimat tarihi ve saat aralığını seçin.";
+
+        return null;
     }
 }

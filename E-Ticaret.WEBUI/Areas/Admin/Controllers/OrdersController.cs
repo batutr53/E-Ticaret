@@ -8,11 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using Microsoft.AspNetCore.Authorization;
-using E_Ticaret.WEBUI.Areas.Admin.Models;
-using System.Security.Cryptography;
-using System.Text;
-using Newtonsoft.Json;
-using Azure;
+using E_Ticaret.WEBUI.Payments;
 
 namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 {
@@ -21,168 +17,97 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
     public class OrdersController : Controller
     {
         private readonly DatabaseContext _context;
-        private readonly IConfiguration _config;
-        public OrdersController(DatabaseContext context, IConfiguration config)
+        private readonly IPayTrService _payTrService;
+        public OrdersController(DatabaseContext context, IPayTrService payTrService)
         {
             _context = context;
-            _config = config;
+            _payTrService = payTrService;
         }
 
         #region Refund
-        public async Task<IActionResult> Refund(CancelRequestModel model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Refund(int orderId, CancellationToken cancellationToken)
         {
             var order = await _context.Orders
                 .Include(o => o.DeliveryTimeRange)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(m => m.Id == model.orderId);
+                .FirstOrDefaultAsync(m => m.Id == orderId, cancellationToken);
 
             if (order == null)
             {
                 TempData["Message"] = "Sipariş Bulunamadı.";
-                return RedirectToAction("Details", new { id = model.orderId });
+                return RedirectToAction("Details", new { id = orderId });
             }
 
-            string publicKey = _config["TrPosAPI:PublicKey"];
-            string apiKey = _config["TrPosAPI:APIKey"];
-            string secretKey = _config["TrPosAPI:SecretKey"];
-            string rnd = DateTime.Now.Ticks.ToString();
-            string txnNo = model.TxnNo;
-            string oid = model.Oid;
-            double amount = (double)order.SubTotal;
-            string userIP = model.UserIP ?? "1.1.1.1";
-            string extInfo = "";
-
-            string birlestir = string.Concat(apiKey, publicKey, rnd, oid, txnNo, amount.ToString());
-            using var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
-            byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(birlestir));
-            string hash = Convert.ToBase64String(b);
-
-            RefundRequestModel requestModel = new RefundRequestModel
+            if (string.IsNullOrWhiteSpace(order.Oid))
             {
-                PublicKey = publicKey,
-                ApiKey = apiKey,
-                Rnd = rnd,
-                Hash = hash,
-                TxnNo = txnNo,
-                Oid = oid,
-                Amount = amount,
-                UserIP = userIP,
-                ExtInfo = extInfo
-            };
-
-            string refundURL = _config["TrPosAPI:RefundURL"];
-
-            using (HttpClient client = new())
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync(refundURL, requestModel);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var refundResponse = JsonConvert.DeserializeObject<RefundResponseModel>(await response.Content.ReadAsStringAsync());
-                    if (refundResponse != null)
-                    {
-                        if (refundResponse.ResultCode == "0000" && hash == refundResponse.Hash)
-                        {
-                            order.OrderStatus = E_Ticaret.Core.Entities.OrderStatus.Refund;
-                            _context.Orders.Update(order);
-                            await _context.SaveChangesAsync();
-
-                            TempData["Message"] = "İade işlemi başarıyla tamamlandı.";
-                            return RedirectToAction("Details", new { id = model.orderId });
-                        }
-                        else
-                        {
-                            TempData["Message"] = refundResponse.ResultDetail;
-                        }
-                    }
-                    else
-                    {
-                        TempData["Message"] = "Hata: TRPOS cevabı çözümlenemedi.";
-                    }
-                }
-                else
-                {
-                    TempData["Message"] = "Hata: Cevap alınamadı.";
-                }
+                TempData["Message"] = "Siparişin PayTR sipariş numarası bulunamadı.";
+                return RedirectToAction("Details", new { id = orderId });
             }
 
-            return RedirectToAction("Details", new { id = model.orderId });
+            if (order.OrderStatus != OrderStatus.Completed)
+            {
+                TempData["Message"] = "Yalnızca tamamlanmış siparişler iade edilebilir.";
+                return RedirectToAction("Details", new { id = orderId });
+            }
+
+            var result = await _payTrService.RefundAsync(order.Oid, order.GetTotal(), cancellationToken);
+            if (result.IsSuccess)
+            {
+                order.OrderStatus = OrderStatus.Refund;
+                await _context.SaveChangesAsync(cancellationToken);
+                TempData["Message"] = "PayTR iade işlemi başarıyla tamamlandı.";
+            }
+            else
+            {
+                TempData["Message"] = $"PayTR iade hatası{(string.IsNullOrWhiteSpace(result.ErrorCode) ? "" : $" ({result.ErrorCode})")}: {result.ErrorMessage}";
+            }
+
+            return RedirectToAction("Details", new { id = orderId });
         }
 
         #endregion
 
         #region Cancel
-        public async Task<IActionResult> Cancel(CancelOrderModel model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int orderId, CancellationToken cancellationToken)
         {
-            string publicKey = _config["TrPosAPI:PublicKey"];
-            string apiKey = _config["TrPosAPI:APIKey"];
-            string secretKey = _config["TrPosAPI:SecretKey"];
-            string rnd = DateTime.Now.Ticks.ToString();
-            string txnNo = model.txnNo;
-            string oid = model.oid;
-            string userIP = model.userIP ?? "1.1.1.1";
-            string extInfo = "";
-
-            string birlestir = string.Concat(apiKey.ToUpper(), publicKey, rnd, oid, txnNo);
-            HMACSHA512 hmac = new HMACSHA512(Encoding.UTF8.GetBytes(secretKey));
-            byte[] b = hmac.ComputeHash(Encoding.UTF8.GetBytes(birlestir));
-            string hash = Convert.ToBase64String(b);
-
-            CancelRequestModel requestModel = new CancelRequestModel
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
+            if (order == null)
             {
-                PublicKey = publicKey,
-                ApiKey = apiKey,
-                Rnd = rnd,
-                Hash = hash,
-                TxnNo = txnNo,
-                UserIP = userIP,
-                Oid = oid,
-                ExtInfo = extInfo
-            };
-
-            string cancelURL = _config["TrPosAPI:CancelURL"];
-
-            using (HttpClient client = new())
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync<CancelRequestModel>(cancelURL, requestModel);
-                if (response.IsSuccessStatusCode)
-                {
-                    var cancelResponse = JsonConvert.DeserializeObject<CancelResponseModel>(
-                        await response.Content.ReadAsStringAsync());
-
-                    if (cancelResponse != null)
-                    {
-                        if (cancelResponse.ResultCode == "0000" && hash == cancelResponse.Hash)
-                        {
-                            var order = await _context.Orders.FindAsync(model.orderId);
-                            if (order != null)
-                            {
-                                order.OrderStatus = OrderStatus.Cancel; 
-                                _context.Orders.Update(order);
-                                await _context.SaveChangesAsync();
-                            }
-
-                            TempData["Message"] = "İptal işlemi başarıyla tamamlandı.";
-                            return RedirectToAction("Details", new { id = model.orderId });
-                        }
-                        else
-                        {
-                            TempData["Message"] = cancelResponse.ResultDetail;
-                        }
-                    }
-                    else
-                    {
-                        TempData["Message"] = "İptal cevabı alınamadı.";
-                    }
-                }
-                else
-                {
-                    TempData["Message"] = "Hata: Cevap alınamadı.";
-                }
+                TempData["Message"] = "Sipariş bulunamadı.";
+                return RedirectToAction("Details", new { id = orderId });
             }
 
-            return RedirectToAction("Details", new { id = model.orderId });
+            if (string.IsNullOrWhiteSpace(order.Oid))
+            {
+                TempData["Message"] = "Siparişin PayTR sipariş numarası bulunamadı.";
+                return RedirectToAction("Details", new { id = orderId });
+            }
+
+            if (order.OrderDate.Date < DateTime.Now.Date ||
+                order.OrderStatus is not (OrderStatus.Approved or OrderStatus.Ready))
+            {
+                TempData["Message"] = "Bu sipariş iptal işlemine uygun değil.";
+                return RedirectToAction("Details", new { id = orderId });
+            }
+
+            var result = await _payTrService.RefundAsync(order.Oid, order.GetTotal(), cancellationToken);
+            if (result.IsSuccess)
+            {
+                order.OrderStatus = OrderStatus.Cancel;
+                await _context.SaveChangesAsync(cancellationToken);
+                TempData["Message"] = "PayTR üzerinden iptal/iade işlemi başarıyla tamamlandı.";
+            }
+            else
+            {
+                TempData["Message"] = $"PayTR iptal/iade hatası{(string.IsNullOrWhiteSpace(result.ErrorCode) ? "" : $" ({result.ErrorCode})")}: {result.ErrorMessage}";
+            }
+
+            return RedirectToAction("Details", new { id = orderId });
         }
 
 

@@ -1,0 +1,18 @@
+@model E_Ticaret.WEBUI.Models.PayTrPaymentViewModel
+@{
+    ViewData["Title"] = "Güvenli Ödeme";
+}
+
+<div class="container py-4">
+    <h1 class="h3 text-center mb-2">PayTR Güvenli Ödeme</h1>
+    <p class="text-center text-muted mb-4">Sipariş No: @Model.MerchantOid</p>
+    <iframe src="@Model.PaymentUrl"
+            id="paytriframe"
+            title="PayTR güvenli ödeme formu"
+            frameborder="0"
+            scrolling="no"
+            style="width: 100%; min-height: 600px;"></iframe>
+</div>
+
+<script src="https://www.paytr.com/js/iframeResizer.min.js"></script>
+<script>iFrameResize({}, '#paytriframe');</script>

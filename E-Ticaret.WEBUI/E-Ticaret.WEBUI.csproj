@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6ef82376-5e6c-44df-a796-acde8c18eb68</UserSecretsId>
     <RootNamespace>E_Ticaret.WEBUI</RootNamespace>
 	  <AssemblyName>ETicaret.WebUI</AssemblyName>
   </PropertyGroup>

@@ -5,6 +5,7 @@ using E_Ticaret.Service.Concrete;
 using E_Ticaret.Service.Helpers;
 using E_Ticaret.WEBUI.Helpers;
 using E_Ticaret.WEBUI.Middlewares;
+using E_Ticaret.WEBUI.Payments;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,11 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 builder.Services.AddSingleton<TelegramHelper>();
+builder.Services.Configure<PayTrOptions>(builder.Configuration.GetSection(PayTrOptions.SectionName));
+builder.Services.AddHttpClient<IPayTrService, PayTrService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(90);
+});
 
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -51,7 +57,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Admin/Auth/Login";
     options.Events.OnRedirectToLogin = context =>
     {
-        // API/AJAX istekleri için yönlendirme yapma
+        // API/AJAX istekleri iÃ§in yÃ¶nlendirme yapma
         if (context.Request.Path.StartsWithSegments("/api") ||
             context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
         {

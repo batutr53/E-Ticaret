@@ -72,7 +72,6 @@ namespace E_Ticaret.Service.Concrete
                 SubTotal = total,
                 DeliveryFree = deliveryFree,
                 Oid = model.Oid,
-                TxnNo = model.TxnNo,
                 Description = model.Description,
                 SenderEmail = model.SenderEmail,
                 SenderFirstName = model.SenderFirstName,

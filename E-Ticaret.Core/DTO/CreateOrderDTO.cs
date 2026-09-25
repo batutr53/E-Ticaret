@@ -14,17 +14,7 @@ namespace E_Ticaret.Core.DTO
         public string? City { get; set; }
         public string? AddressLine { get; set; }
         public string? CustomerId { get; set; }
-        public string? CardName { get; set; }
-        public string? CardNumber { get; set; }
-        public string? CardExpireMonth { get; set; }
-        public string? CardExpireYear { get; set; }
-        public string? CardCvc { get; set; }
         public string? Oid { get; set; }
-        public string? TxnNo { get; set; }
-        public string? Amount { get; set; }
-        public byte Installment { get; set; }
-        public string? ReturnUrl { get; set; }
-        public string? UserIp { get; set; }
         public string? SenderFirstName { get; set; }
         public string? SenderLastName { get; set; }
         public string? SenderPhone { get; set; }

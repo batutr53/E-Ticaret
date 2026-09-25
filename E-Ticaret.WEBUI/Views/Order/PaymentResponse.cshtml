@@ -1,29 +1,34 @@
-﻿@model E_Ticaret.Core.DTO.PaymentResponseDTO
+@model E_Ticaret.WEBUI.Models.PaymentResultViewModel
 
 <div class="payment-result-container">
-    @if (Model.ResultCode == "0000")
+    @if (Model.IsSuccess)
     {
         <div class="payment-success">
             <h1 class="payment-title">Ödeme Başarılı 🎉</h1>
-            <p class="payment-info"><strong>İşlem No:</strong> @Model.TxnNo</p>
-            <p class="payment-info"><strong>Sipariş No:</strong> @Model.Oid</p>
-            <p class="payment-info"><strong>Ödeme Tutarı:</strong> @Model.Amount TL</p>
-            <p class="payment-message">Teşekkür ederiz! Siparişiniz başarıyla alınmıştır.</p>
-
+            <p class="payment-info"><strong>Sipariş No:</strong> @Model.MerchantOid</p>
+            <p class="payment-message">@Model.Message</p>
             <a href="/" class="payment-btn-primary">Ana Sayfaya Dön</a>
+        </div>
+    }
+    else if (Model.IsPending)
+    {
+        <div class="payment-success">
+            <h1 class="payment-title">Ödeme Kontrol Ediliyor</h1>
+            <p class="payment-info"><strong>Sipariş No:</strong> @Model.MerchantOid</p>
+            <p class="payment-message">@Model.Message</p>
+            <a href="/Order/GetOrder" class="payment-btn-primary">Sipariş Sorgula</a>
         </div>
     }
     else
     {
         <div class="payment-error">
-            <h1 class="payment-title">Ödeme Başarısız ❌</h1>
-            <p class="payment-info"><strong>İşlem No:</strong> @Model.TxnNo</p>
-            <p class="payment-info"><strong>Hata Kodu:</strong> @Model.ResultCode</p>
-            <p class="payment-info"><strong>Açıklama:</strong> @Model.ResultDetail</p>
-
-            <p class="payment-message">Ödeme işleminiz sırasında bir hata oluştu. Lütfen tekrar deneyiniz.</p>
-
-            <a href="/" class="payment-btn-danger">Ana Sayfaya Dön</a>
+            <h1 class="payment-title">Ödeme Tamamlanamadı</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.MerchantOid))
+            {
+                <p class="payment-info"><strong>Sipariş No:</strong> @Model.MerchantOid</p>
+            }
+            <p class="payment-message">@Model.Message</p>
+            <a href="/Order" class="payment-btn-danger">Ödemeyi Tekrar Dene</a>
         </div>
     }
 </div>
