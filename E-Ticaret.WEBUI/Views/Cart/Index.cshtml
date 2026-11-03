@@ -1,9 +1,10 @@
-﻿@model E_Ticaret.Core.Entities.Cart
+@model E_Ticaret.Core.Entities.Cart
 @using E_Ticaret.WEBUI.Helpers
 @{
     ViewData["Title"] = "Sepetim";
 }
 
+@if (TempData["CartWarning"] is string warning) { <div class="alert alert-warning" role="alert">@warning</div> }
 <div class="basket-container">
     <div class="basket-main-content">
         <!-- Main Product -->
@@ -23,6 +24,7 @@
 
                         <div class="basket-product-details">
                             <h3>@item.Product.Name</h3>
+                            @if (!item.Product.IsActive) { <p role="alert">Bu ürün artık satışta değil. Lütfen sepetten çıkarın.</p> }
                             <div class="basket-quantity-wrapper">
 
                                 <!-- Azaltma Formu -->

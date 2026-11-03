@@ -1,0 +1,16 @@
+@model List<E_Ticaret.Core.Entities.DeliveryRegion>
+@{ ViewData["Title"] = "Teslimat Bölgeleri"; }
+<div class="container-fluid">
+    <h1 class="h3 mb-3">Teslimat Bölgeleri ve Yol Ücretleri</h1>
+    <p>Her bölgeye listeden mahalle bağlayın. Müşteri adresindeki mahalleyi seçtiğinde o bölgenin ücreti otomatik uygulanır. Bölge etiketi eşleştirmede kullanılmaz.</p>
+    @if (TempData["RegionSuccess"] is string success) { <div class="alert alert-success" role="status">@success</div> }
+    <a asp-action="Edit" class="btn btn-primary mb-3">Yeni Teslimat Bölgesi</a>
+    @if (Model.All(x => !x.IsActive || x.Neighborhoods.Count == 0))
+    { <div class="alert alert-warning">Teslimata açık mahalle yok. Müşterilerin sipariş verebilmesi için en az bir mahalleyi aktif bir bölgeye bağlayın.</div> }
+    <div class="table-responsive"><table class="table table-bordered bg-white">
+        <thead><tr><th>Bölge etiketi</th><th>Yol ücreti</th><th>Mahalle sayısı</th><th>Durum</th><th>İşlem</th></tr></thead>
+        <tbody>@foreach (var region in Model) {
+            <tr><td>@region.Name</td><td>@(region.Fee == 0 ? "Ücretsiz" : region.Fee.ToString("C"))</td><td>@region.Neighborhoods.Count</td><td>@(region.IsActive ? "Aktif" : "Pasif")</td><td><a asp-action="Edit" asp-route-id="@region.Id" class="btn btn-outline-primary btn-sm">Mahalleleri ve Ücreti Düzenle</a></td></tr>
+        }</tbody>
+    </table></div>
+</div>

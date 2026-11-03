@@ -1,4 +1,4 @@
-﻿using E_Ticaret.Core.Email;
+using E_Ticaret.Core.Email;
 
 namespace E_Ticaret.WEBUI.Models
 {
@@ -19,6 +19,9 @@ namespace E_Ticaret.WEBUI.Models
         public decimal SubTotal { get; set; }
         public decimal DeliveryFee { get; set; }
         public decimal Total { get; set; }
+        public string? CardMessage { get; set; }
+        public string? DeliveryInstructions { get; set; }
+        public string? DeliveryRegionName { get; set; }
         public List<OrderProductModel> Products { get; set; } = new();
     }
 }

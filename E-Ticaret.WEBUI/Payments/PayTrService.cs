@@ -36,7 +36,9 @@ public sealed class PayTrService : IPayTrService
             item.ProductName,
             item.Price.ToString("0.00", CultureInfo.InvariantCulture),
             item.Quantity
-        });
+        }).ToList();
+        if (order.DeliveryFree > 0)
+            basket.Add(new object[] { "Teslimat / yol ücreti", order.DeliveryFree.ToString("0.00", CultureInfo.InvariantCulture), 1 });
         var basketJson = JsonSerializer.Serialize(basket);
         var userBasket = Convert.ToBase64String(Encoding.UTF8.GetBytes(basketJson));
         var email = order.SenderEmail ?? string.Empty;

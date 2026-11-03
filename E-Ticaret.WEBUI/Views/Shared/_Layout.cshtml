@@ -1,4 +1,4 @@
-﻿@inject E_Ticaret.Service.Abstract.ISiteSettingService SiteSettingService
+@inject E_Ticaret.Service.Abstract.ISiteSettingService SiteSettingService
 @{
     var siteSetting = await SiteSettingService.GetAsync();
 }
@@ -53,7 +53,8 @@ Detay Çiçekçilik siz değerli müşterilerimiz var olduğu sürece hizmetine 
 
     <partial name="_Footer" />
 
-    <script src="~/js/main.js"></script>
+    <script src="~/js/main.js" asp-append-version="true"></script>
+    <script src="~/js/product-images.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @RenderSection("Scripts", required: false)
     @if (TempData["Message"] != null)

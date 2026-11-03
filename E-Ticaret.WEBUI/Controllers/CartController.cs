@@ -30,11 +30,14 @@ namespace E_Ticaret.WEBUI.Controllers
         [HttpPost("AddItemToCart")]
         public async Task<IActionResult> AddItemToCart(int productId, int quantity = 1)
         {
-            quantity = quantity < 0 ? -quantity : (quantity == 0 || quantity == null ? 1 : quantity);
+            if (quantity < 1 || quantity > 999) return BadRequest("Geçersiz ürün adedi.");
 
             var cart = await GetOrCreate();
 
-            var product = await _serviceProduct.GetQueryable().FirstOrDefaultAsync(x => x.Id == productId);
+            var product = await _serviceProduct.GetQueryable().FirstOrDefaultAsync(x => x.Id == productId && x.IsActive);
+            if (product == null) return NotFound("Bu ürün artık satışta değil.");
+            if ((cart.CartItems.FirstOrDefault(x => x.ProductId == productId)?.Quantity ?? 0) + quantity > 999)
+                return BadRequest("En fazla 999 adet eklenebilir.");
             if (product != null)
             {
                 cart.AddItem(product, quantity);
@@ -46,6 +49,7 @@ namespace E_Ticaret.WEBUI.Controllers
         [HttpPost("DeleteItemFromCart")]
         public async Task<IActionResult> DeleteItemFromCart(int productId, int quantity)
         {
+            if (quantity < 1 || quantity > 999) return BadRequest("Geçersiz ürün adedi.");
             var cart = await GetOrCreate();
             cart.DeleteItem(productId, quantity);
             var result = await _serviceProduct.SaveChangesAsync() > 0;

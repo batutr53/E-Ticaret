@@ -1,0 +1,25 @@
+@model List<E_Ticaret.Core.Entities.TelegramNotification>
+@{ ViewData["Title"] = "Telegram Bildirimleri"; }
+<div class="container-fluid">
+    <h1 class="h3 mb-3">Telegram Sipariş Bildirimleri</h1>
+    @if (!(bool)ViewBag.IsConfigured)
+    {
+        <div class="alert alert-warning">Telegram ayarları eksik. Sunucuda bot ve sohbet ayarları tamamlandığında bekleyen bildirimler gönderilir.</div>
+    }
+    <p>Son 100 bildirim. Başarısız gönderimler otomatik olarak en fazla 10 kez denenir. Sipariş bağlantıları yönetici girişi gerektirir.</p>
+    <div class="table-responsive"><table class="table table-bordered bg-white">
+        <thead><tr><th>Sipariş</th><th>Durum</th><th>Deneme</th><th>Açıklama</th><th>İşlem</th></tr></thead>
+        <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td><a href="/Admin/Orders/Details/@job.OrderId">#@job.OrderId</a></td>
+                <td>@(job.SentAt.HasValue ? "Gönderildi" : job.Attempts >= 10 ? "İşlem gerekiyor" : "Bekliyor")</td>
+                <td>@job.Attempts</td><td>@job.LastError</td>
+                <td>@if (!job.SentAt.HasValue && (job.LastError != null || (job.Attempts >= 10 && job.NextAttemptAt <= DateTime.UtcNow))) { <form asp-action="Retry" method="post"><input type="hidden" name="id" value="@job.Id" /><button class="btn btn-sm btn-outline-primary" type="submit">Tekrar Dene</button></form> }</td>
+            </tr>
+        }
+        </tbody>
+    </table></div>
+    @if (Model.Count == 0) { <p>Henüz bildirim kaydı yok. Yeni ödenmiş siparişler burada listelenir.</p> }
+</div>

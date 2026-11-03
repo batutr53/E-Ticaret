@@ -32,7 +32,7 @@ namespace E_Ticaret.WEBUI.Controllers
                 .Include(c => c.ProductCategories)
                     .ThenInclude(pc => pc.Product)
                         .ThenInclude(p => p.ProductImages)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
 
             if (category == null)
             {
@@ -46,6 +46,7 @@ namespace E_Ticaret.WEBUI.Controllers
             }
 
             var productQuery = category.ProductCategories
+                .Where(pc => pc.Product.IsActive)
                 .OrderBy(pc => pc.OrderNo)
                 .Select(pc => pc.Product);
 

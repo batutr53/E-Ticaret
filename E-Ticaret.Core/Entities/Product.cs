@@ -3,7 +3,7 @@
      public class Product : IEntity
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public long ProductCode { get; set; }
@@ -17,7 +17,7 @@
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        public IList<ProductCategory>? ProductCategories { get; set; }
-        public IList<ProductImage>? ProductImages { get; set; }
+        public IList<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+        public IList<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
     }
 }

@@ -1,7 +1,8 @@
-﻿using E_Ticaret.Core.Entities;
+using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
 using E_Ticaret.WEBUI.Utils;
+using E_Ticaret.WEBUI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -44,6 +45,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            category.Description = RichTextHelper.Normalize(category.Description);
             return View(category);
         }
 
@@ -59,6 +61,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category, IFormFile? Image)
         {
+            category.Description = RichTextHelper.Normalize(category.Description);
             if (ModelState.IsValid)
             {
                 category.Image = await FileHelper.FileLoaderAsync(Image) ?? "";
@@ -66,6 +69,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 await _service.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            category.Description = RichTextHelper.Normalize(category.Description);
             return View(category);
         }
 
@@ -83,6 +87,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
             ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name");
+            category.Description = RichTextHelper.Normalize(category.Description);
             return View(category);
         }
 
@@ -96,6 +101,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            category.Description = RichTextHelper.Normalize(category.Description);
             if (ModelState.IsValid)
             {
                 try
@@ -103,9 +109,11 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                     if (category.CreatedDate.Kind != DateTimeKind.Utc)
                         category.CreatedDate = DateTime.SpecifyKind(category.CreatedDate, DateTimeKind.Utc);
 
-                    if (cbRemoveImage)
-                        category.Image = string.Empty;
-                      category.Image = await FileHelper.FileLoaderAsync(Image) ?? "";
+                    var previous = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                    if (previous == null) return NotFound();
+                    category.Image = cbRemoveImage ? string.Empty : previous.Image;
+                    if (Image != null)
+                        category.Image = await FileHelper.FileLoaderAsync(Image) ?? category.Image;
                     _service.Update(category);
                     await _service.SaveChangesAsync();
                 }
@@ -123,6 +131,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name");
+            category.Description = RichTextHelper.Normalize(category.Description);
             return View(category);
         }
 
@@ -141,6 +150,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            category.Description = RichTextHelper.Normalize(category.Description);
             return View(category);
         }
 

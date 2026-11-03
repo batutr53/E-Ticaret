@@ -13,7 +13,7 @@
         public string? ClassImage { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        public IList<ProductCategory>? ProductCategories { get; set; }
+        public IList<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
     }
 
 }

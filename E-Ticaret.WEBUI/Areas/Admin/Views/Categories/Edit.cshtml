@@ -1,4 +1,4 @@
-﻿@model E_Ticaret.Core.Entities.Category
+@model E_Ticaret.Core.Entities.Category
 
 @{
     ViewData["Title"] = "Kategori Düzenle";
@@ -212,9 +212,13 @@
         tinymce.init({
             selector: '#Description',
             menubar: false,
+            entity_encoding: 'raw',
+            valid_elements: 'p,br,h2,h3,h4,h5,h6,strong/b,em/i,u,ul,ol,li,blockquote,a[href|title|target|rel],img[src|alt|width|height],table,thead,tbody,tr,th,td',
+            content_style: 'body { font-family: Arial, sans-serif; font-size: 16px; line-height: 1.7; }',
             language: 'tr',
+            language_url: 'https://cdn.jsdelivr.net/npm/tinymce-i18n@24.2.26/langs6/tr.js',
             plugins: 'lists link image code',
-            toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+            toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link image | removeformat code',
             branding: false
         });
     </script>

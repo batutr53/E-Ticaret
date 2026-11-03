@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.WEBUI.Utils;
+using E_Ticaret.WEBUI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using E_Ticaret.WEBUI.Areas.Admin.Models;
 
@@ -99,6 +100,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product, List<IFormFile> Images, List<int> CategoryIds, string ImageOrder, int DefaultImageIndex)
         {
+            product.Detail = RichTextHelper.Normalize(product.Detail);
+            var uploadedImages = ModelState.IsValid ? await UploadProductImagesAsync(Images) : new List<string>();
             if (ModelState.IsValid)
             {
                 // 1. Ürün kategorilerini ata
@@ -114,16 +117,18 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
                     // Sıralamayı dizine çevir
                     var imageOrderList = !string.IsNullOrEmpty(ImageOrder)
-                        ? ImageOrder.Split(',').Select(int.Parse).ToList()
+                        ? ImageOrder.Split(',').Select(value => int.TryParse(value, out var index) ? index : -1)
+                            .Where(index => index >= 0 && index < Images.Count).Distinct().ToList()
                         : Enumerable.Range(0, Images.Count).ToList();
+                    imageOrderList.AddRange(Enumerable.Range(0, Images.Count).Except(imageOrderList));
+                    if (DefaultImageIndex < 0 || DefaultImageIndex >= Images.Count) DefaultImageIndex = 0;
 
                     for (int i = 0; i < imageOrderList.Count; i++)
                     {
                         int imageIndex = imageOrderList[i];
                         if (imageIndex >= 0 && imageIndex < Images.Count)
                         {
-                            var image = Images[imageIndex];
-                            var imagePath = await FileHelper.FileLoaderAsync(image);
+                            var imagePath = uploadedImages[imageIndex];
                             if (!string.IsNullOrEmpty(imagePath))
                             {
                                 product.ProductImages.Add(new ProductImage
@@ -165,6 +170,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             var selectedCategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList();
             ViewData["Categories"] = new MultiSelectList(_context.Categories, "Id", "Name", selectedCategoryIds);
 
+            product.Detail = RichTextHelper.Normalize(product.Detail);
             return View(product);
         }
 
@@ -177,6 +183,8 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             if (id != product.Id)
                 return NotFound();
 
+            product.Detail = RichTextHelper.Normalize(product.Detail);
+            var uploadedImages = ModelState.IsValid ? await UploadProductImagesAsync(Images) : new List<string>();
             if (ModelState.IsValid)
             {
                 try
@@ -202,24 +210,22 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
                     if (cbRemoveImage)
                     {
-                        foreach (var img in existingProduct.ProductImages)
-                            FileHelper.FileRemover(img.ImageUrl);
-
                         _context.ProductImages.RemoveRange(existingProduct.ProductImages);
+                        existingProduct.ProductImages.Clear();
                     }
 
                     if (Images != null && Images.Any())
                     {
                         int order = existingProduct.ProductImages.Any() ? existingProduct.ProductImages.Max(i => i.Order) + 1 : 0;
-                        foreach (var image in Images)
+                        foreach (var imagePath in uploadedImages)
                         {
-                            var imagePath = await FileHelper.FileLoaderAsync(image);
                             if (!string.IsNullOrEmpty(imagePath))
                             {
                                 existingProduct.ProductImages.Add(new ProductImage
                                 {
                                     ImageUrl = imagePath,
-                                    Order = order++
+                                    Order = order++,
+                                    IsDefault = !existingProduct.ProductImages.Any(x => x.IsDefault)
                                 });
                             }
                         }
@@ -272,7 +278,7 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
             ViewData["Categories"] = new MultiSelectList(_context.Categories, "Id", "Name", CategoryIds);
-
+            product.ProductImages = await _context.ProductImages.AsNoTracking().Where(x => x.ProductId == id).ToListAsync();
             return View(product);
         }
 
@@ -403,6 +409,24 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<List<string>> UploadProductImagesAsync(List<IFormFile>? images)
+        {
+            var paths = new List<string>();
+            if (images == null) return paths;
+            foreach (var image in images)
+            {
+                var path = await FileHelper.FileLoaderAsync(image, productImage: true);
+                if (path == null)
+                {
+                    foreach (var uploaded in paths) FileHelper.FileRemover(uploaded);
+                    ModelState.AddModelError("", "Görsel yüklenemedi. JPG, PNG, GIF veya WebP biçiminde, en fazla 20 MB / 40 megapiksel bir görsel seçin.");
+                    return new List<string>();
+                }
+                paths.Add(path);
+            }
+            return paths;
         }
 
         private bool ProductExists(int id)

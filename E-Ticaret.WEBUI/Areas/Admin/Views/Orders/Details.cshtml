@@ -1,4 +1,4 @@
-﻿@model E_Ticaret.Core.Entities.Order
+@model E_Ticaret.Core.Entities.Order
 @using System.Web
 @{
     ViewData["Title"] = "Sipariş Detayı";
@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <p><strong>Ad Soyad:</strong> @Model.FirstName @Model.LastName</p>
                     <p><strong>Telefon:</strong> @Model.Phone</p>
-                    <p><strong>Şehir:</strong> @Model.City</p>
+                    <p><strong>İl / İlçe / Mahalle:</strong> @Model.DeliveryLocation</p>
                     <p><strong>Adres:</strong> @Model.AddresLine</p>
                     <p><strong>Müşteri ID:</strong> @Model.CustomerId</p>
                 </div>
@@ -36,7 +36,9 @@
                     <p><strong>Ad Soyad:</strong> @Model.SenderFirstName @Model.SenderLastName</p>
                     <p><strong>Telefon:</strong> @Model.SenderPhone</p>
                     <p><strong>E-posta:</strong> @Model.SenderEmail</p>
-                    <p><strong>Not:</strong> @Model.Description</p>
+                    <p><strong>Çiçek Kartı Mesajı:</strong> <span style="white-space:pre-wrap">@Model.CardMessage</span></p>
+                    <p><strong>Teslimat Talebi / Eski Sipariş Notu:</strong> <span style="white-space:pre-wrap">@Model.Description</span></p>
+                    <p><strong>Teslimat Bölgesi:</strong> @Model.DeliveryRegionName</p>
                 </div>
             </div>
         </div>

@@ -25,12 +25,12 @@
 
                     context.Response.Clear();
                     context.Response.StatusCode = 500;
-                    context.Response.ContentType = "text/html";
+                    context.Response.ContentType = "text/html; charset=utf-8";
 
                     // Basit HTML mesajı (istersen Razor view’a yönlendirme de yapabiliriz)
                     await context.Response.WriteAsync(@"
-                    <html>
-                        <head><title>Hata</title></head>
+                    <html lang='tr'>
+                        <head><meta charset='utf-8'><title>Hata</title></head>
                         <body style='font-family:sans-serif; padding: 40px;'>
                             <h2>Yönetici Panelinde Bir Hata Oluştu</h2>
                             <p>Lütfen daha sonra tekrar deneyin veya teknik destekle iletişime geçin.</p>

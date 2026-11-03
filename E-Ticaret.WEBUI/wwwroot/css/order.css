@@ -1,4 +1,4 @@
-﻿
+
 .steporder-container {
     max-width: 900px;
     margin: 50px auto;
@@ -128,3 +128,9 @@ button {
     background: #4CAF50;
     transition: width 0.4s ease;
 }
+.checkout-field-label { display:block; font-weight:700; margin-bottom:8px; color:#30343b; }
+.checkout-field-help { font-size:14px; line-height:1.5; color:#62676e; margin:0 0 10px; }
+.gonderici-textarea { min-height:110px; resize:vertical; }
+.checkout-payment-summary { border:1px solid #e5e7eb; border-radius:12px; padding:18px; margin:18px 0; background:#fafafa; }
+.checkout-payment-summary p { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.checkout-payment-summary p:last-child { font-size:18px; padding-top:12px; border-top:1px solid #e5e7eb; }

@@ -74,10 +74,20 @@ public class OrderController : Controller
     [HttpGet("")]
     public async Task<IActionResult> Index()
     {
+        var customerId = Request.Cookies["customerId"];
+        if (await _context.Carts.Where(x => x.CustomerId == customerId)
+            .SelectMany(x => x.CartItems).AnyAsync(x => !x.Product.IsActive))
+        {
+            TempData["CartWarning"] = "Sepetinizde artık satışta olmayan bir ürün var. Devam etmek için bu ürünü sepetten çıkarın.";
+            return RedirectToAction("Index", "Cart");
+        }
         ViewBag.DeliveryTimeRanges = await _context.DeliveryTimeRanges
             .Where(x => x.IsActive)
             .OrderBy(x => x.StartTime)
             .ToListAsync();
+        ViewBag.DeliveryProvinces = await _context.AddressProvinces.AsNoTracking()
+            .Where(p => _context.AddressNeighborhoods.Any(n => n.District.ProvinceId == p.Id && n.DeliveryRegion != null && n.DeliveryRegion.IsActive))
+            .OrderBy(p => p.Name).ToListAsync();
         return View();
     }
 
@@ -111,9 +121,18 @@ public class OrderController : Controller
             return PaymentResult(false, false, string.Empty, "Sepetiniz boş. Ödeme başlatılamadı.");
         }
 
+        if (!await _context.DeliveryTimeRanges.AnyAsync(x => x.Id == model.DeliveryTimeRangeId && x.IsActive, cancellationToken))
+            return PaymentResult(false, false, string.Empty, "Seçilen teslimat saati artık uygun değil. Lütfen yeniden seçin.");
+        if (model.DeliveryDate!.Value.Date < DateTime.UtcNow.AddHours(3).Date)
+            return PaymentResult(false, false, string.Empty, "Geçmiş bir teslimat tarihi seçilemez.");
         model.CustomerId = customerId;
         model.Oid = CreateMerchantOid();
-        var order = await _orderService.CreateOrder(model);
+        Order order;
+        try { order = await _orderService.CreateOrder(model); }
+        catch (InvalidOperationException exception)
+        {
+            return PaymentResult(false, false, string.Empty, exception.Message);
+        }
         if (order.Id == 0)
         {
             return PaymentResult(false, false, model.Oid, "Sipariş oluşturulamadı. Lütfen tekrar deneyin.");
@@ -205,6 +224,8 @@ public class OrderController : Controller
             }
 
             await _context.SaveChangesAsync(cancellationToken);
+            _context.TelegramNotifications.Add(new TelegramNotification { OrderId = order.Id });
+            await _context.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
             await SendSuccessNotificationsSafelyAsync(order);
         }
@@ -283,24 +304,32 @@ public class OrderController : Controller
                 SenderEmail = order.SenderEmail,
                 ReceiverFullName = $"{order.FirstName} {order.LastName}".Trim(),
                 ReceiverPhone = order.Phone,
-                ReceiverAddress = $"{order.City} - {order.AddresLine}",
+                ReceiverAddress = $"{order.DeliveryLocation} - {order.AddresLine}",
                 SubTotal = order.SubTotal,
                 DeliveryFee = order.DeliveryFree,
                 Total = order.GetTotal()
             };
 
+            emailModel.CardMessage = order.CardMessage;
+            emailModel.DeliveryInstructions = order.Description;
+            emailModel.DeliveryRegionName = order.DeliveryRegionName;
             var bodyHtml = await _razorRenderer.RenderViewToStringAsync("Emails/OrderConfirmation", emailModel);
             if (!string.IsNullOrWhiteSpace(order.SenderEmail))
             {
-                await _emailService.SendEmailAsync(order.SenderEmail, "Siparişiniz Alındı - Detay Çiçekcilik", bodyHtml);
+                await SendEmailSafelyAsync(order.SenderEmail, "Siparişiniz Alındı - Detay Çiçekcilik", bodyHtml, order.Oid);
             }
-            await _emailService.SendEmailAsync(_emailSettings.AdminEmail, "Yeni Sipariş - Detay Çiçekcilik", bodyHtml);
-            await _telegramHelper.SendTelegramOrderMessage(order.Id, $"Yeni siparişin var! {order.Id}");
+            await SendEmailSafelyAsync(_emailSettings.AdminEmail, "Yeni Sipariş - Detay Çiçekcilik", bodyHtml, order.Oid);
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Payment succeeded but notification delivery failed for order {MerchantOid}", order.Oid);
         }
+    }
+
+    private async Task SendEmailSafelyAsync(string email, string subject, string body, string? oid)
+    {
+        try { await _emailService.SendEmailAsync(email, subject, body); }
+        catch (Exception) { _logger.LogWarning("Sipariş {MerchantOid} e-posta bildirimi gönderilemedi.", oid); }
     }
 
     private string GetSiteUrl()
@@ -349,6 +378,8 @@ public class OrderController : Controller
             return "Geçerli bir alıcı telefonu girin.";
         if (!model.DeliveryDate.HasValue || !model.DeliveryTimeRangeId.HasValue)
             return "Teslimat tarihi ve saat aralığını seçin.";
+        if (model.CardMessage?.Length > 500 || model.Description?.Length > 500)
+            return "Kart mesajı ve teslimat talebi en fazla 500 karakter olabilir.";
 
         return null;
     }

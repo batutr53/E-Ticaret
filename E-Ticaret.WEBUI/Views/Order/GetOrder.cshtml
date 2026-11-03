@@ -1,4 +1,4 @@
-﻿@model E_Ticaret.Core.Entities.Order?
+@model E_Ticaret.Core.Entities.Order?
 @using E_Ticaret.Core.Enums
 @{
     ViewData["Title"] = "Sipariş Takip";
@@ -57,7 +57,7 @@
                 <h4>Alıcı Bilgileri</h4>
                 <p>@Model.FirstName @Model.LastName</p>
                 <p>@Model.Phone</p>
-                <p>@Model.City - @Model.AddresLine</p>
+                <p>@Model.DeliveryLocation - @Model.AddresLine</p>
             </div>
         </div>
 
@@ -79,7 +79,10 @@
 
         <div class="order-total">
             <div>Ara Toplam: @Model.SubTotal.ToString("C")</div>
-            <div>Kargo Ücreti: @Model.DeliveryFree.ToString("C")</div>
+            <div>Teslimat Bölgesi: @Model.DeliveryRegionName</div>
+            <div style="white-space:pre-wrap">Çiçek Kartı Mesajı: @Model.CardMessage</div>
+            <div style="white-space:pre-wrap">Teslimat Talebi / Eski Sipariş Notu: @Model.Description</div>
+            <div>Yol Ücreti: @Model.DeliveryFree.ToString("C")</div>
             <div class="total-amount">Toplam: @Model.GetTotal().ToString("C")</div>
         </div>
         }

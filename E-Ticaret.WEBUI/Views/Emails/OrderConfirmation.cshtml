@@ -1,4 +1,4 @@
-﻿@model OrderEmailModel
+@model OrderEmailModel
 <!DOCTYPE html>
 <html>
 <head>
@@ -154,7 +154,10 @@
 
         <div class="section total-box">
             <div><strong>Ara Toplam:</strong> ₺@Model.SubTotal.ToString("0.00")</div>
-            <div><strong>Kargo:</strong> ₺@Model.DeliveryFee.ToString("0.00")</div>
+            <div><strong>Teslimat Bölgesi:</strong> @Model.DeliveryRegionName</div>
+            <div><strong>Çiçek Kartı Mesajı:</strong> <span style="white-space:pre-wrap">@Model.CardMessage</span></div>
+            <div><strong>Teslimat Talebi:</strong> <span style="white-space:pre-wrap">@Model.DeliveryInstructions</span></div>
+            <div><strong>Yol Ücreti:</strong> ₺@Model.DeliveryFee.ToString("0.00")</div>
             <div><strong>Toplam:</strong> <b>₺@Model.Total.ToString("0.00")</b></div>
         </div>
 

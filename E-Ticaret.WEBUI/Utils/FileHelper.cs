@@ -12,7 +12,7 @@ namespace E_Ticaret.WEBUI.Utils
         private static readonly string[] AllowedImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
         private const long MaxFileSizeInBytes = 5 * 1024 * 1024; // 5MB
 
-        public static async Task<string?> FileLoaderAsync(IFormFile formFile, string filePath = "/img/")
+        public static async Task<string?> FileLoaderAsync(IFormFile formFile, string filePath = "/img/", bool productImage = false)
         {
             if (formFile == null || formFile.Length == 0)
                 return null;
@@ -20,9 +20,10 @@ namespace E_Ticaret.WEBUI.Utils
             var extension = Path.GetExtension(formFile.FileName).ToLower();
             if (!AllowedImageExtensions.Contains(extension))
                 return null;
+            if (productImage && formFile.Length > 20 * 1024 * 1024) return null;
 
             // Benzersiz dosya adı üretme (Her zaman jpg olarak kaydediyoruz eğer sıkıştırılırsa)
-            string uniqueFileName = $"{Guid.NewGuid()}.jpg";
+            string uniqueFileName = $"{Guid.NewGuid()}{(productImage || formFile.Length > MaxFileSizeInBytes ? ".jpg" : extension)}";
             string directory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", filePath.TrimStart('/'));
 
             if (!Directory.Exists(directory))
@@ -30,11 +31,26 @@ namespace E_Ticaret.WEBUI.Utils
 
             string fullPath = Path.Combine(directory, uniqueFileName);
 
-            if (formFile.Length > MaxFileSizeInBytes)
+            if (productImage)
+            {
+                try
+                {
+                    using var input = new MemoryStream();
+                    await formFile.CopyToAsync(input);
+                    input.Position = 0;
+                    var normalized = await ProductImageProcessor.NormalizeAsync(input);
+                    await File.WriteAllBytesAsync(fullPath, normalized);
+                }
+                catch (Exception exception) when (exception is UnknownImageFormatException or InvalidImageContentException or InvalidDataException)
+                {
+                    return null;
+                }
+            }
+            else if (formFile.Length > MaxFileSizeInBytes)
             {
                 // >5MB ise: otomatik sıkıştır!
                 using var inputStream = formFile.OpenReadStream();
-                using var image = await Image.LoadAsync(inputStream);
+                using var image = await Image.LoadAsync(ImageDecoding.Options, inputStream);
 
                 // Genişlik büyükse yeniden boyutlandır (ör: 1280 px’e düşür)
                 int maxWidth = 1280;

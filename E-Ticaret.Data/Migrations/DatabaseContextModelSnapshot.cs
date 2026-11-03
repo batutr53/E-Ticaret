@@ -69,6 +69,70 @@ namespace E_Ticaret.Data.Migrations
                     b.ToTable("Addresses");
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.AddressDistrict", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<int>("ProvinceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProvinceId", "Name");
+
+                    b.ToTable("AddressDistricts");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.AddressNeighborhood", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("DeliveryRegionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LocalityName")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryRegionId");
+
+                    b.HasIndex("DistrictId", "Name");
+
+                    b.ToTable("AddressNeighborhoods");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.AddressProvince", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AddressProvinces");
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.AppUser", b =>
                 {
                     b.Property<int>("Id")
@@ -516,6 +580,34 @@ namespace E_Ticaret.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.DeliveryRegion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Fee")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("DeliveryRegions");
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.DeliveryTimeRange", b =>
                 {
                     b.Property<int>("Id")
@@ -779,6 +871,10 @@ namespace E_Ticaret.Data.Migrations
                     b.Property<string>("AddresLine")
                         .HasColumnType("text");
 
+                    b.Property<string>("CardMessage")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<string>("City")
                         .HasColumnType("text");
 
@@ -788,8 +884,32 @@ namespace E_Ticaret.Data.Migrations
                     b.Property<DateTime?>("DeliveryDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("DeliveryDistrictId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DeliveryDistrictName")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
                     b.Property<decimal>("DeliveryFree")
                         .HasColumnType("numeric");
+
+                    b.Property<int?>("DeliveryNeighborhoodId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DeliveryNeighborhoodName")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<int?>("DeliveryProvinceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("DeliveryRegionId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DeliveryRegionName")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<int?>("DeliveryTimeRangeId")
                         .HasColumnType("integer");
@@ -1067,6 +1187,68 @@ namespace E_Ticaret.Data.Migrations
                     b.ToTable("Sliders");
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.TelegramNotification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LastError")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("SentAt", "NextAttemptAt");
+
+                    b.ToTable("TelegramNotifications");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.AddressDistrict", b =>
+                {
+                    b.HasOne("E_Ticaret.Core.Entities.AddressProvince", "Province")
+                        .WithMany()
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Province");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.AddressNeighborhood", b =>
+                {
+                    b.HasOne("E_Ticaret.Core.Entities.DeliveryRegion", "DeliveryRegion")
+                        .WithMany("Neighborhoods")
+                        .HasForeignKey("DeliveryRegionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("E_Ticaret.Core.Entities.AddressDistrict", "District")
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryRegion");
+
+                    b.Navigation("District");
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.CartItem", b =>
                 {
                     b.HasOne("E_Ticaret.Core.Entities.Cart", "Cart")
@@ -1166,6 +1348,15 @@ namespace E_Ticaret.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("E_Ticaret.Core.Entities.TelegramNotification", b =>
+                {
+                    b.HasOne("E_Ticaret.Core.Entities.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("E_Ticaret.Core.Entities.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -1179,6 +1370,11 @@ namespace E_Ticaret.Data.Migrations
             modelBuilder.Entity("E_Ticaret.Core.Entities.Category", b =>
                 {
                     b.Navigation("ProductCategories");
+                });
+
+            modelBuilder.Entity("E_Ticaret.Core.Entities.DeliveryRegion", b =>
+                {
+                    b.Navigation("Neighborhoods");
                 });
 
             modelBuilder.Entity("E_Ticaret.Core.Entities.FooterSection", b =>

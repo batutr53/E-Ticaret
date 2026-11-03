@@ -1,4 +1,4 @@
-﻿@model ProductDetailViewModel
+@model ProductDetailViewModel
 @using E_Ticaret.WEBUI.Helpers
 @{
     ViewData["Title"] = Model.Product?.Name ?? "Detay";
@@ -50,7 +50,7 @@
         <div class="product-details-section">
             <h3 class="product-details-title">Ürün Detayları</h3>
             <div class="product-details-content">
-                @Html.Raw(Model.Product?.Detail)
+                @Html.Raw(E_Ticaret.WEBUI.Helpers.RichTextHelper.Normalize(Model.Product?.Detail))
             </div>
         </div>
     }

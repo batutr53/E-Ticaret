@@ -1,4 +1,9 @@
-﻿<link rel="stylesheet" href="/css/order.css">
+@using E_Ticaret.Core.Entities
+@using System.Globalization
+@{
+    var provinces = ViewBag.DeliveryProvinces as List<AddressProvince> ?? new();
+}
+<link rel="stylesheet" href="~/css/order.css" asp-append-version="true">
 
 <div class="steporder-container">
     <ul class="steporder-steps">
@@ -18,7 +23,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-user"></i>
                             <input type="text" class="gonderici-input-control" name="SenderFirstLastName"
-                                   placeholder="Gönderici Adı Soyadı" minlength="2" maxlength="100" pattern="^[A-Za-zÇçĞğİıÖöŞşÜü\s]+$" required>
+                                   placeholder="Gönderici Adı Soyadı" minlength="2" maxlength="60" pattern="^[A-Za-zÇçĞğİıÖöŞşÜü\s]+$" required>
                         </div>
                     </div>
 
@@ -34,7 +39,7 @@
                         <div class="gonderici-input-icon">
                             <i class="fas fa-envelope"></i>
                             <input type="email" class="gonderici-input-control" name="SenderEmail"
-                                   placeholder="Gönderici E-Posta Adresi" minlength="5" maxlength="150" required>
+                                   placeholder="Gönderici E-Posta Adresi" minlength="5" maxlength="100" required>
                         </div>
                     </div>
 
@@ -44,8 +49,16 @@
                         </div>*@
 
                     <div class="gonderici-form-group">
-                        <textarea class="gonderici-textarea" name="Description"
-                                  placeholder="Bize İletmek İstedikleriniz (Lütfen saat teslimi talepleri için telefon ile arayınız.)" maxlength="150"></textarea>
+                        <label for="cardMessage" class="checkout-field-label">Çiçek Kartına Yazılacak Not</label>
+                        <p id="cardMessageHelp" class="checkout-field-help">Bu mesaj çiçekle birlikte alıcıya gönderilecek karta yazılır. İsterseniz sonuna adınızı ekleyebilirsiniz.</p>
+                        <textarea id="cardMessage" class="gonderici-textarea" name="CardMessage" rows="4" aria-describedby="cardMessageHelp"
+                                  placeholder="Örnek: İyi ki doğdun! Seni çok seviyorum. — Ayşe" maxlength="500"></textarea>
+                    </div>
+                    <div class="gonderici-form-group">
+                        <label for="deliveryInstructions" class="checkout-field-label">Teslimat / Sipariş Talebiniz (İsteğe bağlı)</label>
+                        <p id="deliveryInstructionsHelp" class="checkout-field-help">Bu alan işletmemiz içindir; karta yazılmaz. Kesin saat talepleri için lütfen bizi arayın.</p>
+                        <textarea id="deliveryInstructions" class="gonderici-textarea" name="Description" aria-describedby="deliveryInstructionsHelp"
+                                  placeholder="Örnek: Teslimattan önce alıcıyı arayabilirsiniz." maxlength="500"></textarea>
                     </div>
                     <div class="gonderici-form-group">
                         <div class="gonderici-input-icon">
@@ -89,6 +102,27 @@
         <!-- STEP 2 -->
         <div class="steporder-step" data-step="2">
             <h2>Alıcı Bilgileri</h2>
+            <div class="checkout-address-picker">
+                <div class="gonderici-form-group">
+                    <label for="deliveryProvinceId" class="checkout-field-label">Teslimat İli</label>
+                    <select id="deliveryProvinceId" name="ProvinceId" class="gonderici-input-control" required>
+                        <option value="">İl seçiniz</option>
+                        @foreach (var province in provinces) { <option value="@province.Id">@province.Name</option> }
+                    </select>
+                </div>
+                <div class="gonderici-form-group">
+                    <label for="deliveryDistrictId" class="checkout-field-label">Teslimat İlçesi</label>
+                    <select id="deliveryDistrictId" name="DistrictId" class="gonderici-input-control" required disabled><option value="">Önce il seçiniz</option></select>
+                </div>
+                <div class="gonderici-form-group">
+                    <label for="deliveryNeighborhoodId" class="checkout-field-label">Teslimat Mahallesi</label>
+                    <select id="deliveryNeighborhoodId" name="NeighborhoodId" class="gonderici-input-control" required disabled aria-describedby="deliveryAddressHelp"><option value="">Önce ilçe seçiniz</option></select>
+                    <input type="hidden" name="QuotedDeliveryFee" id="quotedDeliveryFee" />
+                    <p id="deliveryAddressHelp" class="checkout-field-help">Yalnızca teslimat yaptığımız mahalleler listelenir. Yol ücreti seçtiğiniz mahalleye göre otomatik hesaplanır.</p>
+                    <p id="deliveryAddressStatus" role="status" aria-live="polite" class="checkout-field-help"></p>
+                    @if (provinces.Count == 0) { <p role="alert">Şu anda teslimata açık mahalle bulunmuyor. Lütfen işletmemizle iletişime geçin.</p> }
+                </div>
+            </div>
             <div class="gonderici-container">
                 <div class="gonderici-form-section">
                     <div class="gonderici-form-group">
@@ -101,8 +135,8 @@
                     <div class="gonderici-form-group">
                         <div class="gonderici-input-icon">
                             <i class="fas fa-address-card"></i>
-                            <input type="text" class="gonderici-input-control" name="AddressLine" placeholder="Alıcı Adres"
-                                   required minlength="5" maxlength="250" />
+                            <input type="text" class="gonderici-input-control" name="AddressLine" placeholder="Cadde / sokak, bina ve daire numarası"
+                                   required minlength="5" maxlength="400" />
                         </div>
                     </div>
                     <div class="gonderici-form-group">
@@ -138,10 +172,16 @@
                         <i class="fas fa-lock"></i>
                         Kart bilgileriniz bir sonraki ekranda PayTR'ın güvenli ödeme formunda alınacaktır.
                     </div>
+                    <div class="checkout-payment-summary" aria-live="polite">
+                        <p>Teslimat adresi: <strong data-checkout-address>Mahalle seçiniz</strong></p>
+                        <p>Ürünler: <strong data-checkout-subtotal></strong></p>
+                        <p>Yol ücreti: <strong data-checkout-fee></strong></p>
+                        <p>Ödenecek toplam: <strong data-checkout-total></strong></p>
+                    </div>
 
                     <div class="steporder-buttons">
                         <button type="button" class="steporder-prev">Geri</button>
-                        <input type="submit" value="PayTR ile Güvenli Öde" class="btn btn-primary" />
+                        <input type="submit" value="PayTR ile Güvenli Öde" class="btn btn-primary" disabled="@(provinces.Count == 0)" data-delivery-unavailable="@(provinces.Count == 0 ? "true" : "false")" />
                     </div>
                 </div>
             </div>
@@ -150,4 +190,5 @@
 </div>
 
 
-<script src="/js/order.js"></script>
+<script src="~/js/delivery-address.js" asp-append-version="true"></script>
+<script src="~/js/order.js" asp-append-version="true"></script>

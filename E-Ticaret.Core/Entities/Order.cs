@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +22,14 @@ namespace E_Ticaret.Core.Entities
         public string? SenderPhone { get; set; }
         public string? SenderEmail { get; set; }
         public string? Description { get; set; }
+        public string? CardMessage { get; set; }
+        public int? DeliveryRegionId { get; set; }
+        public string? DeliveryRegionName { get; set; }
+        public int? DeliveryProvinceId { get; set; }
+        public int? DeliveryDistrictId { get; set; }
+        public int? DeliveryNeighborhoodId { get; set; }
+        public string? DeliveryDistrictName { get; set; }
+        public string? DeliveryNeighborhoodName { get; set; }
 
         public string? TxnNo { get; set; }
         public string? Oid { get; set; }
@@ -34,6 +42,8 @@ namespace E_Ticaret.Core.Entities
         public List<OrderItem> OrderItems { get; set; } = new();
         public decimal SubTotal { get; set; }
         public decimal DeliveryFree { get; set; }
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public string DeliveryLocation => string.Join(" / ", new[] { DeliveryNeighborhoodName, DeliveryDistrictName, City }.Where(x => !string.IsNullOrWhiteSpace(x)));
         public decimal GetTotal()
         {
             return SubTotal + DeliveryFree;

@@ -1,4 +1,4 @@
-﻿@model E_Ticaret.Core.Entities.Category
+@model E_Ticaret.Core.Entities.Category
 @using E_Ticaret.WEBUI.Helpers
 
 @{
@@ -108,7 +108,7 @@
     {
         <div class="product-details-section">
             <div class="product-details-content">
-                @Html.Raw(Model.Description)
+                @Html.Raw(E_Ticaret.WEBUI.Helpers.RichTextHelper.Normalize(Model.Description))
             </div>
         </div>
     }

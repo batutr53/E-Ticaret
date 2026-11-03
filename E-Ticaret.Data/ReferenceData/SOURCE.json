@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/ubeydeozdmr/turkiye-api",
+  "commit": "a0ad8351cb52153e7a92aa7ba9a5bc1e3294da8d",
+  "dataset": "2025",
+  "retrievedOn": "2026-11-03",
+  "license": "MIT",
+  "sourceSha256": {
+    "provinces": "321ca5425ba9bc4f51f13bbdfed2928ae42b163a8b99365105dc089da3ec047d",
+    "districts": "05fa3f22584ec729da8fa35a9d108ad2f39798c34436fdff0533ed6b407f1079",
+    "neighborhoods": "42a83178fe57a0b34cb950dc228708bb8a2cf6cb8c8386a568aa4bb0ea4ab35e",
+    "municipalities": "02734522212dcbdcf225820bb0282a325836917208f7d96a5f249596f42d0873"
+  },
+  "counts": {
+    "provinces": 81,
+    "districts": 973,
+    "neighborhoods": 32279
+  },
+  "notes": "Source identifiers are retained; this is an offline reference snapshot, not live government address validation."
+}

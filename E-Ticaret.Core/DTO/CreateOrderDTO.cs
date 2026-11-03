@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +20,13 @@ namespace E_Ticaret.Core.DTO
         public string? SenderPhone { get; set; }
         public string? SenderEmail { get; set; }
         public string? Description { get; set; }
+        public string? CardMessage { get; set; }
+        // Legacy client field; delivery pricing is resolved exclusively from NeighborhoodId.
+        public int? DeliveryRegionId { get; set; }
+        public int? ProvinceId { get; set; }
+        public int? DistrictId { get; set; }
+        public int? NeighborhoodId { get; set; }
+        public string? QuotedDeliveryFee { get; set; }
         public decimal DeliveryFree { get; set; }
         public DateTime? DeliveryDate { get; set; } = DateTime.UtcNow;
         public int? DeliveryTimeRangeId { get; set; }

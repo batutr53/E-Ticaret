@@ -4390,3 +4390,21 @@ ul.category-level-2 {
         border-radius: 8px;
     }
 }
+
+/* Keep the full product visible in every viewport, including older uploaded photos. */
+.product-image img, .product-detail-main-image img, .product-detail-thumbnails img,
+.basket-product-img, .order-item img {
+    object-fit: contain;
+    object-position: center center;
+    background-color: #fff;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+.product-detail-main-image { display:flex; justify-content:center; align-items:center; background:#fff; border-radius:12px; overflow:hidden; }
+.product-detail-main-image img { display:block; width:100%; max-width:500px; height:auto; aspect-ratio:10 / 13; }
+.product-details-content { overflow-wrap:anywhere; line-height:1.8; }
+.product-details-content h2, .product-details-content h3, .product-details-content h4 { line-height:1.35; margin:1.2em 0 .6em; }
+.product-details-content p { margin:0 0 1em; }
+.product-details-content img { max-width:100%; height:auto; }
+.product-details-content table { display:block; max-width:100%; overflow-x:auto; }

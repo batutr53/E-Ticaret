@@ -1,4 +1,4 @@
-﻿@model E_Ticaret.Core.Entities.Cart
+@model E_Ticaret.Core.Entities.Cart
 @using E_Ticaret.WEBUI.Helpers
 
 @{
@@ -7,7 +7,7 @@
 
 <div class="basket-main-content">
     <div class="basket-product-card">
-        @if (Model.CartItems.Any())
+        @if (Model?.CartItems.Any() == true)
         {
             foreach (var item in Model.CartItems)
             {
@@ -40,14 +40,15 @@
                 </div>
             }
 
-            <div class="basket-order-summary">
+            <div class="basket-order-summary" id="checkout-price-source" data-subtotal="@totalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)">
                 <div class="basket-price-summary">
                     <h3 class="basket-price-title">Ürün Toplam Fiyat</h3>
                     <p class="basket-price-value">@totalPrice.ToString("c")</p>
+                    <p>Yol ücreti: <strong data-checkout-fee></strong></p>
 
                     <div class="basket-total-price">
                         <span>Toplam Ödeme Tutarı</span>
-                        <span>@totalPrice.ToString("c")</span>
+                        <span data-checkout-total>@totalPrice.ToString("c")</span>
                     </div>
                 </div>
             </div>

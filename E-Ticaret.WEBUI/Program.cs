@@ -43,7 +43,9 @@ builder.Services.AddScoped<ISiteSettingService, SiteSettingService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
-builder.Services.AddSingleton<TelegramHelper>();
+builder.Services.AddHttpClient<TelegramHelper>(client => client.Timeout = TimeSpan.FromSeconds(20))
+    .RemoveAllLoggers();
+builder.Services.AddHostedService<TelegramNotificationWorker>();
 builder.Services.Configure<PayTrOptions>(builder.Configuration.GetSection(PayTrOptions.SectionName));
 builder.Services.AddHttpClient<IPayTrService, PayTrService>(client =>
 {
@@ -143,3 +145,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+public partial class Program { }

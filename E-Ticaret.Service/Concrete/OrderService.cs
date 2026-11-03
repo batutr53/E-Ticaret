@@ -1,4 +1,4 @@
-﻿using E_Ticaret.Core.DTO;
+using E_Ticaret.Core.DTO;
 using E_Ticaret.Core.Entities;
 using E_Ticaret.Data;
 using E_Ticaret.Service.Abstract;
@@ -37,14 +37,25 @@ namespace E_Ticaret.Service.Concrete
                  .Include(c => c.CartItems)
                  .ThenInclude(ci => ci.Product)
                  .FirstOrDefaultAsync(c => c.CustomerId == model.CustomerId);
-            if (cart == null) { return new Order(); }
+            if (cart == null || cart.CartItems.Count == 0) { return new Order(); }
+            if (cart.CartItems.Any(x => !x.Product.IsActive || x.Quantity < 1))
+                throw new InvalidOperationException("Sepetinizde satışa kapalı bir ürün var. Lütfen sepetinizi güncelleyin.");
+            if (model.CardMessage?.Length > 500 || model.Description?.Length > 500)
+                throw new InvalidOperationException("Kart mesajı ve teslimat talebi en fazla 500 karakter olabilir.");
+            var neighborhood = await new DeliveryAddressService(_context).ResolveAsync(model.ProvinceId, model.DistrictId, model.NeighborhoodId);
+            var region = neighborhood.DeliveryRegion!;
+            if (!decimal.TryParse(model.QuotedDeliveryFee, System.Globalization.NumberStyles.AllowDecimalPoint,
+                System.Globalization.CultureInfo.InvariantCulture, out var quotedFee) || quotedFee != region.Fee)
+                throw new InvalidOperationException("Teslimat ücreti güncellendi. Lütfen sipariş ekranını yenileyip mahalleyi tekrar seçin.");
             var items = new List<OrderItem>();
 
             foreach (var item in cart.CartItems)
             {
                 var product = await _context.Products
           .Include(p => p.ProductImages)
-          .FirstOrDefaultAsync(p => p.Id == item.ProductId);
+          .FirstOrDefaultAsync(p => p.Id == item.ProductId && p.IsActive);
+                if (product == null)
+                    throw new InvalidOperationException("Sepetinizde satışa kapalı bir ürün var. Lütfen sepetinizi güncelleyin.");
 
                 var orderItems = new OrderItem
                 {
@@ -59,13 +70,13 @@ namespace E_Ticaret.Service.Concrete
                 product.Stock -= item.Quantity;
             }
             var total = items.Sum(i => i.Price * i.Quantity);
-            var deliveryFree = 0;
+            var deliveryFree = region.Fee;
             var order = new Order
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Phone = model.Phone,
-                City = model.City,
+                City = neighborhood.District.Province.Name,
                 AddresLine = model.AddressLine,
                 CustomerId = model.CustomerId,
                 OrderItems = items,
@@ -73,6 +84,14 @@ namespace E_Ticaret.Service.Concrete
                 DeliveryFree = deliveryFree,
                 Oid = model.Oid,
                 Description = model.Description,
+                CardMessage = model.CardMessage,
+                DeliveryRegionId = region?.Id,
+                DeliveryRegionName = region.Name,
+                DeliveryProvinceId = neighborhood.District.ProvinceId,
+                DeliveryDistrictId = neighborhood.DistrictId,
+                DeliveryNeighborhoodId = neighborhood.Id,
+                DeliveryDistrictName = neighborhood.District.Name,
+                DeliveryNeighborhoodName = neighborhood.DisplayName,
                 SenderEmail = model.SenderEmail,
                 SenderFirstName = model.SenderFirstName,
                 SenderLastName = model.SenderLastName,

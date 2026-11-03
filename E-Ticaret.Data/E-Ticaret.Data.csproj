@@ -20,6 +20,9 @@
   <ItemGroup>
     <ProjectReference Include="..\E-Ticaret.Core\E-Ticaret.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ReferenceData\AddressReferenceCatalog.2025.json.gz" LogicalName="AddressReferenceCatalog.2025.json.gz" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations\" />

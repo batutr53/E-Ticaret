@@ -1,4 +1,4 @@
-﻿@model E_Ticaret.Core.Entities.Order
+@model E_Ticaret.Core.Entities.Order
 
 @{
     ViewData["Title"] = "Siparişi Düzenle";
@@ -12,6 +12,13 @@
     <form asp-action="Edit" class="needs-validation">
         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="DeliveryProvinceId" />
+        <input type="hidden" asp-for="DeliveryDistrictId" />
+        <input type="hidden" asp-for="DeliveryNeighborhoodId" />
+        <input type="hidden" asp-for="DeliveryDistrictName" />
+        <input type="hidden" asp-for="DeliveryNeighborhoodName" />
+        <input type="hidden" asp-for="DeliveryRegionId" />
+        <input type="hidden" asp-for="DeliveryRegionName" />
 
         <div class="row">
             <!-- Alıcı Bilgileri -->
@@ -83,7 +90,11 @@
                             <span asp-validation-for="SenderEmail" class="text-danger small"></span>
                         </div>
                         <div class="form-group">
-                            <label asp-for="Description">Not</label>
+                            <label asp-for="CardMessage">Çiçek Kartı Mesajı</label>
+                            <textarea asp-for="CardMessage" class="form-control" rows="4" maxlength="500"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Description">Teslimat Talebi / Eski Sipariş Notu</label>
                             <textarea asp-for="Description" class="form-control" rows="2"></textarea>
                             <span asp-validation-for="Description" class="text-danger small"></span>
                         </div>
