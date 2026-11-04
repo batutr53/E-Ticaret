@@ -15,6 +15,7 @@ namespace E_Ticaret.Core.Enums
                 OrderStatus.Completed => "Ödeme Tamamlandı",
                 OrderStatus.Cancel => "İptal Edildi",
                 OrderStatus.Refund => "İade Edildi",
+                OrderStatus.RefundProcessing => "PayTR iade kontrolü bekliyor",
                 OrderStatus.PaymentFailed => "Ödeme Başarısız",
                 _ => "Bilinmiyor"
             };

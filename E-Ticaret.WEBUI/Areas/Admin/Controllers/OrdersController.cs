@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,95 +24,23 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             _payTrService = payTrService;
         }
 
-        #region Refund
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Refund(int orderId, CancellationToken cancellationToken)
         {
-            var order = await _context.Orders
-                .Include(o => o.DeliveryTimeRange)
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Product)
-                .FirstOrDefaultAsync(m => m.Id == orderId, cancellationToken);
-
-            if (order == null)
-            {
-                TempData["Message"] = "Sipariş Bulunamadı.";
-                return RedirectToAction("Details", new { id = orderId });
-            }
-
-            if (string.IsNullOrWhiteSpace(order.Oid))
-            {
-                TempData["Message"] = "Siparişin PayTR sipariş numarası bulunamadı.";
-                return RedirectToAction("Details", new { id = orderId });
-            }
-
-            if (order.OrderStatus != OrderStatus.Completed)
-            {
-                TempData["Message"] = "Yalnızca tamamlanmış siparişler iade edilebilir.";
-                return RedirectToAction("Details", new { id = orderId });
-            }
-
-            var result = await _payTrService.RefundAsync(order.Oid, order.GetTotal(), cancellationToken);
-            if (result.IsSuccess)
-            {
-                order.OrderStatus = OrderStatus.Refund;
-                await _context.SaveChangesAsync(cancellationToken);
-                TempData["Message"] = "PayTR iade işlemi başarıyla tamamlandı.";
-            }
-            else
-            {
-                TempData["Message"] = $"PayTR iade hatası{(string.IsNullOrWhiteSpace(result.ErrorCode) ? "" : $" ({result.ErrorCode})")}: {result.ErrorMessage}";
-            }
-
+            TempData["Message"] = await new OrderStatusService(_context, _payTrService)
+                .ChangeAsync(orderId, OrderStatus.Refund, cancellationToken);
             return RedirectToAction("Details", new { id = orderId });
         }
 
-        #endregion
-
-        #region Cancel
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cancel(int orderId, CancellationToken cancellationToken)
         {
-            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
-            if (order == null)
-            {
-                TempData["Message"] = "Sipariş bulunamadı.";
-                return RedirectToAction("Details", new { id = orderId });
-            }
-
-            if (string.IsNullOrWhiteSpace(order.Oid))
-            {
-                TempData["Message"] = "Siparişin PayTR sipariş numarası bulunamadı.";
-                return RedirectToAction("Details", new { id = orderId });
-            }
-
-            if (order.OrderDate.Date < DateTime.Now.Date ||
-                order.OrderStatus is not (OrderStatus.Approved or OrderStatus.Ready))
-            {
-                TempData["Message"] = "Bu sipariş iptal işlemine uygun değil.";
-                return RedirectToAction("Details", new { id = orderId });
-            }
-
-            var result = await _payTrService.RefundAsync(order.Oid, order.GetTotal(), cancellationToken);
-            if (result.IsSuccess)
-            {
-                order.OrderStatus = OrderStatus.Cancel;
-                await _context.SaveChangesAsync(cancellationToken);
-                TempData["Message"] = "PayTR üzerinden iptal/iade işlemi başarıyla tamamlandı.";
-            }
-            else
-            {
-                TempData["Message"] = $"PayTR iptal/iade hatası{(string.IsNullOrWhiteSpace(result.ErrorCode) ? "" : $" ({result.ErrorCode})")}: {result.ErrorMessage}";
-            }
-
+            TempData["Message"] = await new OrderStatusService(_context, _payTrService)
+                .ChangeAsync(orderId, OrderStatus.Cancel, cancellationToken);
             return RedirectToAction("Details", new { id = orderId });
         }
-
-
-
-        #endregion
 
         // GET: Admin/Orders
         public async Task<IActionResult> Index(
@@ -230,49 +158,39 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [HttpPost]
         public async Task<IActionResult> Edit(int id, Order order)
         {
-            if (id != order.Id)
-            {
-                return NotFound();
-            }
-
+            if (id != order.Id) return NotFound();
+            var existing = await _context.Orders.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+            if (existing == null) return NotFound();
+            if (!Enum.IsDefined(order.OrderStatus))
+                ModelState.AddModelError("OrderStatus", "Geçersiz sipariş durumu.");
+            if (existing.OrderStatus == OrderStatus.RefundProcessing)
+                ModelState.AddModelError("", "PayTR iade sonucu kontrol edilene kadar sipariş değiştirilemez.");
+            if (existing.Oid != order.Oid || existing.TxnNo != order.TxnNo || existing.SubTotal != order.SubTotal || existing.DeliveryFree != order.DeliveryFree)
+                ModelState.AddModelError("", "Ödeme numarası ve tahsil edilen tutar değiştirilemez.");
+            if (order.OrderStatus != existing.OrderStatus && order.OrderStatus is not
+                (OrderStatus.Cancel or OrderStatus.Refund or OrderStatus.Ready or OrderStatus.OnWay or OrderStatus.Completed))
+                ModelState.AddModelError("OrderStatus", "Ödeme durumları elle değiştirilemez.");
             if (ModelState.IsValid)
             {
-                try
-                {
-                    if (order.OrderDate.Kind != DateTimeKind.Utc)
-                        order.OrderDate = DateTime.SpecifyKind(order.OrderDate, DateTimeKind.Utc);
-
-                    if (order.DeliveryDate.HasValue && order.DeliveryDate.Value.Kind != DateTimeKind.Utc)
-                        order.DeliveryDate = DateTime.SpecifyKind(order.DeliveryDate.Value, DateTimeKind.Utc);
-
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrderExists(order.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                var deliveryDate = order.DeliveryDate.HasValue
+                    ? DateTime.SpecifyKind(order.DeliveryDate.Value, DateTimeKind.Utc) : (DateTime?)null;
+                // Update only editable customer/delivery fields, never payment identifiers, totals or status.
+                var changed = await _context.Orders.Where(x => x.Id == id && x.OrderStatus == existing.OrderStatus)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(x => x.FirstName, order.FirstName).SetProperty(x => x.LastName, order.LastName)
+                        .SetProperty(x => x.Phone, order.Phone).SetProperty(x => x.AddresLine, order.AddresLine)
+                        .SetProperty(x => x.SenderFirstName, order.SenderFirstName).SetProperty(x => x.SenderLastName, order.SenderLastName)
+                        .SetProperty(x => x.SenderPhone, order.SenderPhone).SetProperty(x => x.SenderEmail, order.SenderEmail)
+                        .SetProperty(x => x.CardMessage, order.CardMessage).SetProperty(x => x.Description, order.Description)
+                        .SetProperty(x => x.DeliveryDate, deliveryDate).SetProperty(x => x.DeliveryTimeRangeId, order.DeliveryTimeRangeId));
+                TempData["Message"] = changed == 0 ? "Sipariş başka bir işlemde değişti; sayfayı yenileyin."
+                    : await new OrderStatusService(_context, _payTrService).ChangeAsync(id, order.OrderStatus);
+                return RedirectToAction("Details", new { id });
             }
-
-            ViewBag.DeliveryTimeRanges = new SelectList(
-                await _context.DeliveryTimeRanges
-                    .Where(x => x.IsActive)
-                    .OrderBy(x => x.StartTime)
-                    .ToListAsync(),
-                "Id", "RangeText", order.DeliveryTimeRangeId
-            );
-
+            ViewBag.DeliveryTimeRanges = new SelectList(await _context.DeliveryTimeRanges
+                .Where(x => x.IsActive).OrderBy(x => x.StartTime).ToListAsync(), "Id", "RangeText", order.DeliveryTimeRangeId);
             return View(order);
         }
 
@@ -302,10 +220,10 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
             var order = await _context.Orders.FindAsync(id);
             if (order != null)
             {
-                _context.Orders.Remove(order);
+                TempData["Message"] = "Ödeme ve iade geçmişi korunmalıdır. Siparişi silmek yerine iptal/iade işlemini kullanın.";
+                return RedirectToAction("Details", new { id });
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -318,30 +236,11 @@ namespace E_Ticaret.WEBUI.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(int orderId, string orderStatus)
         {
-            if (string.IsNullOrEmpty(orderStatus))
-            {
-                TempData["Error"] = "Sipariş durumu boş olamaz!";
-                return RedirectToAction("Index");
-            }
-
-            if (!Enum.TryParse(typeof(E_Ticaret.Core.Entities.OrderStatus), orderStatus, out var statusEnum))
-            {
-                TempData["Error"] = "Geçersiz sipariş durumu!";
-                return RedirectToAction("Index");
-            }
-
-            var order = await _context.Orders.FindAsync(orderId);
-            if (order == null)
-            {
-                TempData["Error"] = "Sipariş bulunamadı!";
-                return RedirectToAction("Index");
-            }
-
-            order.OrderStatus = (E_Ticaret.Core.Entities.OrderStatus)statusEnum;
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Sipariş durumu başarıyla güncellendi!";
-            return RedirectToAction("Index");
+            if (!Enum.TryParse<OrderStatus>(orderStatus, out var target) || !Enum.IsDefined(target))
+                TempData["Message"] = "Geçersiz sipariş durumu.";
+            else
+                TempData["Message"] = await new OrderStatusService(_context, _payTrService).ChangeAsync(orderId, target);
+            return RedirectToAction("Details", new { id = orderId });
         }
     }
 }

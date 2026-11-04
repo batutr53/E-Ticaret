@@ -1,4 +1,5 @@
-﻿@model IEnumerable<E_Ticaret.Core.Entities.Order>
+@model IEnumerable<E_Ticaret.Core.Entities.Order>
+@using E_Ticaret.Core.Entities
 
 @{
     ViewData["Title"] = "Siparişler";
@@ -67,6 +68,7 @@
                                     E_Ticaret.Core.Entities.OrderStatus.Cancel => "İptal Edildi",
                                     E_Ticaret.Core.Entities.OrderStatus.Ready => "Hazırlanıyor",
                                     E_Ticaret.Core.Entities.OrderStatus.Refund => "İade Edildi",
+                                    E_Ticaret.Core.Entities.OrderStatus.RefundProcessing => "PayTR iade kontrolü bekliyor",
                                     _ => s.ToString()
                                 };
                                 var selected = (ViewBag.StatusFilter?.ToString() == s.ToString()) ? "selected" : "";
@@ -142,7 +144,7 @@
                                     <form asp-action="UpdateStatus" method="post" class="d-flex align-items-center justify-content-center">
                                         <input type="hidden" name="orderId" value="@item.Id" />
                                         <select name="orderStatus" class="form-control form-control-sm mr-2">
-                                            @foreach (var status in durumlar)
+                                            @foreach (var status in durumlar.Where(s => s == item.OrderStatus || ((item.OrderStatus is OrderStatus.Approved or OrderStatus.Ready or OrderStatus.OnWay or OrderStatus.Completed) && (s is OrderStatus.Ready or OrderStatus.OnWay or OrderStatus.Completed or OrderStatus.Cancel or OrderStatus.Refund))))
                                             {
                                                 var selected = item.OrderStatus == status ? "selected=\"selected\"" : "";
                                                 var statusText = status switch
@@ -155,6 +157,7 @@
                                                     E_Ticaret.Core.Entities.OrderStatus.Cancel => "İptal Edildi",
                                                     E_Ticaret.Core.Entities.OrderStatus.Ready => "Hazırlanıyor",
                                                     E_Ticaret.Core.Entities.OrderStatus.Refund => "İade Edildi",
+                                                    E_Ticaret.Core.Entities.OrderStatus.RefundProcessing => "PayTR iade kontrolü bekliyor",
                                                     _ => status.ToString()
                                                 };
                                                 @:<option value="@status" @Html.Raw(selected)>@statusText</option>

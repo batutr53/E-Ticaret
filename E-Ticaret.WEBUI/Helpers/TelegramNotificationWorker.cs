@@ -50,6 +50,12 @@ public class TelegramNotificationWorker(IServiceScopeFactory scopeFactory, ILogg
                 job.LastError = null;
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
+            catch (TelegramDeliveryException exception)
+            {
+                job.LastError = exception.Message;
+                job.NextAttemptAt = DateTime.UtcNow.AddMinutes(Math.Min(60, Math.Pow(2, job.Attempts)));
+                logger.LogWarning("Sipariş {OrderId} Telegram bildirimi reddedildi: {Reason}", job.OrderId, exception.Message);
+            }
             catch (Exception)
             {
                 job.LastError = "Gönderilemedi. Bot ayarlarını, sohbet erişimini ve sunucu bağlantısını kontrol edin.";

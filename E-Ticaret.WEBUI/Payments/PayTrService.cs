@@ -116,6 +116,8 @@ public sealed class PayTrService : IPayTrService
         decimal amount,
         CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(merchantOid) || amount <= 0 || decimal.Round(amount, 2) != amount)
+            return new(false, null, "Geçersiz PayTR sipariş numarası veya iade tutarı.");
         if (!_options.HasCredentials)
         {
             return new(false, null, "PayTR mağaza bilgileri yapılandırılmamış.");
@@ -145,21 +147,27 @@ public sealed class PayTrService : IPayTrService
 
             if (!response.IsSuccessStatusCode)
             {
-                return new(false, null, $"PayTR iade servisi HTTP {(int)response.StatusCode} döndürdü.");
+                return new(false, null, $"PayTR iade servisi HTTP {(int)response.StatusCode} döndürdü.", true);
             }
 
             using var json = JsonDocument.Parse(responseBody);
             var root = json.RootElement;
             if (string.Equals(GetString(root, "status"), "success", StringComparison.OrdinalIgnoreCase))
             {
+                if (GetString(root, "merchant_oid") != merchantOid ||
+                    !decimal.TryParse(GetString(root, "return_amount"), NumberStyles.Number, CultureInfo.InvariantCulture, out var returnedAmount) ||
+                    returnedAmount != amount)
+                    return new(false, null, "PayTR iade yanıtındaki sipariş/tutar doğrulanamadı.", true);
                 return new(true, null, null);
             }
 
-            return new(false, GetString(root, "err_no"), GetString(root, "err_msg") ?? "PayTR iade işlemini reddetti.");
+            var status = GetString(root, "status");
+            return new(false, GetString(root, "err_no"), GetString(root, "err_msg") ?? "PayTR iade işlemi doğrulanamadı.",
+                status is not ("error" or "failed"));
         }
         catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or JsonException)
         {
-            return new(false, null, "PayTR iade servisine şu anda ulaşılamıyor.");
+            return new(false, null, "PayTR iade servisine şu anda ulaşılamıyor; sonuç kontrol edilmeli.", true);
         }
     }
 

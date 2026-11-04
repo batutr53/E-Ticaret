@@ -16,6 +16,13 @@ public class NotificationsController(DatabaseContext db, TelegramHelper telegram
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> CheckConnection(CancellationToken cancellationToken)
+    {
+        TempData["ConnectionResult"] = await telegram.CheckConnectionAsync(cancellationToken);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Retry(int id)
     {
         var now = DateTime.UtcNow;

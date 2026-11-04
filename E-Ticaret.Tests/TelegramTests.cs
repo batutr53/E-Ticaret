@@ -83,7 +83,7 @@ public class TelegramTests
     {
         var handler = new Handler();
         var telegram = new TelegramHelper(new HttpClient(handler), Config());
-        var error = await Assert.ThrowsAsync<InvalidOperationException>(() => telegram.SendTelegramOrderMessage(5, "A < B & C"));
+        var error = await Assert.ThrowsAnyAsync<InvalidOperationException>(() => telegram.SendTelegramOrderMessage(5, "A < B & C"));
         Assert.DoesNotContain("test-token", error.ToString());
         Assert.Contains("A+%26lt%3B+B+%26amp%3B+C", handler.Body);
     }

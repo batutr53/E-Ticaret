@@ -1,17 +1,19 @@
 @model E_Ticaret.Core.Entities.Order
 @using System.Web
+@using E_Ticaret.Core.Enums
 @{
     ViewData["Title"] = "Sipariş Detayı";
     var message = TempData["Message"] as string;
 
-    var isCancelable = Model.OrderDate.Date >= DateTime.Now.Date &&
-                   (Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Approved ||
-                    Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Ready);
-
-    var isRefundable = Model.OrderDate.Date < DateTime.Now.Date &&
-                       Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Completed;
+    var isCancelable = Model.OrderStatus is E_Ticaret.Core.Entities.OrderStatus.Approved
+        or E_Ticaret.Core.Entities.OrderStatus.Ready or E_Ticaret.Core.Entities.OrderStatus.OnWay;
+    var isRefundable = Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.Completed;
 }
 
+@if (Model.OrderStatus == E_Ticaret.Core.Entities.OrderStatus.RefundProcessing)
+{
+    <div class="alert alert-warning">PayTR iade sonucu kontrol ediliyor veya sonuç belirsiz. İkinci iade gönderilmez. PayTR panelinden sonucu doğrulamak için teknik destekle iletişime geçin.</div>
+}
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">
         <i class="fas fa-file-invoice"></i> Sipariş Detayı
@@ -48,7 +50,7 @@
                 <div class="card-header font-weight-bold text-success">Sipariş Bilgileri</div>
                 <div class="card-body">
                     <p><strong>Tarih:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
-                    <p><strong>Durum:</strong> <span class="badge badge-@GetStatusColor(Model.OrderStatus)">@Model.OrderStatus</span></p>
+                    <p><strong>Durum:</strong> <span class="badge badge-@GetStatusColor(Model.OrderStatus)">@Model.OrderStatus.ToText()</span></p>
                     <p><strong>PayTR Sipariş No:</strong> @Model.Oid</p>
                     <p><strong>Ara Toplam:</strong> @Model.SubTotal ₺</p>
                     <p><strong>Kargo:</strong> @Model.DeliveryFree ₺</p>

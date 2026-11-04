@@ -2,6 +2,13 @@
 @{ ViewData["Title"] = "Telegram Bildirimleri"; }
 <div class="container-fluid">
     <h1 class="h3 mb-3">Telegram Sipariş Bildirimleri</h1>
+    <form asp-action="CheckConnection" method="post" class="mb-3">
+        <button class="btn btn-outline-primary" type="submit">Bot ve Sohbet Bağlantısını Kontrol Et</button>
+    </form>
+    @if (TempData["ConnectionResult"] is string result)
+    {
+        <div class="alert alert-info">@result</div>
+    }
     @if (!(bool)ViewBag.IsConfigured)
     {
         <div class="alert alert-warning">Telegram ayarları eksik. Sunucuda bot ve sohbet ayarları tamamlandığında bekleyen bildirimler gönderilir.</div>

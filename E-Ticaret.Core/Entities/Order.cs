@@ -72,7 +72,9 @@ namespace E_Ticaret.Core.Entities
         OnWay,
         Cancel,
         Refund,
-        Ready
+        Ready,
+        // Persisted before calling PayTR. Never retry an uncertain refund automatically.
+        RefundProcessing
     }
 
 }

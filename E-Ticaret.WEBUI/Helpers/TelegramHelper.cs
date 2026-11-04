@@ -42,18 +42,48 @@ public class TelegramHelper(HttpClient client, IConfiguration configuration)
         }
         using (response)
         {
-            if (!response.IsSuccessStatusCode)
-                throw new InvalidOperationException($"Telegram bildirimi reddedildi (HTTP {(int)response.StatusCode}).");
             try
             {
                 using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
-                if (!body.RootElement.TryGetProperty("ok", out var ok) || ok.ValueKind != JsonValueKind.True)
-                    throw new InvalidOperationException("Telegram bildirimi kabul edilmedi.");
+                EnsureAccepted(response, body.RootElement);
             }
             catch (JsonException)
             {
                 throw new InvalidOperationException("Telegram geçersiz yanıt döndürdü.");
             }
+        }
+    }
+
+    private static void EnsureAccepted(HttpResponseMessage response, JsonElement body)
+    {
+        if (response.IsSuccessStatusCode && body.TryGetProperty("ok", out var ok) && ok.ValueKind == JsonValueKind.True) return;
+        var code = body.TryGetProperty("error_code", out var value) && value.TryGetInt32(out var parsed)
+            ? parsed : (int)response.StatusCode;
+        var description = body.TryGetProperty("description", out var reason) && reason.ValueKind == JsonValueKind.String ? reason.GetString() : null;
+        throw new TelegramDeliveryException(code, description);
+    }
+
+    // Read-only checks; never sends a test notification to the customer's chat.
+    public async Task<string> CheckConnectionAsync(CancellationToken cancellationToken = default)
+    {
+        if (!IsConfigured) return "Telegram bot veya sohbet ayarı eksik.";
+        try
+        {
+            foreach (var method in new[] { "getMe", "getChat" })
+            {
+                using var content = new FormUrlEncodedContent(method == "getChat"
+                    ? new Dictionary<string, string> { ["chat_id"] = configuration["TelegramBot:ChatId"]! }
+                    : new Dictionary<string, string>());
+                using var response = await client.PostAsync($"https://api.telegram.org/bot{configuration["TelegramBot:BotToken"]}/{method}", content, cancellationToken);
+                using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+                EnsureAccepted(response, body.RootElement);
+            }
+            return "Bot anahtarı geçerli ve sohbet erişilebilir. Mesaj gönderme yetkisi ayrıca gereklidir; test mesajı gönderilmedi.";
+        }
+        catch (TelegramDeliveryException exception) { return exception.Message; }
+        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or JsonException)
+        {
+            return "Telegram bağlantısı doğrulanamadı. Sunucu bağlantısını kontrol edin.";
         }
     }
 }

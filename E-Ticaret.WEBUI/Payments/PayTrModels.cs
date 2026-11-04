@@ -37,4 +37,4 @@ public sealed class PayTrCallbackModel
 
 public sealed record PayTrTokenResult(bool IsSuccess, string? Token, string? ErrorMessage);
 
-public sealed record PayTrRefundResult(bool IsSuccess, string? ErrorCode, string? ErrorMessage);
+public sealed record PayTrRefundResult(bool IsSuccess, string? ErrorCode, string? ErrorMessage, bool IsUncertain = false);
