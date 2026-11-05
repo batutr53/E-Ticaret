@@ -4435,3 +4435,43 @@ ul.category-level-2 {
 .product-details-content p { margin:0 0 1em; }
 .product-details-content img { max-width:100%; height:auto; }
 .product-details-content table { display:block; max-width:100%; overflow-x:auto; }
+
+/* Mobile image proportions must follow the column width, not the phone height.
+   Keep the desktop frames above unchanged. */
+@media (max-width: 767px) {
+    .product-image {
+        height: auto;
+        aspect-ratio: 10 / 13;
+        min-width: 0;
+    }
+
+    .product-detail-image-wrapper,
+    .product-detail-info-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .product-detail-main-image img {
+        height: auto;
+        aspect-ratio: 10 / 13;
+        max-height: 560px;
+    }
+
+    .mobile-slider .banner-item {
+        height: auto;
+    }
+
+    .mobile-slider .banner-item > a,
+    .mobile-slider .banner-item img {
+        display: block;
+        width: 100%;
+    }
+
+    .mobile-slider .banner-item img {
+        height: auto;
+    }
+
+    .mobile-slider .banner-item:hover img {
+        transform: none;
+    }
+}
