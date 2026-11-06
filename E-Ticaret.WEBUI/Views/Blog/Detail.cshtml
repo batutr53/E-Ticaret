@@ -1,0 +1,53 @@
+@model BlogDetailViewModel
+@using E_Ticaret.WEBUI.Helpers
+@using System.Text.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var post = Model.Post;
+    var banner = Model.Settings.BannerImage == null ? "/img/blog/hero.svg" : BlogContent.CoverUrl(Model.Settings.BannerImage);
+    var canonical = "https://www.detaycicek.com/blog/" + post.Slug;
+    var schema = new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org", ["@type"] = "BlogPosting", ["headline"] = post.Title,
+        ["description"] = post.SeoDescription ?? BlogContent.Excerpt(post), ["image"] = "https://www.detaycicek.com" + BlogContent.CoverUrl(post.CoverImage),
+        ["datePublished"] = post.PublishedAt?.ToUniversalTime().ToString("O"), ["dateModified"] = post.UpdatedAt.ToUniversalTime().ToString("O"),
+        ["author"] = new Dictionary<string, string> { ["@type"] = "Organization", ["name"] = post.Author },
+        ["publisher"] = new Dictionary<string, string> { ["@type"] = "Organization", ["name"] = "Detay Çiçekçilik" },
+        ["mainEntityOfPage"] = canonical
+    };
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/blog.css" asp-append-version="true" />
+    @if (!Model.IsPreview) { <script type="application/ld+json">@Html.Raw(JsonSerializer.Serialize(schema))</script> }
+}
+<div class="journal">
+    @if (Model.IsPreview) { <div class="journal-preview">YÖNETİCİ ÖNİZLEMESİ — Bu görünüm yalnızca size açıktır. <a href="/Admin/Blog/Edit/@post.Id">Düzenlemeye dön →</a></div> }
+    <header class="journal-hero journal-hero-detail" style="--journal-banner:url('@banner')">
+        <div class="journal-shell"><span class="journal-eyebrow">DETAY ÇİÇEK / ÇİÇEK GÜNLÜĞÜ</span><h1>@post.Title</h1>
+            <nav aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>›</span><a href="/blog">Blog</a>@if (post.BlogCategory != null) { <span>›</span><a href="/blog?category=@post.BlogCategory.Slug">@post.BlogCategory.Name</a> }<span>›</span><span>@post.Title</span></nav>
+        </div>
+    </header>
+    <div class="journal-shell journal-detail-layout">
+        <article class="journal-article">
+            <div class="journal-article-meta"><span>@(post.BlogCategory?.Name ?? "Çiçek Günlüğü")</span><span>·</span><time datetime="@post.PublishedAt?.ToUniversalTime().ToString("O")">@(post.PublishedAt.HasValue ? BlogContent.LocalDate(post.PublishedAt.Value).ToString("dd MMMM yyyy") : "Taslak")</time><span>·</span><span>@BlogContent.ReadingMinutes(post.BodyHtml) dk okuma</span></div>
+            @if (!string.IsNullOrWhiteSpace(post.Excerpt)) { <p class="journal-lead">@post.Excerpt</p> }
+            @if (post.CoverImage != null) { <img class="journal-article-cover" src="@BlogContent.CoverUrl(post.CoverImage)" alt="@(string.IsNullOrWhiteSpace(post.CoverAlt) ? post.Title : post.CoverAlt)" width="1200" height="675" fetchpriority="high" /> }
+            <div class="journal-prose" id="journalContent">@Html.Raw(RichTextHelper.Normalize(post.BodyHtml))</div>
+            <div class="journal-author"><span class="journal-author-icon" aria-hidden="true">✿</span><div><strong>@post.Author</strong><p>Çiçeklere duyduğumuz sevgiyi, ilham veren fikirler ve küçük detaylarla paylaşıyoruz.</p></div></div>
+            <div class="journal-share"><span>Bu yazıyı paylaş</span><a href="https://wa.me/?text=@Uri.EscapeDataString(post.Title + " " + canonical)" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ile paylaş"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp</a><button type="button" data-copy-blog="@canonical">Bağlantıyı kopyala</button><span data-copy-status role="status"></span></div>
+            <a class="journal-back" href="/blog">← Tüm yazılara dön</a>
+        </article>
+        <aside class="journal-sidebar" aria-label="Yazı rehberi">
+            <nav class="journal-toc" hidden aria-label="İçindekiler"><span class="journal-eyebrow">BU YAZIDA</span><h2>İçindekiler</h2><ol></ol></nav>
+            @if (Model.RelatedPosts.Count > 0)
+            {
+                <div class="journal-sidebar-related"><span class="journal-eyebrow">KEŞFETMEYE DEVAM ET</span><h2>Benzer yazılar</h2>
+                    @foreach (var related in Model.RelatedPosts.Take(3)) { <a href="/blog/@related.Slug"><img src="@BlogContent.CoverUrl(related.CoverImage)" alt="" loading="lazy" width="88" height="66" /><span>@related.Title<small>@BlogContent.ReadingMinutes(related.BodyHtml) dk okuma ↗</small></span></a> }
+                </div>
+            }
+            <div class="journal-shop-note"><span aria-hidden="true">✿</span><h2>Bir çiçek, bin güzel duygu.</h2><p>İlhamınızı sevdikleriniz için küçük bir sürprize dönüştürün.</p><a href="/">Çiçekleri keşfet ↗</a></div>
+        </aside>
+    </div>
+    @if (Model.RelatedPosts.Count > 0) { <section class="journal-shell journal-related"><div class="journal-section-heading"><span class="journal-eyebrow">BİRAZ DAHA İLHAM</span><h2>Bunlar da ilginizi çekebilir</h2></div><div class="journal-grid">@foreach (var related in Model.RelatedPosts) { <partial name="~/Views/Blog/_Card.cshtml" model="related" /> }</div></section> }
+</div>
+@section Scripts { <script src="~/js/blog.js" asp-append-version="true"></script> }

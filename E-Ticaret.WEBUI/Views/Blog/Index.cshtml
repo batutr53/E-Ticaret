@@ -1,0 +1,60 @@
+@model BlogIndexViewModel
+@using E_Ticaret.WEBUI.Helpers
+@{
+    ViewData["Title"] = Model.Settings.Title;
+    var currentCategory = Model.Categories.FirstOrDefault(x => x.Slug == Model.CategorySlug);
+    var banner = Model.Settings.BannerImage == null ? "/img/blog/hero.svg" : BlogContent.CoverUrl(Model.Settings.BannerImage);
+}
+@section Head { <link rel="stylesheet" href="~/css/blog.css" asp-append-version="true" /> }
+<div class="journal">
+    <header class="journal-hero" style="--journal-banner:url('@banner')">
+        <div class="journal-shell">
+            <span class="journal-eyebrow">DETAY ÇİÇEK / ÇİÇEK GÜNLÜĞÜ</span>
+            <h1>@Model.Settings.Title</h1>
+            <p>@Model.Settings.Description</p>
+            <nav aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>›</span><span>Blog</span>@if (currentCategory != null) { <span>›</span><span>@currentCategory.Name</span> }</nav>
+        </div>
+    </header>
+    <section class="journal-shell journal-list" aria-label="Blog yazıları">
+        <div class="journal-toolbar">
+            <div class="journal-categories" aria-label="Blog kategorileri">
+                <a href="/blog" class="@(Model.CategorySlug == null ? "is-current" : "")" aria-current="@(Model.CategorySlug == null ? "page" : null)">Tüm yazılar</a>
+                @foreach (var category in Model.Categories)
+                {
+                    <a href="@Url.Action("Index", "Blog", new { area = "", category = category.Slug, q = Model.Search })" class="@(category.Slug == Model.CategorySlug ? "is-current" : "")" aria-current="@(category.Slug == Model.CategorySlug ? "page" : null)">@category.Name</a>
+                }
+            </div>
+            <form action="/blog" method="get" class="journal-search" role="search">
+                @if (Model.CategorySlug != null) { <input type="hidden" name="category" value="@Model.CategorySlug" /> }
+                <label for="journalSearch" class="journal-sr">Blogda ara</label>
+                <input id="journalSearch" type="search" name="q" value="@Model.Search" placeholder="Biraz ilham ara…" maxlength="100" />
+                <button type="submit" aria-label="Yazıları ara"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+            </form>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Search)) { <p class="journal-results">“@Model.Search” için @Model.Total yazı bulundu. <a href="/blog">Aramayı temizle</a></p> }
+        @if (Model.Posts.Count > 0)
+        {
+            <div class="journal-grid">
+                @foreach (var post in Model.Posts) { <partial name="_Card" model="post" /> }
+            </div>
+            <div class="journal-pagination-wrap">
+                <p>@((Model.Page - 1) * Model.PageSize + 1)–@(Math.Min(Model.Page * Model.PageSize, Model.Total)) arası gösteriliyor <span>·</span> Toplam @Model.Total yazı</p>
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="journal-pagination" aria-label="Blog sayfaları">
+                        @if (Model.Page > 1) { <a href="@Url.Action("Index", new { page = Model.Page - 1, category = Model.CategorySlug, q = Model.Search })" rel="prev" aria-label="Önceki sayfa">‹</a> }
+                        @for (var i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.TotalPages, Model.Page + 2); i++)
+                        {
+                            <a href="@Url.Action("Index", new { page = i, category = Model.CategorySlug, q = Model.Search })" class="@(i == Model.Page ? "is-current" : "")" aria-current="@(i == Model.Page ? "page" : null)">@i</a>
+                        }
+                        @if (Model.Page < Model.TotalPages) { <a href="@Url.Action("Index", new { page = Model.Page + 1, category = Model.CategorySlug, q = Model.Search })" rel="next" aria-label="Sonraki sayfa">›</a> }
+                    </nav>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="journal-empty"><span aria-hidden="true">✿</span><h2>@(Model.Search != null || currentCategory != null ? "Aradığınız yazıyı bulamadık" : "Yeni hikâyeler filizleniyor")</h2><p>@(Model.Search != null || currentCategory != null ? "Başka bir kelimeyle arayın veya tüm yazıları keşfedin." : "Çiçeklerden ilham alan önerilerimiz ve rehberlerimiz yakında burada.")</p><a class="journal-read" href="@(Model.Search != null || currentCategory != null ? "/blog" : "/")">@(Model.Search != null || currentCategory != null ? "Tüm yazıları gör" : "Çiçekleri keşfet") ↗</a></div>
+        }
+    </section>
+</div>

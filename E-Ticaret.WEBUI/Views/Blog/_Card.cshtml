@@ -1,0 +1,11 @@
+@model E_Ticaret.Core.Entities.BlogPost
+@using E_Ticaret.WEBUI.Helpers
+<article class="journal-card">
+    <a class="journal-card-image" href="/blog/@Model.Slug" tabindex="-1" aria-hidden="true">
+        <img src="@BlogContent.CoverUrl(Model.CoverImage)" alt="@(string.IsNullOrWhiteSpace(Model.CoverAlt) ? Model.Title : Model.CoverAlt)" loading="lazy" width="640" height="360" />
+    </a>
+    <div class="journal-card-meta">@(Model.BlogCategory?.Name ?? "Çiçek Günlüğü") <span>·</span> @BlogContent.ReadingMinutes(Model.BodyHtml) dk okuma</div>
+    <h2><a href="/blog/@Model.Slug">@Model.Title</a></h2>
+    <p>@BlogContent.Excerpt(Model)</p>
+    <a class="journal-read" href="/blog/@Model.Slug" aria-label="@Model.Title — Devamını oku">Devamını oku <span aria-hidden="true">↗</span></a>
+</article>

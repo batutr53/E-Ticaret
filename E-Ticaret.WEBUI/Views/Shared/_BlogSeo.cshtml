@@ -1,0 +1,11 @@
+@if (ViewData["CanonicalPath"] is string path)
+{
+    <link rel="canonical" href="@("https://www.detaycicek.com" + path)" />
+    <meta property="og:url" content="@("https://www.detaycicek.com" + path)" />
+    <meta property="og:type" content="@(path.StartsWith("/blog/") ? "article" : "website")" />
+    <meta property="og:title" content="@ViewData["Title"] — Detay Çiçekçilik" />
+    <meta property="og:description" content="@ViewData["SeoDescription"]" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    @if (ViewData["OgImage"] is string image) { <meta property="og:image" content="@image" /> }
+}

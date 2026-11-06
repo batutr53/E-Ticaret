@@ -1,0 +1,10 @@
+@model List<E_Ticaret.Core.Entities.BlogCategory>
+@{ ViewData["Title"] = "Blog Kategorileri"; }
+@section Head { <link rel="stylesheet" href="~/css/blog-admin.css" asp-append-version="true" /> }
+<div class="blog-admin"><partial name="_Nav" /><div class="blog-admin-panel blog-admin-form-panel"><h2>Kategoriler</h2><p class="text-muted small">Yazıları konularına göre gruplayın. Kapattığınız kategorinin yazıları da ziyaretçilere gösterilmez; içerikleriniz korunur.</p>
+    @foreach (var category in Model)
+    {
+        <form asp-action="SaveCategory" method="post" class="blog-admin-category-row"><input type="hidden" name="id" value="@category.Id" /><div><label for="category-@category.Id" class="small">Kategori adı</label><input id="category-@category.Id" name="name" value="@category.Name" required maxlength="100" class="form-control" /></div><div><label for="sort-@category.Id" class="small">Sıra</label><input id="sort-@category.Id" type="number" name="sortOrder" value="@category.SortOrder" class="form-control" /></div><label class="blog-admin-check"><input type="checkbox" name="isActive" value="true" checked="@category.IsActive" /> Aktif</label><button class="btn btn-outline-success" type="submit">Kaydet</button></form>
+    }
+    <h3 class="mt-4">Yeni kategori</h3><form asp-action="SaveCategory" method="post" class="blog-admin-category-row"><div><label for="newCategoryName" class="small">Kategori adı</label><input id="newCategoryName" name="name" required maxlength="100" placeholder="Örn. Çiçek Bakımı" class="form-control" /></div><div><label for="newCategorySort" class="small">Sıra</label><input id="newCategorySort" name="sortOrder" type="number" value="0" class="form-control" /></div><label class="blog-admin-check"><input type="checkbox" name="isActive" value="true" checked /> Aktif</label><button class="btn btn-success" type="submit">Kategori ekle</button></form>
+</div></div>

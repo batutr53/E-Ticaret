@@ -1,0 +1,25 @@
+@model List<E_Ticaret.Core.Entities.BlogPost>
+@using E_Ticaret.WEBUI.Helpers
+@{ ViewData["Title"] = "Blog Yönetimi"; var isDraft = (string?)ViewBag.Status == "draft"; var isPublished = (string?)ViewBag.Status == "published"; var isScheduled = (string?)ViewBag.Status == "scheduled"; }
+@section Head { <link rel="stylesheet" href="~/css/blog-admin.css" asp-append-version="true" /> }
+<div class="blog-admin">
+    <partial name="_Nav" />
+    <div class="blog-admin-tools"><form method="get" action="/Admin/Blog" class="blog-admin-filter"><input type="search" name="q" value="@ViewBag.Search" placeholder="Yazı başlığında ara…" class="form-control" aria-label="Yazı ara" /><select name="status" class="form-control" aria-label="Yayın durumu"><option value="">Tüm durumlar</option><option value="draft" selected="@isDraft">Taslaklar</option><option value="published" selected="@isPublished">Yayındakiler</option><option value="scheduled" selected="@isScheduled">Planlananlar</option></select><button class="btn btn-light" type="submit">Filtrele</button></form><a class="btn btn-success" href="/Admin/Blog/Edit"><i class="fas fa-plus mr-2"></i> Yeni Yazı</a></div>
+    <div class="blog-admin-panel">
+        <div class="blog-admin-panel-title"><h2>Yazılarınız</h2><span>@ViewBag.Total yazı</span></div>
+        @if (Model.Count == 0)
+        {
+            <div class="blog-admin-empty"><i class="fas fa-feather-alt"></i><h2>İlk hikâyenizi paylaşın</h2><p>Başlığı yazın, kapak görselinizi seçin ve içeriğinizi ekleyin.<br />Hazır olduğunuzda yayınlayabilir, önce taslak olarak kaydedebilirsiniz.</p><a href="/Admin/Blog/Edit" class="btn btn-success">Yazı oluşturmaya başla</a></div>
+        }
+        else
+        {
+            <div class="table-responsive"><table class="table blog-admin-table"><thead><tr><th>Yazı</th><th>Kategori</th><th>Durum</th><th>Güncelleme</th><th>İşlemler</th></tr></thead><tbody>
+                @foreach (var post in Model)
+                {
+                    <tr><td><div class="blog-admin-post"><img src="@BlogContent.CoverUrl(post.CoverImage)" alt="" width="82" height="56" /><div><a href="/Admin/Blog/Edit/@post.Id">@post.Title</a><small>/blog/@post.Slug</small></div></div></td><td>@(post.BlogCategory?.Name ?? "—")</td><td><span class="blog-admin-status @(post.IsPublished ? "published" : "draft")">@(!post.IsPublished ? "Taslak" : post.BlogCategory is { IsActive: false } ? "Kategori kapalı" : post.PublishedAt > DateTime.UtcNow ? "Planlandı" : "Yayında")</span></td><td><small>@BlogContent.LocalDate(post.UpdatedAt).ToString("dd.MM.yyyy HH:mm")</small></td><td><div class="blog-admin-actions"><a class="btn btn-sm btn-outline-secondary" href="/Admin/Blog/Edit/@post.Id">Düzenle</a><a class="btn btn-sm btn-light" href="/Admin/Blog/Preview/@post.Id" target="_blank" rel="noopener" aria-label="@post.Title önizleme">Önizle ↗</a>@if (post.IsPublished) { <form asp-action="Unpublish" method="post"><input type="hidden" name="id" value="@post.Id" /><button class="btn btn-sm btn-link text-muted" type="submit">Yayından kaldır</button></form> }</div></td></tr>
+                }
+            </tbody></table></div>
+        }
+    </div>
+    @if ((int)ViewBag.TotalPages > 1) { <nav class="mt-3 d-flex flex-wrap" aria-label="Yazı sayfaları">@for (var i = 1; i <= (int)ViewBag.TotalPages; i++) { <a class="btn btn-sm mr-2 mb-2 @(i == (int)ViewBag.Page ? "btn-success" : "btn-light")" href="@Url.Action("Index", new { page = i, q = ViewBag.Search, status = ViewBag.Status })">@i</a> }</nav> }
+</div>

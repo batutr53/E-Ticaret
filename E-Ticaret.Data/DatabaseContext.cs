@@ -29,6 +29,9 @@ namespace E_Ticaret.Data
         public DbSet<MobileBanner> MobileBanners { get; set; }
         public DbSet<SiteSetting> SiteSettings { get; set; }
         public DbSet<ContentPage> ContentPages { get; set; }
+        public DbSet<BlogPost> BlogPosts { get; set; }
+        public DbSet<BlogCategory> BlogCategories { get; set; }
+        public DbSet<BlogSetting> BlogSettings { get; set; }
         public DbSet<DeliveryRegion> DeliveryRegions { get; set; }
         public DbSet<TelegramNotification> TelegramNotifications { get; set; }
         public DbSet<AddressProvince> AddressProvinces { get; set; }
